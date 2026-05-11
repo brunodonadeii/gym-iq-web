@@ -10,19 +10,11 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as LayoutRouteImport } from './routes/_layout'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as LayoutDashboardIndexRouteImport } from './routes/_layout/dashboard/index'
-import { Route as LayoutDashboardStudentsIndexRouteImport } from './routes/_layout/dashboard/students/index'
-import { Route as LayoutDashboardStudentsNewRouteImport } from './routes/_layout/dashboard/students/new'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LayoutRoute = LayoutRouteImport.update({
-  id: '/_layout',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -30,75 +22,30 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LayoutDashboardIndexRoute = LayoutDashboardIndexRouteImport.update({
-  id: '/dashboard/',
-  path: '/dashboard/',
-  getParentRoute: () => LayoutRoute,
-} as any)
-const LayoutDashboardStudentsIndexRoute =
-  LayoutDashboardStudentsIndexRouteImport.update({
-    id: '/dashboard/students/',
-    path: '/dashboard/students/',
-    getParentRoute: () => LayoutRoute,
-  } as any)
-const LayoutDashboardStudentsNewRoute =
-  LayoutDashboardStudentsNewRouteImport.update({
-    id: '/dashboard/students/new',
-    path: '/dashboard/students/new',
-    getParentRoute: () => LayoutRoute,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/dashboard/': typeof LayoutDashboardIndexRoute
-  '/dashboard/students/new': typeof LayoutDashboardStudentsNewRoute
-  '/dashboard/students/': typeof LayoutDashboardStudentsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/dashboard': typeof LayoutDashboardIndexRoute
-  '/dashboard/students/new': typeof LayoutDashboardStudentsNewRoute
-  '/dashboard/students': typeof LayoutDashboardStudentsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/_layout': typeof LayoutRouteWithChildren
   '/login': typeof LoginRoute
-  '/_layout/dashboard/': typeof LayoutDashboardIndexRoute
-  '/_layout/dashboard/students/new': typeof LayoutDashboardStudentsNewRoute
-  '/_layout/dashboard/students/': typeof LayoutDashboardStudentsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/login'
-    | '/dashboard/'
-    | '/dashboard/students/new'
-    | '/dashboard/students/'
+  fullPaths: '/' | '/login'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/login'
-    | '/dashboard'
-    | '/dashboard/students/new'
-    | '/dashboard/students'
-  id:
-    | '__root__'
-    | '/'
-    | '/_layout'
-    | '/login'
-    | '/_layout/dashboard/'
-    | '/_layout/dashboard/students/new'
-    | '/_layout/dashboard/students/'
+  to: '/' | '/login'
+  id: '__root__' | '/' | '/login'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  LayoutRoute: typeof LayoutRouteWithChildren
   LoginRoute: typeof LoginRoute
 }
 
@@ -111,13 +58,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_layout': {
-      id: '/_layout'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof LayoutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -125,48 +65,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_layout/dashboard/': {
-      id: '/_layout/dashboard/'
-      path: '/dashboard'
-      fullPath: '/dashboard/'
-      preLoaderRoute: typeof LayoutDashboardIndexRouteImport
-      parentRoute: typeof LayoutRoute
-    }
-    '/_layout/dashboard/students/': {
-      id: '/_layout/dashboard/students/'
-      path: '/dashboard/students'
-      fullPath: '/dashboard/students/'
-      preLoaderRoute: typeof LayoutDashboardStudentsIndexRouteImport
-      parentRoute: typeof LayoutRoute
-    }
-    '/_layout/dashboard/students/new': {
-      id: '/_layout/dashboard/students/new'
-      path: '/dashboard/students/new'
-      fullPath: '/dashboard/students/new'
-      preLoaderRoute: typeof LayoutDashboardStudentsNewRouteImport
-      parentRoute: typeof LayoutRoute
-    }
   }
 }
 
-interface LayoutRouteChildren {
-  LayoutDashboardIndexRoute: typeof LayoutDashboardIndexRoute
-  LayoutDashboardStudentsNewRoute: typeof LayoutDashboardStudentsNewRoute
-  LayoutDashboardStudentsIndexRoute: typeof LayoutDashboardStudentsIndexRoute
-}
-
-const LayoutRouteChildren: LayoutRouteChildren = {
-  LayoutDashboardIndexRoute: LayoutDashboardIndexRoute,
-  LayoutDashboardStudentsNewRoute: LayoutDashboardStudentsNewRoute,
-  LayoutDashboardStudentsIndexRoute: LayoutDashboardStudentsIndexRoute,
-}
-
-const LayoutRouteWithChildren =
-  LayoutRoute._addFileChildren(LayoutRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  LayoutRoute: LayoutRouteWithChildren,
   LoginRoute: LoginRoute,
 }
 export const routeTree = rootRouteImport

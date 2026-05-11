@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8080/api/auth";
+const API_URL = "https://gym-iq-api.onrender.com/api";
 
 export type LoginRequest = {
   email: string;
@@ -11,7 +11,7 @@ export type AuthResponse = {
 };
 
 export async function login(data: LoginRequest): Promise<AuthResponse> {
-  const res = await fetch(`${API_URL}/login`, {
+  const res = await fetch(`${API_URL}/auth/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

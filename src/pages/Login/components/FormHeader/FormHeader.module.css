@@ -1,0 +1,17 @@
+.formHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.formHeader > h3 {
+  font-size: clamp(1.8rem, 3vw, 2.15rem);
+  line-height: 1.15;
+  font-weight: 700;
+}
+
+.formHeader > span {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--muted);
+}
