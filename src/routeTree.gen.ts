@@ -10,11 +10,20 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as SidebarRouteRouteImport } from './routes/_sidebar/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SidebarStudentsRouteImport } from './routes/_sidebar/students'
+import { Route as SidebarDashboardRouteImport } from './routes/_sidebar/dashboard'
+import { Route as SidebarStudentsIndexRouteImport } from './routes/_sidebar/students/index'
+import { Route as SidebarStudentsCreateRouteImport } from './routes/_sidebar/students/create'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SidebarRouteRoute = SidebarRouteRouteImport.update({
+  id: '/_sidebar',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -22,30 +31,77 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SidebarStudentsRoute = SidebarStudentsRouteImport.update({
+  id: '/students',
+  path: '/students',
+  getParentRoute: () => SidebarRouteRoute,
+} as any)
+const SidebarDashboardRoute = SidebarDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => SidebarRouteRoute,
+} as any)
+const SidebarStudentsIndexRoute = SidebarStudentsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SidebarStudentsRoute,
+} as any)
+const SidebarStudentsCreateRoute = SidebarStudentsCreateRouteImport.update({
+  id: '/create',
+  path: '/create',
+  getParentRoute: () => SidebarStudentsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/dashboard': typeof SidebarDashboardRoute
+  '/students': typeof SidebarStudentsRouteWithChildren
+  '/students/create': typeof SidebarStudentsCreateRoute
+  '/students/': typeof SidebarStudentsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/dashboard': typeof SidebarDashboardRoute
+  '/students/create': typeof SidebarStudentsCreateRoute
+  '/students': typeof SidebarStudentsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_sidebar': typeof SidebarRouteRouteWithChildren
   '/login': typeof LoginRoute
+  '/_sidebar/dashboard': typeof SidebarDashboardRoute
+  '/_sidebar/students': typeof SidebarStudentsRouteWithChildren
+  '/_sidebar/students/create': typeof SidebarStudentsCreateRoute
+  '/_sidebar/students/': typeof SidebarStudentsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/dashboard'
+    | '/students'
+    | '/students/create'
+    | '/students/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login'
-  id: '__root__' | '/' | '/login'
+  to: '/' | '/login' | '/dashboard' | '/students/create' | '/students'
+  id:
+    | '__root__'
+    | '/'
+    | '/_sidebar'
+    | '/login'
+    | '/_sidebar/dashboard'
+    | '/_sidebar/students'
+    | '/_sidebar/students/create'
+    | '/_sidebar/students/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  SidebarRouteRoute: typeof SidebarRouteRouteWithChildren
   LoginRoute: typeof LoginRoute
 }
 
@@ -58,6 +114,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_sidebar': {
+      id: '/_sidebar'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof SidebarRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -65,11 +128,68 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_sidebar/students': {
+      id: '/_sidebar/students'
+      path: '/students'
+      fullPath: '/students'
+      preLoaderRoute: typeof SidebarStudentsRouteImport
+      parentRoute: typeof SidebarRouteRoute
+    }
+    '/_sidebar/dashboard': {
+      id: '/_sidebar/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof SidebarDashboardRouteImport
+      parentRoute: typeof SidebarRouteRoute
+    }
+    '/_sidebar/students/': {
+      id: '/_sidebar/students/'
+      path: '/'
+      fullPath: '/students/'
+      preLoaderRoute: typeof SidebarStudentsIndexRouteImport
+      parentRoute: typeof SidebarStudentsRoute
+    }
+    '/_sidebar/students/create': {
+      id: '/_sidebar/students/create'
+      path: '/create'
+      fullPath: '/students/create'
+      preLoaderRoute: typeof SidebarStudentsCreateRouteImport
+      parentRoute: typeof SidebarStudentsRoute
+    }
   }
 }
 
+interface SidebarStudentsRouteChildren {
+  SidebarStudentsCreateRoute: typeof SidebarStudentsCreateRoute
+  SidebarStudentsIndexRoute: typeof SidebarStudentsIndexRoute
+}
+
+const SidebarStudentsRouteChildren: SidebarStudentsRouteChildren = {
+  SidebarStudentsCreateRoute: SidebarStudentsCreateRoute,
+  SidebarStudentsIndexRoute: SidebarStudentsIndexRoute,
+}
+
+const SidebarStudentsRouteWithChildren = SidebarStudentsRoute._addFileChildren(
+  SidebarStudentsRouteChildren,
+)
+
+interface SidebarRouteRouteChildren {
+  SidebarDashboardRoute: typeof SidebarDashboardRoute
+  SidebarStudentsRoute: typeof SidebarStudentsRouteWithChildren
+}
+
+const SidebarRouteRouteChildren: SidebarRouteRouteChildren = {
+  SidebarDashboardRoute: SidebarDashboardRoute,
+  SidebarStudentsRoute: SidebarStudentsRouteWithChildren,
+}
+
+const SidebarRouteRouteWithChildren = SidebarRouteRoute._addFileChildren(
+  SidebarRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  SidebarRouteRoute: SidebarRouteRouteWithChildren,
   LoginRoute: LoginRoute,
 }
 export const routeTree = rootRouteImport

@@ -18,7 +18,7 @@
 
   border-radius: 999px;
 
-  background: rgba(255, 138, 61, 0.25);
+  background: var(--glow-strong);
 
   filter: blur(120px);
 
@@ -38,7 +38,7 @@
 
   border-radius: 999px;
 
-  background: rgba(255, 138, 61, 0.2);
+  background: var(--glow-soft);
 
   filter: blur(140px);
 
@@ -117,7 +117,8 @@
   padding: 40px;
   border-radius: 24px;
   background: var(--surface);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
 }
 
 @media (max-width: 900px) {

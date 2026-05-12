@@ -24,20 +24,17 @@ export const LoginPage = () => {
           </div>
           <h2>
             Dados, <span className={styles.accent}>previsoes</span> e gestao em
-            um so sistema.
+            um só sistema.
           </h2>
           <p className={styles.muted}>
-            Centralize alunos, pagamentos, metricas e analises preditivas em
-            uma unica plataforma.
+            Centralize alunos, pagamentos, metricas e analises preditivas em uma
+            unica plataforma.
           </p>
         </div>
       </div>
 
       <div className={styles.right}>
-        <form
-          className={styles.formWrapper}
-          onSubmit={handleSubmit}
-        >
+        <form className={styles.formWrapper} onSubmit={handleSubmit}>
           <Card>
             <FormHeader />
             <TextField

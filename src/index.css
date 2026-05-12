@@ -1,14 +1,63 @@
 @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap");
 
 :root {
-  --background: #0f1115;
-  --surface: #171c24;
   --primary: #ff8a3d;
-  --button-hover: #ff9b59;
-  --button-active: #e9782e;
+  --primary-contrast: #ffffff;
+  --primary-soft: rgba(255, 138, 61, 0.16);
+  --primary-ring: rgba(255, 138, 61, 0.18);
+  --button-hover: #f67821;
+  --button-active: #df6616;
+  --background: #0f1115;
+  --background-elevated: #171c24;
+  --surface: #171c24;
+  --surface-alt: #1d2430;
+  --surface-hover: #252e3c;
   --text-primary: #f3f4f6;
-  --text-secondary: #0f1115;
+  --text-secondary: #c5ced8;
   --muted: #9ca3af;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --overlay: rgba(7, 10, 14, 0.72);
+  --shadow-sm: 0 12px 32px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 32px 80px rgba(0, 0, 0, 0.38);
+  --glow-strong: rgba(255, 138, 61, 0.25);
+  --glow-soft: rgba(255, 138, 61, 0.2);
+}
+
+[data-theme="dark"] {
+  --background: #0f1115;
+  --background-elevated: #171c24;
+  --surface: #171c24;
+  --surface-alt: #1d2430;
+  --surface-hover: #252e3c;
+  --text-primary: #f3f4f6;
+  --text-secondary: #c5ced8;
+  --muted: #9ca3af;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --overlay: rgba(7, 10, 14, 0.72);
+  --shadow-sm: 0 12px 32px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 32px 80px rgba(0, 0, 0, 0.38);
+  --glow-strong: rgba(255, 138, 61, 0.25);
+  --glow-soft: rgba(255, 138, 61, 0.2);
+}
+
+[data-theme="light"] {
+  --background: #f4f7fb;
+  --background-elevated: #ffffff;
+  --surface: #ffffff;
+  --surface-alt: #eef3f9;
+  --surface-hover: #e4ebf5;
+  --text-primary: #111827;
+  --text-secondary: #334155;
+  --muted: #64748b;
+  --border: rgba(15, 23, 42, 0.1);
+  --border-strong: rgba(15, 23, 42, 0.18);
+  --overlay: rgba(15, 23, 42, 0.4);
+  --shadow-sm: 0 14px 36px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 28px 72px rgba(15, 23, 42, 0.16);
+  --glow-strong: rgba(255, 138, 61, 0.18);
+  --glow-soft: rgba(255, 138, 61, 0.12);
 }
 
 * {
@@ -29,4 +78,7 @@ body {
   background: var(--background);
   color: var(--text-primary);
   overflow-x: hidden;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
