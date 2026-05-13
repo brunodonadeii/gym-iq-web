@@ -10,22 +10,18 @@ export type AuthResponse = {
   type: string;
 };
 
+// api/auth.ts
 export async function login(data: LoginRequest): Promise<AuthResponse> {
   const res = await fetch(`${API_URL}/auth/login`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
 
-  if (!res.ok) {
-    throw new Error("Credenciais inválidas");
-  }
+  if (!res.ok) throw new Error("Credenciais inválidas");
 
   const jsonData = await res.json();
-
   localStorage.setItem("token", jsonData.token);
 
-  return res.json();
+  return jsonData;
 }

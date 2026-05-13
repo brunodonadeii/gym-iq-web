@@ -1,5 +1,4 @@
 import { Button } from "@/components/Button/Button";
-import { StudentForm } from "../components/StudentForm/StudentForm";
 import styles from "./StudentsEdit.module.css";
 import { TextField } from "@/components/TextField/TextField";
 import { useUpdateStudent } from "@/mutations/useUpdateStudent";
@@ -9,6 +8,7 @@ import { useNavigate, useParams } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { useFormInputs } from "@/hooks/useFormInputs";
 import type { StudentEditFormData } from "../types";
+import { Form } from "@/components/Form/Form";
 
 const EMPTY_FORM: StudentEditFormData = {
   name: "",
@@ -59,7 +59,7 @@ export const StudentsEdit = () => {
   };
 
   return (
-    <StudentForm
+    <Form
       title="Dados pessoais"
       description="Informações base para identificar o aluno e iniciar o acesso."
       loading={isLoading}
@@ -150,6 +150,6 @@ export const StudentsEdit = () => {
           />
         </div>
       </fieldset>
-    </StudentForm>
+    </Form>
   );
 };

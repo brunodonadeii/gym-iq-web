@@ -6,9 +6,9 @@ import { useState } from "react";
 import styles from "./StudentsCreate.module.css";
 import { useCreateStudent } from "@/mutations/useCreateStudent";
 import { toast } from "sonner";
-import { StudentForm } from "../components/StudentForm/StudentForm";
 import { useFormInputs } from "@/hooks/useFormInputs";
 import type { StudentCreateFormData } from "../types";
+import { Form } from "@/components/Form/Form";
 
 const EMPTY_FORM: StudentCreateFormData = {
   name: "",
@@ -46,7 +46,7 @@ export const StudentsCreate = () => {
   };
 
   return (
-    <StudentForm
+    <Form
       title="Dados pessoais"
       description="Informações base para identificar o aluno e iniciar o acesso."
       actions={
@@ -145,6 +145,6 @@ export const StudentsCreate = () => {
           />
         </div>
       </fieldset>
-    </StudentForm>
+    </Form>
   );
 };

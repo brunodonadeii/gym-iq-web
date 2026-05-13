@@ -5,14 +5,24 @@ import { Card } from "@/components/Card/Card";
 import { Button } from "@/components/Button/Button";
 import { TextField } from "@/components/TextField/TextField";
 import { FormHeader } from "./components/FormHeader/FormHeader";
+import { router } from "@/router";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 
 export const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { redirect } = useSearch({ from: "/login" });
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    login({ email, password });
+    try {
+      await login({ email, password });
+      await router.invalidate();
+      navigate({ to: redirect });
+    } catch (err) {
+      console.log("Credenciais inválidas", err);
+    }
   };
 
   return (

@@ -1,7 +1,7 @@
 import { Header } from "@/components/Header/Header";
 import { Sidebar } from "@/components/Sidebar/Sidebar";
 import { Outlet } from "@tanstack/react-router";
-import { Users } from "lucide-react";
+import { Layers, Users } from "lucide-react";
 import styles from "./Layout.module.css";
 
 const sidebarItems = [
@@ -9,6 +9,11 @@ const sidebarItems = [
     label: "Alunos",
     icon: <Users size={20} />,
     to: "/students",
+  },
+  {
+    label: "Planos",
+    icon: <Layers size={20} />,
+    to: "/plans",
   },
 ];
 

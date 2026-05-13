@@ -1,8 +1,8 @@
-import styles from "./StudentForm.module.css";
 import { Skeleton } from "@/components/Skeleton/Skeleton";
 import type { ReactNode } from "react";
+import styles from "./Form.module.css";
 
-type StudentFormProps = {
+type FormProps = {
   children: ReactNode;
   actions: ReactNode;
   loading?: boolean;
@@ -10,13 +10,13 @@ type StudentFormProps = {
   description: string;
 };
 
-export const StudentForm = ({
+export const Form = ({
   children,
   actions,
   loading,
   description,
   title = "Dados pessoais",
-}: StudentFormProps) => {
+}: FormProps) => {
   return (
     <div className={styles.page}>
       <div className={styles.card}>
