@@ -1,0 +1,107 @@
+.trigger {
+  width: 36px;
+  height: 36px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid var(--border);
+  border-radius: 12px;
+
+  background: var(--surface-alt);
+  color: var(--text-secondary);
+
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.trigger:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+.trigger:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px var(--primary-soft);
+}
+
+.content {
+  min-width: 180px;
+
+  padding: 6px;
+
+  border: 1px solid var(--border);
+  border-radius: 14px;
+
+  background: var(--surface);
+
+  box-shadow: var(--shadow-sm);
+
+  z-index: 1000;
+
+  animation: dropdownIn 0.12s ease;
+}
+
+.item {
+  height: 38px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 0 12px;
+
+  border-radius: 10px;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  color: var(--text-primary);
+
+  cursor: pointer;
+  outline: none;
+
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.item:hover,
+.item[data-highlighted] {
+  background: var(--surface-hover);
+}
+
+.danger {
+  color: #dc2626;
+}
+
+.danger:hover,
+.danger[data-highlighted] {
+  background: rgba(220, 38, 38, 0.08);
+}
+
+.disabled,
+.item[data-disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+@keyframes dropdownIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

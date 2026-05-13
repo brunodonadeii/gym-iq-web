@@ -1,4 +1,5 @@
 import { Button } from "@/components/Button/Button";
+import { Dropdown } from "@/components/Dropdown/Dropdown";
 import { SearchBar } from "@/components/SearchBar/SearchBar";
 import {
   Table,
@@ -9,11 +10,12 @@ import {
   TableRow,
 } from "@/components/Table/Table";
 import { useNavigate } from "@tanstack/react-router";
-import { MoreHorizontal, Search, UserPlus } from "lucide-react";
+import { Pencil, Search, Trash2, UserPlus } from "lucide-react";
 
 import styles from "./StudentsPage.module.css";
 import { useGetStudents } from "@/queries/useGetStudents";
 import { useState } from "react";
+import { useDeleteStudent } from "@/mutations/useDeleteStudent";
 
 const studentColumns = [
   { width: "24%" },
@@ -27,7 +29,9 @@ const studentColumns = [
 export const StudentsPage = () => {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
+
   const { data } = useGetStudents(search);
+  const { mutate: deleteStudent } = useDeleteStudent();
 
   return (
     <div className={styles.page}>
@@ -82,18 +86,27 @@ export const StudentsPage = () => {
                     </span>
                   </TableCell>
                   <TableCell center>
-                    <button
-                      className={styles.actionButton}
-                      type="button"
-                      onClick={() =>
-                        navigate({
-                          to: "$studentId",
-                          params: { studentId: d.studentId },
-                        })
-                      }
-                    >
-                      <MoreHorizontal size={16} />
-                    </button>
+                    <Dropdown
+                      items={[
+                        {
+                          label: "Editar",
+                          icon: <Pencil size={15} />,
+                          onSelect: () =>
+                            navigate({
+                              to: "/students/$studentId",
+                              params: { studentId: String(d.studentId) },
+                            }),
+                        },
+                        {
+                          label: "Excluir",
+                          icon: <Trash2 size={15} />,
+                          danger: true,
+                          onSelect: () => {
+                            deleteStudent({ id: String(d.studentId) });
+                          },
+                        },
+                      ]}
+                    />
                   </TableCell>
                 </TableRow>
               ))}
