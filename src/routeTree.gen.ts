@@ -14,13 +14,17 @@ import { Route as SidebarRouteRouteImport } from './routes/_sidebar/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SidebarStudentsRouteImport } from './routes/_sidebar/students'
 import { Route as SidebarPlansRouteImport } from './routes/_sidebar/plans'
+import { Route as SidebarEnrollmentsRouteImport } from './routes/_sidebar/enrollments'
 import { Route as SidebarDashboardRouteImport } from './routes/_sidebar/dashboard'
 import { Route as SidebarStudentsIndexRouteImport } from './routes/_sidebar/students/index'
 import { Route as SidebarPlansIndexRouteImport } from './routes/_sidebar/plans/index'
+import { Route as SidebarEnrollmentsIndexRouteImport } from './routes/_sidebar/enrollments/index'
 import { Route as SidebarStudentsCreateRouteImport } from './routes/_sidebar/students/create'
 import { Route as SidebarStudentsStudentIdRouteImport } from './routes/_sidebar/students/$studentId'
 import { Route as SidebarPlansCreateRouteImport } from './routes/_sidebar/plans/create'
 import { Route as SidebarPlansPlanIdRouteImport } from './routes/_sidebar/plans/$planId'
+import { Route as SidebarEnrollmentsCreateRouteImport } from './routes/_sidebar/enrollments/create'
+import { Route as SidebarEnrollmentsEnrollmentIdRouteImport } from './routes/_sidebar/enrollments/$enrollmentId'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -46,6 +50,11 @@ const SidebarPlansRoute = SidebarPlansRouteImport.update({
   path: '/plans',
   getParentRoute: () => SidebarRouteRoute,
 } as any)
+const SidebarEnrollmentsRoute = SidebarEnrollmentsRouteImport.update({
+  id: '/enrollments',
+  path: '/enrollments',
+  getParentRoute: () => SidebarRouteRoute,
+} as any)
 const SidebarDashboardRoute = SidebarDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -60,6 +69,11 @@ const SidebarPlansIndexRoute = SidebarPlansIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => SidebarPlansRoute,
+} as any)
+const SidebarEnrollmentsIndexRoute = SidebarEnrollmentsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SidebarEnrollmentsRoute,
 } as any)
 const SidebarStudentsCreateRoute = SidebarStudentsCreateRouteImport.update({
   id: '/create',
@@ -82,17 +96,33 @@ const SidebarPlansPlanIdRoute = SidebarPlansPlanIdRouteImport.update({
   path: '/$planId',
   getParentRoute: () => SidebarPlansRoute,
 } as any)
+const SidebarEnrollmentsCreateRoute =
+  SidebarEnrollmentsCreateRouteImport.update({
+    id: '/create',
+    path: '/create',
+    getParentRoute: () => SidebarEnrollmentsRoute,
+  } as any)
+const SidebarEnrollmentsEnrollmentIdRoute =
+  SidebarEnrollmentsEnrollmentIdRouteImport.update({
+    id: '/$enrollmentId',
+    path: '/$enrollmentId',
+    getParentRoute: () => SidebarEnrollmentsRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/dashboard': typeof SidebarDashboardRoute
+  '/enrollments': typeof SidebarEnrollmentsRouteWithChildren
   '/plans': typeof SidebarPlansRouteWithChildren
   '/students': typeof SidebarStudentsRouteWithChildren
+  '/enrollments/$enrollmentId': typeof SidebarEnrollmentsEnrollmentIdRoute
+  '/enrollments/create': typeof SidebarEnrollmentsCreateRoute
   '/plans/$planId': typeof SidebarPlansPlanIdRoute
   '/plans/create': typeof SidebarPlansCreateRoute
   '/students/$studentId': typeof SidebarStudentsStudentIdRoute
   '/students/create': typeof SidebarStudentsCreateRoute
+  '/enrollments/': typeof SidebarEnrollmentsIndexRoute
   '/plans/': typeof SidebarPlansIndexRoute
   '/students/': typeof SidebarStudentsIndexRoute
 }
@@ -100,10 +130,13 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/dashboard': typeof SidebarDashboardRoute
+  '/enrollments/$enrollmentId': typeof SidebarEnrollmentsEnrollmentIdRoute
+  '/enrollments/create': typeof SidebarEnrollmentsCreateRoute
   '/plans/$planId': typeof SidebarPlansPlanIdRoute
   '/plans/create': typeof SidebarPlansCreateRoute
   '/students/$studentId': typeof SidebarStudentsStudentIdRoute
   '/students/create': typeof SidebarStudentsCreateRoute
+  '/enrollments': typeof SidebarEnrollmentsIndexRoute
   '/plans': typeof SidebarPlansIndexRoute
   '/students': typeof SidebarStudentsIndexRoute
 }
@@ -113,12 +146,16 @@ export interface FileRoutesById {
   '/_sidebar': typeof SidebarRouteRouteWithChildren
   '/login': typeof LoginRoute
   '/_sidebar/dashboard': typeof SidebarDashboardRoute
+  '/_sidebar/enrollments': typeof SidebarEnrollmentsRouteWithChildren
   '/_sidebar/plans': typeof SidebarPlansRouteWithChildren
   '/_sidebar/students': typeof SidebarStudentsRouteWithChildren
+  '/_sidebar/enrollments/$enrollmentId': typeof SidebarEnrollmentsEnrollmentIdRoute
+  '/_sidebar/enrollments/create': typeof SidebarEnrollmentsCreateRoute
   '/_sidebar/plans/$planId': typeof SidebarPlansPlanIdRoute
   '/_sidebar/plans/create': typeof SidebarPlansCreateRoute
   '/_sidebar/students/$studentId': typeof SidebarStudentsStudentIdRoute
   '/_sidebar/students/create': typeof SidebarStudentsCreateRoute
+  '/_sidebar/enrollments/': typeof SidebarEnrollmentsIndexRoute
   '/_sidebar/plans/': typeof SidebarPlansIndexRoute
   '/_sidebar/students/': typeof SidebarStudentsIndexRoute
 }
@@ -128,12 +165,16 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/dashboard'
+    | '/enrollments'
     | '/plans'
     | '/students'
+    | '/enrollments/$enrollmentId'
+    | '/enrollments/create'
     | '/plans/$planId'
     | '/plans/create'
     | '/students/$studentId'
     | '/students/create'
+    | '/enrollments/'
     | '/plans/'
     | '/students/'
   fileRoutesByTo: FileRoutesByTo
@@ -141,10 +182,13 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/dashboard'
+    | '/enrollments/$enrollmentId'
+    | '/enrollments/create'
     | '/plans/$planId'
     | '/plans/create'
     | '/students/$studentId'
     | '/students/create'
+    | '/enrollments'
     | '/plans'
     | '/students'
   id:
@@ -153,12 +197,16 @@ export interface FileRouteTypes {
     | '/_sidebar'
     | '/login'
     | '/_sidebar/dashboard'
+    | '/_sidebar/enrollments'
     | '/_sidebar/plans'
     | '/_sidebar/students'
+    | '/_sidebar/enrollments/$enrollmentId'
+    | '/_sidebar/enrollments/create'
     | '/_sidebar/plans/$planId'
     | '/_sidebar/plans/create'
     | '/_sidebar/students/$studentId'
     | '/_sidebar/students/create'
+    | '/_sidebar/enrollments/'
     | '/_sidebar/plans/'
     | '/_sidebar/students/'
   fileRoutesById: FileRoutesById
@@ -206,6 +254,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SidebarPlansRouteImport
       parentRoute: typeof SidebarRouteRoute
     }
+    '/_sidebar/enrollments': {
+      id: '/_sidebar/enrollments'
+      path: '/enrollments'
+      fullPath: '/enrollments'
+      preLoaderRoute: typeof SidebarEnrollmentsRouteImport
+      parentRoute: typeof SidebarRouteRoute
+    }
     '/_sidebar/dashboard': {
       id: '/_sidebar/dashboard'
       path: '/dashboard'
@@ -226,6 +281,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/plans/'
       preLoaderRoute: typeof SidebarPlansIndexRouteImport
       parentRoute: typeof SidebarPlansRoute
+    }
+    '/_sidebar/enrollments/': {
+      id: '/_sidebar/enrollments/'
+      path: '/'
+      fullPath: '/enrollments/'
+      preLoaderRoute: typeof SidebarEnrollmentsIndexRouteImport
+      parentRoute: typeof SidebarEnrollmentsRoute
     }
     '/_sidebar/students/create': {
       id: '/_sidebar/students/create'
@@ -255,8 +317,37 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SidebarPlansPlanIdRouteImport
       parentRoute: typeof SidebarPlansRoute
     }
+    '/_sidebar/enrollments/create': {
+      id: '/_sidebar/enrollments/create'
+      path: '/create'
+      fullPath: '/enrollments/create'
+      preLoaderRoute: typeof SidebarEnrollmentsCreateRouteImport
+      parentRoute: typeof SidebarEnrollmentsRoute
+    }
+    '/_sidebar/enrollments/$enrollmentId': {
+      id: '/_sidebar/enrollments/$enrollmentId'
+      path: '/$enrollmentId'
+      fullPath: '/enrollments/$enrollmentId'
+      preLoaderRoute: typeof SidebarEnrollmentsEnrollmentIdRouteImport
+      parentRoute: typeof SidebarEnrollmentsRoute
+    }
   }
 }
+
+interface SidebarEnrollmentsRouteChildren {
+  SidebarEnrollmentsEnrollmentIdRoute: typeof SidebarEnrollmentsEnrollmentIdRoute
+  SidebarEnrollmentsCreateRoute: typeof SidebarEnrollmentsCreateRoute
+  SidebarEnrollmentsIndexRoute: typeof SidebarEnrollmentsIndexRoute
+}
+
+const SidebarEnrollmentsRouteChildren: SidebarEnrollmentsRouteChildren = {
+  SidebarEnrollmentsEnrollmentIdRoute: SidebarEnrollmentsEnrollmentIdRoute,
+  SidebarEnrollmentsCreateRoute: SidebarEnrollmentsCreateRoute,
+  SidebarEnrollmentsIndexRoute: SidebarEnrollmentsIndexRoute,
+}
+
+const SidebarEnrollmentsRouteWithChildren =
+  SidebarEnrollmentsRoute._addFileChildren(SidebarEnrollmentsRouteChildren)
 
 interface SidebarPlansRouteChildren {
   SidebarPlansPlanIdRoute: typeof SidebarPlansPlanIdRoute
@@ -292,12 +383,14 @@ const SidebarStudentsRouteWithChildren = SidebarStudentsRoute._addFileChildren(
 
 interface SidebarRouteRouteChildren {
   SidebarDashboardRoute: typeof SidebarDashboardRoute
+  SidebarEnrollmentsRoute: typeof SidebarEnrollmentsRouteWithChildren
   SidebarPlansRoute: typeof SidebarPlansRouteWithChildren
   SidebarStudentsRoute: typeof SidebarStudentsRouteWithChildren
 }
 
 const SidebarRouteRouteChildren: SidebarRouteRouteChildren = {
   SidebarDashboardRoute: SidebarDashboardRoute,
+  SidebarEnrollmentsRoute: SidebarEnrollmentsRouteWithChildren,
   SidebarPlansRoute: SidebarPlansRouteWithChildren,
   SidebarStudentsRoute: SidebarStudentsRouteWithChildren,
 }

@@ -2,19 +2,21 @@ import type { Plan } from "@/pages/Plans/types";
 import { authFetch } from "@/services/api";
 import { useQuery } from "@tanstack/react-query";
 
-async function fetchPlans(): Promise<Plan[]> {
-  const response = await authFetch("plans/all");
+type PlansQueryMode = "active" | "all";
+
+async function fetchPlans(mode: PlansQueryMode): Promise<Plan[]> {
+  const response = await authFetch(mode === "active" ? "plans" : "plans/all");
 
   if (!response.ok) {
-    throw new Error("Erro ao buscar alunos");
+    throw new Error("Erro ao buscar planos");
   }
 
   return response.json();
 }
 
-export function useGetPlans() {
+export function useGetPlans(mode: PlansQueryMode = "active") {
   return useQuery({
-    queryKey: ["plans"],
-    queryFn: fetchPlans,
+    queryKey: ["plans", mode],
+    queryFn: () => fetchPlans(mode),
   });
 }

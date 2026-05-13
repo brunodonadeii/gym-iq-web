@@ -1,6 +1,6 @@
 import { Button } from "@/components/Button/Button";
 import { Dropdown } from "@/components/Dropdown/Dropdown";
-import { SearchBar } from "@/components/SearchBar/SearchBar";
+import { SelectField } from "@/components/SelectField/SelectField";
 import {
   Table,
   TableBody,
@@ -10,38 +10,72 @@ import {
   TableRow,
 } from "@/components/Table/Table";
 import { useNavigate } from "@tanstack/react-router";
-import { Pencil, Search, Trash2, UserPlus } from "lucide-react";
+import { Pencil, Trash2, UserPlus } from "lucide-react";
 import styles from "./Plans.module.css";
 import { useGetPlans } from "@/queries/useGetPlans";
 import { useDeletePlan } from "@/mutations/useDeletePlan";
+import { useMemo, useState } from "react";
+
+type PlanStatusFilter = "active" | "inactive" | "all";
 
 const studentColumns = [
-  { width: "24%" },
-  { width: "16%" },
-  { width: "16%" },
-  { width: "22%" },
-  { width: "12%" },
-  { width: "10%" },
+  { width: "20%" },
+  { width: "20%" },
+  { width: "20%" },
+  { width: "20%" },
+  { width: "20%" },
+  { width: "20%" },
 ];
 
 export const PlansPage = () => {
   const navigate = useNavigate();
-  const { data } = useGetPlans();
+  const [statusFilter, setStatusFilter] = useState<PlanStatusFilter>("active");
+  const queryMode = statusFilter === "active" ? "active" : "all";
+  const { data } = useGetPlans(queryMode);
   const { mutate: deletePlan } = useDeletePlan();
+  const plans = useMemo(() => {
+    if (statusFilter === "inactive") {
+      return data?.filter((plan) => !plan.active) ?? [];
+    }
+
+    return data ?? [];
+  }, [data, statusFilter]);
+
+  const activeCount = plans.filter((plan) => plan.active).length;
+  const inactiveCount = plans.length - activeCount;
 
   return (
     <div className={styles.page}>
       <div className={styles.topBar}>
-        <SearchBar
-          icon={<Search size={15} />}
-          placeholder="Buscar por nome, CPF ou email"
-        />
-        <Button
-          leftIcon={<UserPlus size={18} />}
-          onClick={() => navigate({ to: "/plans/create" })}
-        >
-          Novo Plano
-        </Button>
+        <div className={styles.topBarContent}>
+          <strong className={styles.topBarTitle}>
+            {plans.length} plano(s) exibido(s)
+          </strong>
+          <span className={styles.topBarSubtitle}>
+            {activeCount} ativo(s) e {inactiveCount} inativo(s) neste recorte.
+          </span>
+        </div>
+
+        <div className={styles.topBarActions}>
+          <SelectField
+            label="Status"
+            id="planStatusFilter"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value as PlanStatusFilter)}
+            options={[
+              { label: "Ativos", value: "active" },
+              { label: "Inativos", value: "inactive" },
+              { label: "Todos", value: "all" },
+            ]}
+            containerProps={{ className: styles.filterField }}
+          />
+          <Button
+            leftIcon={<UserPlus size={18} />}
+            onClick={() => navigate({ to: "/plans/create" })}
+          >
+            Novo Plano
+          </Button>
+        </div>
       </div>
 
       <section className={styles.tableSection}>
@@ -65,7 +99,7 @@ export const PlansPage = () => {
             </TableHead>
 
             <TableBody>
-              {data?.map((d) => (
+              {plans.map((d) => (
                 <TableRow key={d.planId}>
                   <TableCell>
                     <div className={styles.nameCell}>
@@ -76,7 +110,11 @@ export const PlansPage = () => {
                   <TableCell>R${d.monthlyPrice}</TableCell>
                   <TableCell>{d.durationDays} dias</TableCell>
                   <TableCell center>
-                    <span className={styles.statusBadge}>
+                    <span
+                      className={`${styles.statusBadge} ${
+                        d.active ? styles.statusActive : styles.statusInactive
+                      }`}
+                    >
                       {d.active === true ? "Ativo" : "Inativo"}
                     </span>
                   </TableCell>
