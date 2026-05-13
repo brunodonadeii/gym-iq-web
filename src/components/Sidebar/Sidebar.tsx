@@ -17,7 +17,7 @@ export const Sidebar = ({ items }: SidebarProps) => {
   return (
     <aside className={styles.sidebar}>
       <div className={styles.sectionHeader}>
-        <span className={styles.sectionLabel}>Navegacao</span>
+        <span className={styles.sectionLabel}>Navegação</span>
         <ThemeToggle />
       </div>
 

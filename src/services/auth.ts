@@ -1,4 +1,4 @@
-const API_URL = "https://gym-iq-api.onrender.com/api";
+const API_URL = import.meta.env.VITE_API_URL;
 
 export type LoginRequest = {
   email: string;
@@ -22,6 +22,10 @@ export async function login(data: LoginRequest): Promise<AuthResponse> {
   if (!res.ok) {
     throw new Error("Credenciais inválidas");
   }
+
+  const jsonData = await res.json();
+
+  localStorage.setItem("token", jsonData.token);
 
   return res.json();
 }

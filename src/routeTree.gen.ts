@@ -16,6 +16,7 @@ import { Route as SidebarStudentsRouteImport } from './routes/_sidebar/students'
 import { Route as SidebarDashboardRouteImport } from './routes/_sidebar/dashboard'
 import { Route as SidebarStudentsIndexRouteImport } from './routes/_sidebar/students/index'
 import { Route as SidebarStudentsCreateRouteImport } from './routes/_sidebar/students/create'
+import { Route as SidebarStudentsStudentIdRouteImport } from './routes/_sidebar/students/$studentId'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -51,12 +52,19 @@ const SidebarStudentsCreateRoute = SidebarStudentsCreateRouteImport.update({
   path: '/create',
   getParentRoute: () => SidebarStudentsRoute,
 } as any)
+const SidebarStudentsStudentIdRoute =
+  SidebarStudentsStudentIdRouteImport.update({
+    id: '/$studentId',
+    path: '/$studentId',
+    getParentRoute: () => SidebarStudentsRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/dashboard': typeof SidebarDashboardRoute
   '/students': typeof SidebarStudentsRouteWithChildren
+  '/students/$studentId': typeof SidebarStudentsStudentIdRoute
   '/students/create': typeof SidebarStudentsCreateRoute
   '/students/': typeof SidebarStudentsIndexRoute
 }
@@ -64,6 +72,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/dashboard': typeof SidebarDashboardRoute
+  '/students/$studentId': typeof SidebarStudentsStudentIdRoute
   '/students/create': typeof SidebarStudentsCreateRoute
   '/students': typeof SidebarStudentsIndexRoute
 }
@@ -74,6 +83,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/_sidebar/dashboard': typeof SidebarDashboardRoute
   '/_sidebar/students': typeof SidebarStudentsRouteWithChildren
+  '/_sidebar/students/$studentId': typeof SidebarStudentsStudentIdRoute
   '/_sidebar/students/create': typeof SidebarStudentsCreateRoute
   '/_sidebar/students/': typeof SidebarStudentsIndexRoute
 }
@@ -84,10 +94,17 @@ export interface FileRouteTypes {
     | '/login'
     | '/dashboard'
     | '/students'
+    | '/students/$studentId'
     | '/students/create'
     | '/students/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/dashboard' | '/students/create' | '/students'
+  to:
+    | '/'
+    | '/login'
+    | '/dashboard'
+    | '/students/$studentId'
+    | '/students/create'
+    | '/students'
   id:
     | '__root__'
     | '/'
@@ -95,6 +112,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/_sidebar/dashboard'
     | '/_sidebar/students'
+    | '/_sidebar/students/$studentId'
     | '/_sidebar/students/create'
     | '/_sidebar/students/'
   fileRoutesById: FileRoutesById
@@ -156,15 +174,24 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SidebarStudentsCreateRouteImport
       parentRoute: typeof SidebarStudentsRoute
     }
+    '/_sidebar/students/$studentId': {
+      id: '/_sidebar/students/$studentId'
+      path: '/$studentId'
+      fullPath: '/students/$studentId'
+      preLoaderRoute: typeof SidebarStudentsStudentIdRouteImport
+      parentRoute: typeof SidebarStudentsRoute
+    }
   }
 }
 
 interface SidebarStudentsRouteChildren {
+  SidebarStudentsStudentIdRoute: typeof SidebarStudentsStudentIdRoute
   SidebarStudentsCreateRoute: typeof SidebarStudentsCreateRoute
   SidebarStudentsIndexRoute: typeof SidebarStudentsIndexRoute
 }
 
 const SidebarStudentsRouteChildren: SidebarStudentsRouteChildren = {
+  SidebarStudentsStudentIdRoute: SidebarStudentsStudentIdRoute,
   SidebarStudentsCreateRoute: SidebarStudentsCreateRoute,
   SidebarStudentsIndexRoute: SidebarStudentsIndexRoute,
 }

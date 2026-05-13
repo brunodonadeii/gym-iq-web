@@ -12,6 +12,8 @@ import { useNavigate } from "@tanstack/react-router";
 import { MoreHorizontal, Search, UserPlus } from "lucide-react";
 
 import styles from "./StudentsPage.module.css";
+import { useGetStudents } from "@/queries/useGetStudents";
+import { useState } from "react";
 
 const studentColumns = [
   { width: "24%" },
@@ -24,6 +26,8 @@ const studentColumns = [
 
 export const StudentsPage = () => {
   const navigate = useNavigate();
+  const [search, setSearch] = useState("");
+  const { data } = useGetStudents(search);
 
   return (
     <div className={styles.page}>
@@ -31,6 +35,7 @@ export const StudentsPage = () => {
         <SearchBar
           icon={<Search size={15} />}
           placeholder="Buscar por nome, CPF ou email"
+          onChange={(e) => setSearch(e.target.value)}
         />
         <Button
           leftIcon={<UserPlus size={18} />}
@@ -61,26 +66,37 @@ export const StudentsPage = () => {
             </TableHead>
 
             <TableBody>
-              <TableRow>
-                <TableCell>
-                  <div className={styles.nameCell}>
-                    <span className={styles.namePrimary}>
-                      Bruno Donadei Manfredini
+              {data?.map((d) => (
+                <TableRow key={d.studentId}>
+                  <TableCell>
+                    <div className={styles.nameCell}>
+                      <span className={styles.namePrimary}>{d.name}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>{d.cpf}</TableCell>
+                  <TableCell>{d.phone}</TableCell>
+                  <TableCell>{d.email}</TableCell>
+                  <TableCell center>
+                    <span className={styles.statusBadge}>
+                      {d.active === true ? "Ativo" : "Inativo"}
                     </span>
-                  </div>
-                </TableCell>
-                <TableCell>474.507.148-50</TableCell>
-                <TableCell>(11) 96015-0856</TableCell>
-                <TableCell>domanbruno@gmail.com</TableCell>
-                <TableCell center>
-                  <span className={styles.statusBadge}>Ativo</span>
-                </TableCell>
-                <TableCell center>
-                  <button className={styles.actionButton} type="button">
-                    <MoreHorizontal size={16} />
-                  </button>
-                </TableCell>
-              </TableRow>
+                  </TableCell>
+                  <TableCell center>
+                    <button
+                      className={styles.actionButton}
+                      type="button"
+                      onClick={() =>
+                        navigate({
+                          to: "$studentId",
+                          params: { studentId: d.studentId },
+                        })
+                      }
+                    >
+                      <MoreHorizontal size={16} />
+                    </button>
+                  </TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </div>
