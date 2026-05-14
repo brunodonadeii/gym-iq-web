@@ -88,8 +88,8 @@ export const EnrollmentsPage = () => {
     useGetActiveStudentEnrollment(selectedStudentId, studentFilterEnabled);
 
   const enrollments = studentFilterEnabled
-    ? filteredEnrollments ?? []
-    : allEnrollments ?? [];
+    ? (filteredEnrollments ?? [])
+    : (allEnrollments ?? []);
 
   const activeCount = useMemo(
     () => enrollments.filter((item) => item.status === "ACTIVE").length,
@@ -115,8 +115,8 @@ export const EnrollmentsPage = () => {
 
   const summaryPlanLabel =
     activeEnrollment && plans
-      ? plans.find((plan) => plan.planId === activeEnrollment.planId)?.name ??
-        resolvePlanName(activeEnrollment)
+      ? (plans.find((plan) => plan.planId === activeEnrollment.planId)?.name ??
+        resolvePlanName(activeEnrollment))
       : null;
 
   const handleStatusChange = (id: string, newStatus: EnrollmentStatus) => {
@@ -142,7 +142,7 @@ export const EnrollmentsPage = () => {
   const getEnrollmentActions = (enrollment: Enrollment): DropdownItem[] => {
     const enrollmentId = String(enrollment.enrollmentId);
     const renewAction = {
-      label: "Renovar matricula",
+      label: "Renovar matrícula",
       icon: <RefreshCcw size={15} />,
       onSelect: () =>
         navigate({
@@ -180,7 +180,7 @@ export const EnrollmentsPage = () => {
       renewAction,
       ...statusActions,
       {
-        label: "Cancelar matricula",
+        label: "Cancelar matrícula",
         icon: <CircleOff size={15} />,
         danger: true,
         disabled: isUpdatingStatus || !canChangeAccessStatus(enrollment.status),
@@ -192,32 +192,21 @@ export const EnrollmentsPage = () => {
   return (
     <div className={styles.page}>
       <section className={styles.hero}>
-        <div className={styles.heroCard}>
-          <span className={styles.eyebrow}>Matriculas</span>
-          <h3 className={styles.heroTitle}>
-            Controle acesso, encerramento e renovacao de matriculas.
-          </h3>
-          <p className={styles.heroDescription}>
-            Status controla acesso; renovacao encerra o ciclo atual e inicia uma
-            nova matricula.
-          </p>
-        </div>
-
         <div className={styles.metricsCard}>
           <div className={styles.metric}>
-            <span className={styles.metricLabel}>Total exibido</span>
+            <span className={styles.metricLabel}>Total exibído</span>
             <strong className={styles.metricValue}>{enrollments.length}</strong>
             <p className={styles.metricHint}>
               {studentFilterEnabled
-                ? "Historico filtrado por aluno."
-                : "Matriz completa de matriculas."}
+                ? "Histórico filtrado por aluno."
+                : "Matriz completa de matrículas."}
             </p>
           </div>
           <div className={styles.metric}>
             <span className={styles.metricLabel}>Acesso ativo</span>
             <strong className={styles.metricValue}>{activeCount}</strong>
             <p className={styles.metricHint}>
-              Matriculas validas com acesso liberado.
+              Matrículas válidas com acesso liberado.
             </p>
           </div>
           <div className={styles.metric}>
@@ -234,8 +223,8 @@ export const EnrollmentsPage = () => {
         <div className={styles.topBarContent}>
           <strong className={styles.topBarTitle}>Filtro por aluno</strong>
           <span className={styles.topBarSubtitle}>
-            Escolha um aluno para ver historico e matricula ativa, ou mantenha a
-            visao geral.
+            Escolha um aluno para ver histórico e matrícula ativa, ou mantenha a
+            visão geral.
           </span>
         </div>
 
@@ -252,7 +241,7 @@ export const EnrollmentsPage = () => {
             leftIcon={<PlusCircle size={18} />}
             onClick={() => navigate({ to: "/enrollments/create" })}
           >
-            Nova Matricula
+            Nova Matrícula
           </Button>
         </div>
       </div>
@@ -272,14 +261,14 @@ export const EnrollmentsPage = () => {
             <div className={styles.summaryBadge}>
               <UserRoundSearch size={16} />
               {isLoadingStudentEnrollments
-                ? "Carregando historico..."
-                : `${enrollments.length} matricula(s)`}
+                ? "Carregando histórico..."
+                : `${enrollments.length} matrícula(s)`}
             </div>
           </div>
 
           <div className={styles.activePanel}>
             <div>
-              <span className={styles.panelLabel}>Matricula ativa</span>
+              <span className={styles.panelLabel}>Matrícula ativa</span>
               {isLoadingActiveEnrollment ? (
                 <p className={styles.panelValue}>Carregando...</p>
               ) : activeEnrollment ? (
@@ -288,14 +277,14 @@ export const EnrollmentsPage = () => {
                     {summaryPlanLabel ?? resolvePlanName(activeEnrollment)}
                   </p>
                   <p className={styles.panelHint}>
-                    Vigencia ate {formatDate(activeEnrollment.endDate)}
+                    Vigência ate {formatDate(activeEnrollment.endDate)}
                   </p>
                 </>
               ) : (
                 <>
-                  <p className={styles.panelValue}>Nenhuma matricula ativa</p>
+                  <p className={styles.panelValue}>Nenhuma matrícula ativa</p>
                   <p className={styles.panelHint}>
-                    Esse aluno nao possui contrato ativo no momento.
+                    Esse aluno não possui contrato ativo no momento.
                   </p>
                 </>
               )}
@@ -309,8 +298,8 @@ export const EnrollmentsPage = () => {
           <div>
             <h3 className={styles.sectionTitle}>Lista principal</h3>
             <p className={styles.sectionDescription}>
-              Consulte aluno, plano, vigencia, status de acesso e data de
-              criacao em uma visao unica.
+              Consulte aluno, plano, vigência, status de acesso e data de
+              criação em uma visão única.
             </p>
           </div>
         </div>
@@ -322,11 +311,11 @@ export const EnrollmentsPage = () => {
                 <TableHeaderCell>Aluno</TableHeaderCell>
                 <TableHeaderCell>E-mail</TableHeaderCell>
                 <TableHeaderCell>Plano</TableHeaderCell>
-                <TableHeaderCell>Inicio</TableHeaderCell>
+                <TableHeaderCell>Início</TableHeaderCell>
                 <TableHeaderCell>Fim</TableHeaderCell>
                 <TableHeaderCell center>Status</TableHeaderCell>
-                <TableHeaderCell>Criacao</TableHeaderCell>
-                <TableHeaderCell center>Acoes</TableHeaderCell>
+                <TableHeaderCell>Criação</TableHeaderCell>
+                <TableHeaderCell center>Ações</TableHeaderCell>
               </TableRow>
             </TableHead>
 

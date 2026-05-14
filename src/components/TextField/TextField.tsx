@@ -8,6 +8,7 @@ type TextFieldProps = Omit<
   label: string;
   value: string | number | readonly string[] | undefined;
   onChange: ChangeEventHandler<HTMLInputElement>;
+  helperText?: string;
 };
 
 export const TextField = ({
@@ -15,6 +16,7 @@ export const TextField = ({
   value,
   onChange,
   id,
+  helperText,
   ...rest
 }: TextFieldProps) => {
   return (
@@ -30,6 +32,8 @@ export const TextField = ({
         onChange={onChange}
         {...rest}
       />
+
+      {helperText && <span className={styles.helperText}>{helperText}</span>}
     </div>
   );
 };

@@ -14,15 +14,22 @@ import { Route as SidebarRouteRouteImport } from './routes/_sidebar/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SidebarStudentsRouteImport } from './routes/_sidebar/students'
 import { Route as SidebarPlansRouteImport } from './routes/_sidebar/plans'
+import { Route as SidebarPaymentsRouteImport } from './routes/_sidebar/payments'
+import { Route as SidebarInstructorsRouteImport } from './routes/_sidebar/instructors'
 import { Route as SidebarEnrollmentsRouteImport } from './routes/_sidebar/enrollments'
 import { Route as SidebarDashboardRouteImport } from './routes/_sidebar/dashboard'
 import { Route as SidebarStudentsIndexRouteImport } from './routes/_sidebar/students/index'
 import { Route as SidebarPlansIndexRouteImport } from './routes/_sidebar/plans/index'
+import { Route as SidebarPaymentsIndexRouteImport } from './routes/_sidebar/payments/index'
+import { Route as SidebarInstructorsIndexRouteImport } from './routes/_sidebar/instructors/index'
 import { Route as SidebarEnrollmentsIndexRouteImport } from './routes/_sidebar/enrollments/index'
 import { Route as SidebarStudentsCreateRouteImport } from './routes/_sidebar/students/create'
 import { Route as SidebarStudentsStudentIdRouteImport } from './routes/_sidebar/students/$studentId'
 import { Route as SidebarPlansCreateRouteImport } from './routes/_sidebar/plans/create'
 import { Route as SidebarPlansPlanIdRouteImport } from './routes/_sidebar/plans/$planId'
+import { Route as SidebarPaymentsCreateRouteImport } from './routes/_sidebar/payments/create'
+import { Route as SidebarInstructorsCreateRouteImport } from './routes/_sidebar/instructors/create'
+import { Route as SidebarInstructorsInstructorIdRouteImport } from './routes/_sidebar/instructors/$instructorId'
 import { Route as SidebarEnrollmentsCreateRouteImport } from './routes/_sidebar/enrollments/create'
 import { Route as SidebarEnrollmentsEnrollmentIdRouteImport } from './routes/_sidebar/enrollments/$enrollmentId'
 
@@ -50,6 +57,16 @@ const SidebarPlansRoute = SidebarPlansRouteImport.update({
   path: '/plans',
   getParentRoute: () => SidebarRouteRoute,
 } as any)
+const SidebarPaymentsRoute = SidebarPaymentsRouteImport.update({
+  id: '/payments',
+  path: '/payments',
+  getParentRoute: () => SidebarRouteRoute,
+} as any)
+const SidebarInstructorsRoute = SidebarInstructorsRouteImport.update({
+  id: '/instructors',
+  path: '/instructors',
+  getParentRoute: () => SidebarRouteRoute,
+} as any)
 const SidebarEnrollmentsRoute = SidebarEnrollmentsRouteImport.update({
   id: '/enrollments',
   path: '/enrollments',
@@ -69,6 +86,16 @@ const SidebarPlansIndexRoute = SidebarPlansIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => SidebarPlansRoute,
+} as any)
+const SidebarPaymentsIndexRoute = SidebarPaymentsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SidebarPaymentsRoute,
+} as any)
+const SidebarInstructorsIndexRoute = SidebarInstructorsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SidebarInstructorsRoute,
 } as any)
 const SidebarEnrollmentsIndexRoute = SidebarEnrollmentsIndexRouteImport.update({
   id: '/',
@@ -96,6 +123,23 @@ const SidebarPlansPlanIdRoute = SidebarPlansPlanIdRouteImport.update({
   path: '/$planId',
   getParentRoute: () => SidebarPlansRoute,
 } as any)
+const SidebarPaymentsCreateRoute = SidebarPaymentsCreateRouteImport.update({
+  id: '/create',
+  path: '/create',
+  getParentRoute: () => SidebarPaymentsRoute,
+} as any)
+const SidebarInstructorsCreateRoute =
+  SidebarInstructorsCreateRouteImport.update({
+    id: '/create',
+    path: '/create',
+    getParentRoute: () => SidebarInstructorsRoute,
+  } as any)
+const SidebarInstructorsInstructorIdRoute =
+  SidebarInstructorsInstructorIdRouteImport.update({
+    id: '/$instructorId',
+    path: '/$instructorId',
+    getParentRoute: () => SidebarInstructorsRoute,
+  } as any)
 const SidebarEnrollmentsCreateRoute =
   SidebarEnrollmentsCreateRouteImport.update({
     id: '/create',
@@ -114,15 +158,22 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/dashboard': typeof SidebarDashboardRoute
   '/enrollments': typeof SidebarEnrollmentsRouteWithChildren
+  '/instructors': typeof SidebarInstructorsRouteWithChildren
+  '/payments': typeof SidebarPaymentsRouteWithChildren
   '/plans': typeof SidebarPlansRouteWithChildren
   '/students': typeof SidebarStudentsRouteWithChildren
   '/enrollments/$enrollmentId': typeof SidebarEnrollmentsEnrollmentIdRoute
   '/enrollments/create': typeof SidebarEnrollmentsCreateRoute
+  '/instructors/$instructorId': typeof SidebarInstructorsInstructorIdRoute
+  '/instructors/create': typeof SidebarInstructorsCreateRoute
+  '/payments/create': typeof SidebarPaymentsCreateRoute
   '/plans/$planId': typeof SidebarPlansPlanIdRoute
   '/plans/create': typeof SidebarPlansCreateRoute
   '/students/$studentId': typeof SidebarStudentsStudentIdRoute
   '/students/create': typeof SidebarStudentsCreateRoute
   '/enrollments/': typeof SidebarEnrollmentsIndexRoute
+  '/instructors/': typeof SidebarInstructorsIndexRoute
+  '/payments/': typeof SidebarPaymentsIndexRoute
   '/plans/': typeof SidebarPlansIndexRoute
   '/students/': typeof SidebarStudentsIndexRoute
 }
@@ -132,11 +183,16 @@ export interface FileRoutesByTo {
   '/dashboard': typeof SidebarDashboardRoute
   '/enrollments/$enrollmentId': typeof SidebarEnrollmentsEnrollmentIdRoute
   '/enrollments/create': typeof SidebarEnrollmentsCreateRoute
+  '/instructors/$instructorId': typeof SidebarInstructorsInstructorIdRoute
+  '/instructors/create': typeof SidebarInstructorsCreateRoute
+  '/payments/create': typeof SidebarPaymentsCreateRoute
   '/plans/$planId': typeof SidebarPlansPlanIdRoute
   '/plans/create': typeof SidebarPlansCreateRoute
   '/students/$studentId': typeof SidebarStudentsStudentIdRoute
   '/students/create': typeof SidebarStudentsCreateRoute
   '/enrollments': typeof SidebarEnrollmentsIndexRoute
+  '/instructors': typeof SidebarInstructorsIndexRoute
+  '/payments': typeof SidebarPaymentsIndexRoute
   '/plans': typeof SidebarPlansIndexRoute
   '/students': typeof SidebarStudentsIndexRoute
 }
@@ -147,15 +203,22 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/_sidebar/dashboard': typeof SidebarDashboardRoute
   '/_sidebar/enrollments': typeof SidebarEnrollmentsRouteWithChildren
+  '/_sidebar/instructors': typeof SidebarInstructorsRouteWithChildren
+  '/_sidebar/payments': typeof SidebarPaymentsRouteWithChildren
   '/_sidebar/plans': typeof SidebarPlansRouteWithChildren
   '/_sidebar/students': typeof SidebarStudentsRouteWithChildren
   '/_sidebar/enrollments/$enrollmentId': typeof SidebarEnrollmentsEnrollmentIdRoute
   '/_sidebar/enrollments/create': typeof SidebarEnrollmentsCreateRoute
+  '/_sidebar/instructors/$instructorId': typeof SidebarInstructorsInstructorIdRoute
+  '/_sidebar/instructors/create': typeof SidebarInstructorsCreateRoute
+  '/_sidebar/payments/create': typeof SidebarPaymentsCreateRoute
   '/_sidebar/plans/$planId': typeof SidebarPlansPlanIdRoute
   '/_sidebar/plans/create': typeof SidebarPlansCreateRoute
   '/_sidebar/students/$studentId': typeof SidebarStudentsStudentIdRoute
   '/_sidebar/students/create': typeof SidebarStudentsCreateRoute
   '/_sidebar/enrollments/': typeof SidebarEnrollmentsIndexRoute
+  '/_sidebar/instructors/': typeof SidebarInstructorsIndexRoute
+  '/_sidebar/payments/': typeof SidebarPaymentsIndexRoute
   '/_sidebar/plans/': typeof SidebarPlansIndexRoute
   '/_sidebar/students/': typeof SidebarStudentsIndexRoute
 }
@@ -166,15 +229,22 @@ export interface FileRouteTypes {
     | '/login'
     | '/dashboard'
     | '/enrollments'
+    | '/instructors'
+    | '/payments'
     | '/plans'
     | '/students'
     | '/enrollments/$enrollmentId'
     | '/enrollments/create'
+    | '/instructors/$instructorId'
+    | '/instructors/create'
+    | '/payments/create'
     | '/plans/$planId'
     | '/plans/create'
     | '/students/$studentId'
     | '/students/create'
     | '/enrollments/'
+    | '/instructors/'
+    | '/payments/'
     | '/plans/'
     | '/students/'
   fileRoutesByTo: FileRoutesByTo
@@ -184,11 +254,16 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/enrollments/$enrollmentId'
     | '/enrollments/create'
+    | '/instructors/$instructorId'
+    | '/instructors/create'
+    | '/payments/create'
     | '/plans/$planId'
     | '/plans/create'
     | '/students/$studentId'
     | '/students/create'
     | '/enrollments'
+    | '/instructors'
+    | '/payments'
     | '/plans'
     | '/students'
   id:
@@ -198,15 +273,22 @@ export interface FileRouteTypes {
     | '/login'
     | '/_sidebar/dashboard'
     | '/_sidebar/enrollments'
+    | '/_sidebar/instructors'
+    | '/_sidebar/payments'
     | '/_sidebar/plans'
     | '/_sidebar/students'
     | '/_sidebar/enrollments/$enrollmentId'
     | '/_sidebar/enrollments/create'
+    | '/_sidebar/instructors/$instructorId'
+    | '/_sidebar/instructors/create'
+    | '/_sidebar/payments/create'
     | '/_sidebar/plans/$planId'
     | '/_sidebar/plans/create'
     | '/_sidebar/students/$studentId'
     | '/_sidebar/students/create'
     | '/_sidebar/enrollments/'
+    | '/_sidebar/instructors/'
+    | '/_sidebar/payments/'
     | '/_sidebar/plans/'
     | '/_sidebar/students/'
   fileRoutesById: FileRoutesById
@@ -254,6 +336,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SidebarPlansRouteImport
       parentRoute: typeof SidebarRouteRoute
     }
+    '/_sidebar/payments': {
+      id: '/_sidebar/payments'
+      path: '/payments'
+      fullPath: '/payments'
+      preLoaderRoute: typeof SidebarPaymentsRouteImport
+      parentRoute: typeof SidebarRouteRoute
+    }
+    '/_sidebar/instructors': {
+      id: '/_sidebar/instructors'
+      path: '/instructors'
+      fullPath: '/instructors'
+      preLoaderRoute: typeof SidebarInstructorsRouteImport
+      parentRoute: typeof SidebarRouteRoute
+    }
     '/_sidebar/enrollments': {
       id: '/_sidebar/enrollments'
       path: '/enrollments'
@@ -281,6 +377,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/plans/'
       preLoaderRoute: typeof SidebarPlansIndexRouteImport
       parentRoute: typeof SidebarPlansRoute
+    }
+    '/_sidebar/payments/': {
+      id: '/_sidebar/payments/'
+      path: '/'
+      fullPath: '/payments/'
+      preLoaderRoute: typeof SidebarPaymentsIndexRouteImport
+      parentRoute: typeof SidebarPaymentsRoute
+    }
+    '/_sidebar/instructors/': {
+      id: '/_sidebar/instructors/'
+      path: '/'
+      fullPath: '/instructors/'
+      preLoaderRoute: typeof SidebarInstructorsIndexRouteImport
+      parentRoute: typeof SidebarInstructorsRoute
     }
     '/_sidebar/enrollments/': {
       id: '/_sidebar/enrollments/'
@@ -317,6 +427,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SidebarPlansPlanIdRouteImport
       parentRoute: typeof SidebarPlansRoute
     }
+    '/_sidebar/payments/create': {
+      id: '/_sidebar/payments/create'
+      path: '/create'
+      fullPath: '/payments/create'
+      preLoaderRoute: typeof SidebarPaymentsCreateRouteImport
+      parentRoute: typeof SidebarPaymentsRoute
+    }
+    '/_sidebar/instructors/create': {
+      id: '/_sidebar/instructors/create'
+      path: '/create'
+      fullPath: '/instructors/create'
+      preLoaderRoute: typeof SidebarInstructorsCreateRouteImport
+      parentRoute: typeof SidebarInstructorsRoute
+    }
+    '/_sidebar/instructors/$instructorId': {
+      id: '/_sidebar/instructors/$instructorId'
+      path: '/$instructorId'
+      fullPath: '/instructors/$instructorId'
+      preLoaderRoute: typeof SidebarInstructorsInstructorIdRouteImport
+      parentRoute: typeof SidebarInstructorsRoute
+    }
     '/_sidebar/enrollments/create': {
       id: '/_sidebar/enrollments/create'
       path: '/create'
@@ -348,6 +479,35 @@ const SidebarEnrollmentsRouteChildren: SidebarEnrollmentsRouteChildren = {
 
 const SidebarEnrollmentsRouteWithChildren =
   SidebarEnrollmentsRoute._addFileChildren(SidebarEnrollmentsRouteChildren)
+
+interface SidebarInstructorsRouteChildren {
+  SidebarInstructorsInstructorIdRoute: typeof SidebarInstructorsInstructorIdRoute
+  SidebarInstructorsCreateRoute: typeof SidebarInstructorsCreateRoute
+  SidebarInstructorsIndexRoute: typeof SidebarInstructorsIndexRoute
+}
+
+const SidebarInstructorsRouteChildren: SidebarInstructorsRouteChildren = {
+  SidebarInstructorsInstructorIdRoute: SidebarInstructorsInstructorIdRoute,
+  SidebarInstructorsCreateRoute: SidebarInstructorsCreateRoute,
+  SidebarInstructorsIndexRoute: SidebarInstructorsIndexRoute,
+}
+
+const SidebarInstructorsRouteWithChildren =
+  SidebarInstructorsRoute._addFileChildren(SidebarInstructorsRouteChildren)
+
+interface SidebarPaymentsRouteChildren {
+  SidebarPaymentsCreateRoute: typeof SidebarPaymentsCreateRoute
+  SidebarPaymentsIndexRoute: typeof SidebarPaymentsIndexRoute
+}
+
+const SidebarPaymentsRouteChildren: SidebarPaymentsRouteChildren = {
+  SidebarPaymentsCreateRoute: SidebarPaymentsCreateRoute,
+  SidebarPaymentsIndexRoute: SidebarPaymentsIndexRoute,
+}
+
+const SidebarPaymentsRouteWithChildren = SidebarPaymentsRoute._addFileChildren(
+  SidebarPaymentsRouteChildren,
+)
 
 interface SidebarPlansRouteChildren {
   SidebarPlansPlanIdRoute: typeof SidebarPlansPlanIdRoute
@@ -384,6 +544,8 @@ const SidebarStudentsRouteWithChildren = SidebarStudentsRoute._addFileChildren(
 interface SidebarRouteRouteChildren {
   SidebarDashboardRoute: typeof SidebarDashboardRoute
   SidebarEnrollmentsRoute: typeof SidebarEnrollmentsRouteWithChildren
+  SidebarInstructorsRoute: typeof SidebarInstructorsRouteWithChildren
+  SidebarPaymentsRoute: typeof SidebarPaymentsRouteWithChildren
   SidebarPlansRoute: typeof SidebarPlansRouteWithChildren
   SidebarStudentsRoute: typeof SidebarStudentsRouteWithChildren
 }
@@ -391,6 +553,8 @@ interface SidebarRouteRouteChildren {
 const SidebarRouteRouteChildren: SidebarRouteRouteChildren = {
   SidebarDashboardRoute: SidebarDashboardRoute,
   SidebarEnrollmentsRoute: SidebarEnrollmentsRouteWithChildren,
+  SidebarInstructorsRoute: SidebarInstructorsRouteWithChildren,
+  SidebarPaymentsRoute: SidebarPaymentsRouteWithChildren,
   SidebarPlansRoute: SidebarPlansRouteWithChildren,
   SidebarStudentsRoute: SidebarStudentsRouteWithChildren,
 }

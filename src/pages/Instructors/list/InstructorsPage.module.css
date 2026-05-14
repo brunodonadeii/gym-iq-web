@@ -7,7 +7,6 @@
 .heroCard,
 .metricsCard,
 .topBar,
-.summaryCard,
 .tableSection {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -16,13 +15,24 @@
 }
 
 .heroCard {
+  position: relative;
+  overflow: hidden;
   padding: 28px;
 }
 
+.heroCard::after {
+  content: "";
+  position: absolute;
+  inset: auto -48px -68px auto;
+  width: 190px;
+  height: 190px;
+  border-radius: 999px;
+  background: var(--glow-soft);
+  filter: blur(32px);
+}
+
 .eyebrow,
-.summaryEyebrow,
-.metricLabel,
-.panelLabel {
+.metricLabel {
   display: inline-flex;
   align-items: center;
   width: fit-content;
@@ -39,7 +49,7 @@
 
 .heroTitle {
   margin-top: 16px;
-  font-size: clamp(1.7rem, 3vw, 2.3rem);
+  font-size: clamp(1.7rem, 3vw, 2.35rem);
   line-height: 1.1;
   color: var(--text-primary);
 }
@@ -47,31 +57,31 @@
 .heroDescription {
   max-width: 58ch;
   margin-top: 12px;
+  color: var(--text-secondary);
   font-size: 1rem;
   line-height: 1.7;
-  color: var(--text-secondary);
 }
 
 .metricsCard {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px;
   padding: 18px;
 }
 
 .metric {
   padding: 18px;
+  border: 1px solid var(--border);
   border-radius: 18px;
   background: var(--surface-alt);
-  border: 1px solid var(--border);
 }
 
 .metricValue {
   margin-top: 12px;
-  font-size: 1.9rem;
-  line-height: 1;
-  font-weight: 800;
   color: var(--text-primary);
+  font-size: 1.9rem;
+  font-weight: 800;
+  line-height: 1;
 }
 
 .metricHint {
@@ -96,17 +106,14 @@
 }
 
 .topBarTitle,
-.sectionTitle,
-.summaryTitle {
+.sectionTitle {
+  color: var(--text-primary);
   font-size: 1rem;
   font-weight: 700;
-  color: var(--text-primary);
 }
 
 .topBarSubtitle,
-.sectionDescription,
-.summaryDescription,
-.panelHint {
+.sectionDescription {
   color: var(--muted);
   font-size: 0.92rem;
   line-height: 1.6;
@@ -114,50 +121,10 @@
 
 .topBarActions {
   display: flex;
-  align-items: flex-end;
-  gap: 12px;
-}
-
-.filterField {
-  min-width: 280px;
-}
-
-.summaryCard {
-  padding: 22px;
-}
-
-.summaryHeader {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-}
-
-.summaryBadge {
-  display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
-  border-radius: 16px;
-  border: 1px solid var(--border);
-  background: var(--surface-alt);
-  color: var(--text-secondary);
-  font-size: 0.92rem;
-}
-
-.activePanel {
-  margin-top: 18px;
-  padding: 18px;
-  border-radius: 20px;
-  border: 1px solid var(--border);
-  background: var(--surface-alt);
-}
-
-.panelValue {
-  margin-top: 12px;
-  color: var(--text-primary);
-  font-size: 1.15rem;
-  font-weight: 700;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .tableSection {
@@ -183,48 +150,44 @@
 }
 
 .namePrimary {
-  font-weight: 700;
   color: var(--text-primary);
+  font-weight: 700;
+}
+
+.nameSecondary {
+  color: var(--muted);
+  font-size: 0.86rem;
 }
 
 .statusBadge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 6px;
   padding: 8px 12px;
   border-radius: 999px;
   font-size: 0.82rem;
   font-weight: 700;
 }
 
-.statusACTIVE {
+.statusActive {
   background: rgba(34, 197, 94, 0.14);
   color: #15803d;
 }
 
-.statusSUSPENDED {
-  background: rgba(245, 158, 11, 0.14);
-  color: #b45309;
-}
-
-.statusCANCELED {
-  background: rgba(239, 68, 68, 0.14);
-  color: #b91c1c;
+.statusInactive {
+  background: rgba(100, 116, 139, 0.14);
+  color: var(--muted);
 }
 
 @media (max-width: 1080px) {
   .hero {
     grid-template-columns: 1fr;
   }
-
-  .metricsCard {
-    grid-template-columns: 1fr;
-  }
 }
 
 @media (max-width: 768px) {
   .topBar,
-  .summaryHeader,
   .sectionHeader {
     flex-direction: column;
     align-items: stretch;
@@ -235,8 +198,8 @@
     align-items: stretch;
   }
 
-  .filterField {
-    min-width: 0;
+  .metricsCard {
+    grid-template-columns: 1fr;
   }
 
   .tableWrap {

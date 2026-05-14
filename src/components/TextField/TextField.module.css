@@ -38,3 +38,9 @@
   font-weight: 600;
   color: var(--muted);
 }
+
+.helperText {
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
