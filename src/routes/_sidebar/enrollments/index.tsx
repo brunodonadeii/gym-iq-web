@@ -6,7 +6,5 @@ export const Route = createFileRoute("/_sidebar/enrollments/")({
   staticData: {
     breadcrumb: "Matriculas",
     headline: "Listagem de matriculas",
-    description:
-      "Gerencie vinculos entre alunos e planos com foco em vigencia, status e renovacao.",
   },
 });

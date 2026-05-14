@@ -6,7 +6,5 @@ export const Route = createFileRoute("/_sidebar/payments/")({
   staticData: {
     breadcrumb: "Pagamentos",
     headline: "Listagem de pagamentos",
-    description:
-      "Acompanhe cobrancas, vencimentos e baixas vinculadas as matriculas.",
   },
 });

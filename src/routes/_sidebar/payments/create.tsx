@@ -6,7 +6,5 @@ export const Route = createFileRoute("/_sidebar/payments/create")({
   staticData: {
     breadcrumb: "Pagamentos / Criar",
     headline: "Crie uma nova cobranca",
-    description:
-      "Associe uma cobranca a matricula e defina valor e vencimento.",
   },
 });

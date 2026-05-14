@@ -6,7 +6,5 @@ export const Route = createFileRoute("/_sidebar/enrollments/create")({
   staticData: {
     breadcrumb: "Matriculas / Criar",
     headline: "Crie uma nova matricula",
-    description:
-      "Associe um aluno a um plano e defina a data inicial da vigencia quando necessario.",
   },
 });

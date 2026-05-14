@@ -1,4 +1,4 @@
-import type { Plan, PlanEditFormData } from "@/pages/Plans/types";
+import type { Plan, PlanFormData } from "@/pages/Plans/types";
 import { authFetch } from "@/services/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -9,7 +9,7 @@ interface ApiError {
 
 interface UpdatePlanData {
   id: string;
-  data: PlanEditFormData;
+  data: PlanFormData;
 }
 
 async function updatePlan({ data, id }: UpdatePlanData) {
