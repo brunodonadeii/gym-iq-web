@@ -11,7 +11,8 @@ import { useNavigate, useSearch } from "@tanstack/react-router";
 export const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { redirect } = useSearch({ from: "/login" });
+  const search = useSearch({ strict: false }) as { redirect?: string };
+  const redirect = search.redirect ?? "/dashboard";
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
