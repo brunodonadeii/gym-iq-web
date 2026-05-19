@@ -160,6 +160,13 @@
   font-weight: 700;
 }
 
+.panelSkeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
 .tableSection {
   overflow: hidden;
 }

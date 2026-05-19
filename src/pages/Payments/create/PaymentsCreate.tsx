@@ -37,12 +37,15 @@ export const PaymentsCreate = () => {
   const [data, setData] = useState<PaymentCreateFormData>(EMPTY_FORM);
   const { set, setMasked } = useFormInputs(setData);
   const navigate = useNavigate();
-  const { data: enrollments, isLoading } = useGetEnrollments();
+  const { data: enrollments, isLoading } = useGetEnrollments({
+    size: 100,
+    sort: "createdAt,desc",
+  });
   const { mutate, isPending } = useCreatePayment();
 
   const activeEnrollments = useMemo(
     () =>
-      enrollments?.filter((enrollment) => enrollment.status === "ACTIVE") ??
+      enrollments?.content.filter((enrollment) => enrollment.status === "ACTIVE") ??
       [],
     [enrollments],
   );

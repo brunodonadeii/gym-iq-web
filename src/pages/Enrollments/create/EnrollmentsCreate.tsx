@@ -1,12 +1,14 @@
+import { Autocomplete } from "@/components/Autocomplete/Autocomplete";
 import { Button } from "@/components/Button/Button";
 import { Form } from "@/components/Form/Form";
 import { SelectField } from "@/components/SelectField/SelectField";
 import { TextField } from "@/components/TextField/TextField";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useFormInputs } from "@/hooks/useFormInputs";
 import { useCreateEnrollment } from "@/mutations/useCreateEnrollment";
 import type { EnrollmentCreateFormData } from "@/pages/Enrollments/types";
+import { useGetStudentOptions } from "@/queries/useGetStudentOptions";
 import { useGetPlans } from "@/queries/useGetPlans";
-import { useGetStudents } from "@/queries/useGetStudents";
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -20,25 +22,30 @@ const EMPTY_FORM: EnrollmentCreateFormData = {
 
 export const EnrollmentsCreate = () => {
   const [data, setData] = useState<EnrollmentCreateFormData>(EMPTY_FORM);
+  const [studentSearch, setStudentSearch] = useState("");
+  const debouncedStudentSearch = useDebouncedValue(studentSearch);
   const { set } = useFormInputs(setData);
   const navigate = useNavigate();
   const { mutate, isPending } = useCreateEnrollment();
-  const { data: students, isLoading: isLoadingStudents } = useGetStudents("");
-  const { data: plans, isLoading: isLoadingPlans } = useGetPlans();
+  const { data: studentOptions, isFetching: isFetchingStudentOptions } =
+    useGetStudentOptions(debouncedStudentSearch);
+  const { data: plans, isLoading: isLoadingPlans } = useGetPlans("active", {
+    size: 100,
+    sort: "name,asc",
+  });
 
-  const loadingDependencies = isLoadingStudents || isLoadingPlans;
+  const loadingDependencies = isLoadingPlans;
 
-  const studentOptions = [
-    { label: "Selecione um aluno", value: "", disabled: true },
-    ...(students?.map((student) => ({
-      label: student.name,
+  const autocompleteStudentOptions =
+    studentOptions?.map((student) => ({
+      label: student.label,
       value: String(student.studentId),
-    })) ?? []),
-  ];
+      description: student.email,
+    })) ?? [];
 
   const planOptions = [
     { label: "Selecione um plano", value: "", disabled: true },
-    ...(plans?.map((plan) => ({
+    ...(plans?.content.map((plan) => ({
       label: plan.name,
       value: String(plan.planId),
     })) ?? []),
@@ -86,12 +93,26 @@ export const EnrollmentsCreate = () => {
       }
     >
       <div className={styles.row}>
-        <SelectField
+        <Autocomplete
           label="Aluno"
           id="studentId"
-          value={data.studentId}
-          onChange={set("studentId")}
-          options={studentOptions}
+          search={studentSearch}
+          onSearchChange={(value) => {
+            setStudentSearch(value);
+            setData((prev) => ({ ...prev, studentId: "" }));
+          }}
+          onSelect={(option) => {
+            setStudentSearch(option.label);
+            setData((prev) => ({ ...prev, studentId: option.value }));
+          }}
+          onClear={() => {
+            setStudentSearch("");
+            setData((prev) => ({ ...prev, studentId: "" }));
+          }}
+          options={autocompleteStudentOptions}
+          loading={isFetchingStudentOptions}
+          placeholder="Digite nome, CPF ou e-mail"
+          helperText="Busca leve em /students/options."
           required
         />
         <SelectField

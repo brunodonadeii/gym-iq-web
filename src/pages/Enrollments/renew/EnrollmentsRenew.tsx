@@ -42,15 +42,18 @@ export const EnrollmentsRenew = () => {
   const enrollmentId = params.enrollmentId;
   const navigate = useNavigate();
   const { data: enrollments, isLoading: isLoadingEnrollments } =
-    useGetEnrollments();
-  const { data: plans, isLoading: isLoadingPlans } = useGetPlans();
+    useGetEnrollments({ size: 100, sort: "createdAt,desc" });
+  const { data: plans, isLoading: isLoadingPlans } = useGetPlans("active", {
+    size: 100,
+    sort: "name,asc",
+  });
   const { mutate, isPending } = useRenewEnrollment();
   const [data, setData] = useState<EnrollmentRenewFormData>(EMPTY_FORM);
   const { set } = useFormInputs(setData);
 
   const enrollment = useMemo(
     () =>
-      enrollments?.find(
+      enrollments?.content.find(
         (item) => String(item.enrollmentId) === String(enrollmentId),
       ),
     [enrollmentId, enrollments],
@@ -64,7 +67,7 @@ export const EnrollmentsRenew = () => {
 
   const planOptions = [
     { label: "Selecione o novo plano", value: "", disabled: true },
-    ...(plans?.map((plan) => ({
+    ...(plans?.content.map((plan) => ({
       label: plan.name,
       value: String(plan.planId),
     })) ?? []),

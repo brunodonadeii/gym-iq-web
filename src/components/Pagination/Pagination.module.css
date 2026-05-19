@@ -1,0 +1,89 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 24px 24px;
+  border-top: 1px solid var(--border);
+}
+
+.summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary);
+  font-size: 0.92rem;
+}
+
+.summary strong {
+  color: var(--text-primary);
+}
+
+.controls,
+.pageControls {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.sizeField {
+  width: 110px;
+}
+
+.pageControls {
+  align-items: center;
+}
+
+.navButton {
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface-alt);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.navButton:hover:not(:disabled) {
+  background: var(--surface-hover);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+.navButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.pageIndicator {
+  min-width: 118px;
+  color: var(--text-secondary);
+  font-size: 0.92rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+@media (max-width: 720px) {
+  .wrapper,
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .sizeField {
+    width: 100%;
+  }
+
+  .pageControls {
+    justify-content: space-between;
+  }
+}

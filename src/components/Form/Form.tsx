@@ -21,7 +21,19 @@ export const Form = ({
     <div className={styles.page}>
       <div className={styles.card}>
         {loading ? (
-          <Skeleton height={"1000px"} />
+          <div className={styles.skeletonStack}>
+            <Skeleton width="180px" height="18px" />
+            <Skeleton width="min(520px, 100%)" height="16px" />
+            <Skeleton height="56px" />
+            <div className={styles.skeletonRow}>
+              <Skeleton height="56px" />
+              <Skeleton height="56px" />
+            </div>
+            <div className={styles.skeletonRow}>
+              <Skeleton height="56px" />
+              <Skeleton height="56px" />
+            </div>
+          </div>
         ) : (
           <>
             <fieldset className={styles.fieldset}>

@@ -1,6 +1,8 @@
 import type { Payment } from "@/pages/Payments/types";
 import { authFetch } from "@/services/api";
-import { useQuery } from "@tanstack/react-query";
+import type { PageRequest, PageResponse } from "@/types/pagination";
+import { buildPaginationParams } from "@/utils/pagination";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 type PaymentsQuery =
   | { mode: "all" }
@@ -18,8 +20,20 @@ const getPaymentsUrl = (query: PaymentsQuery) => {
   return "payments";
 };
 
-async function fetchPayments(query: PaymentsQuery): Promise<Payment[]> {
-  const response = await authFetch(getPaymentsUrl(query));
+const getDefaultSort = (query: PaymentsQuery) =>
+  query.mode === "overdue" ? "dueDate,asc" : "dueDate,desc";
+
+async function fetchPayments(
+  query: PaymentsQuery,
+  pagination: PageRequest,
+): Promise<PageResponse<Payment>> {
+  const request = {
+    ...pagination,
+    sort: pagination.sort ?? getDefaultSort(query),
+  };
+  const response = await authFetch(
+    `${getPaymentsUrl(query)}?${buildPaginationParams(request)}`,
+  );
 
   if (!response.ok) {
     throw new Error("Erro ao buscar pagamentos");
@@ -28,10 +42,18 @@ async function fetchPayments(query: PaymentsQuery): Promise<Payment[]> {
   return response.json();
 }
 
-export function useGetPayments(query: PaymentsQuery, enabled = true) {
+export function useGetPayments(
+  query: PaymentsQuery,
+  enabled = true,
+  pagination: PageRequest = { page: 0, size: 10 },
+) {
   return useQuery({
-    queryKey: ["payments", query],
-    queryFn: () => fetchPayments(query),
+    queryKey: ["payments", query, pagination],
+    queryFn: () => fetchPayments(query, pagination),
     enabled,
+    placeholderData: keepPreviousData,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 15 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 }

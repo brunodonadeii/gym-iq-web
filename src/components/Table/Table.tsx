@@ -7,6 +7,7 @@ import type {
   ThHTMLAttributes,
 } from "react";
 
+import { Skeleton } from "@/components/Skeleton/Skeleton";
 import styles from "./Table.module.css";
 
 type TableColumn = {
@@ -31,6 +32,11 @@ type TableSectionProps = {
 type TableEmptyStateProps = {
   colSpan: number;
   message: string;
+};
+
+type TableSkeletonRowsProps = {
+  rows?: number;
+  columns: number;
 };
 
 const getClassName = (...classNames: Array<string | false | undefined>) =>
@@ -132,5 +138,27 @@ export const TableEmptyState = ({
         {message}
       </td>
     </TableRow>
+  );
+};
+
+export const TableSkeletonRows = ({
+  rows = 5,
+  columns,
+}: TableSkeletonRowsProps) => {
+  return (
+    <>
+      {Array.from({ length: rows }).map((_, rowIndex) => (
+        <TableRow key={`skeleton-row-${rowIndex}`}>
+          {Array.from({ length: columns }).map((__, columnIndex) => (
+            <TableCell key={`skeleton-cell-${rowIndex}-${columnIndex}`}>
+              <Skeleton
+                height={columnIndex === 0 ? "1.15rem" : "1rem"}
+                width={columnIndex === columns - 1 ? "42px" : "100%"}
+              />
+            </TableCell>
+          ))}
+        </TableRow>
+      ))}
+    </>
   );
 };

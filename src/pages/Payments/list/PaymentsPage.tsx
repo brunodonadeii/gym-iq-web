@@ -1,6 +1,9 @@
+import { Autocomplete } from "@/components/Autocomplete/Autocomplete";
 import { Button } from "@/components/Button/Button";
 import { Dropdown, type DropdownItem } from "@/components/Dropdown/Dropdown";
+import { Pagination } from "@/components/Pagination/Pagination";
 import { SelectField } from "@/components/SelectField/SelectField";
+import { Skeleton } from "@/components/Skeleton/Skeleton";
 import {
   Table,
   TableBody,
@@ -9,8 +12,10 @@ import {
   TableHead,
   TableHeaderCell,
   TableRow,
+  TableSkeletonRows,
 } from "@/components/Table/Table";
 import { TextField } from "@/components/TextField/TextField";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { usePayPayment } from "@/mutations/usePayPayment";
 import { useRefreshOverduePayments } from "@/mutations/useRefreshOverduePayments";
 import { useUpdatePaymentStatus } from "@/mutations/useUpdatePaymentStatus";
@@ -23,7 +28,7 @@ import type {
 } from "@/pages/Payments/types";
 import { useGetEnrollments } from "@/queries/useGetEnrollments";
 import { useGetPayments } from "@/queries/useGetPayments";
-import { useGetStudents } from "@/queries/useGetStudents";
+import { useGetStudentOptions } from "@/queries/useGetStudentOptions";
 import { useNavigate } from "@tanstack/react-router";
 import {
   CheckCircle2,
@@ -143,12 +148,20 @@ export const PaymentsPage = () => {
   const [filterMode, setFilterMode] = useState<PaymentFilterMode>("all");
   const [statusFilter, setStatusFilter] = useState<PaymentStatusFilter>("all");
   const [studentId, setStudentId] = useState("");
+  const [studentSearch, setStudentSearch] = useState("");
   const [enrollmentId, setEnrollmentId] = useState("");
+  const [page, setPage] = useState(0);
+  const [size, setSize] = useState(10);
   const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
   const [payForm, setPayForm] = useState<PaymentPayFormData>(EMPTY_PAY_FORM);
+  const debouncedStudentSearch = useDebouncedValue(studentSearch);
 
-  const { data: students } = useGetStudents("");
-  const { data: enrollments } = useGetEnrollments();
+  const { data: students, isFetching: isFetchingStudents } =
+    useGetStudentOptions(debouncedStudentSearch, filterMode === "student");
+  const { data: enrollments } = useGetEnrollments({
+    size: 100,
+    sort: "createdAt,desc",
+  });
   const { mutate: payPayment, isPending: isPayingPayment } = usePayPayment();
   const { mutate: updateStatus, isPending: isUpdatingStatus } =
     useUpdatePaymentStatus();
@@ -171,18 +184,23 @@ export const PaymentsPage = () => {
         ? enrollmentId !== ""
         : true;
 
-  const { data: payments, isLoading } = useGetPayments(
+  const { data: payments, isLoading, isFetching } = useGetPayments(
     paymentsQuery,
     filterEnabled,
+    {
+      page,
+      size,
+    },
   );
 
   const visiblePayments = useMemo(() => {
-    const source = filterEnabled ? (payments ?? []) : [];
+    const source = filterEnabled ? (payments?.content ?? []) : [];
 
     if (statusFilter === "all") return source;
 
     return source.filter((payment) => payment.status === statusFilter);
   }, [filterEnabled, payments, statusFilter]);
+  const tableLoading = isLoading || isFetching;
 
   const paidCount = useMemo(
     () => visiblePayments.filter((payment) => payment.status === "PAID").length,
@@ -201,17 +219,12 @@ export const PaymentsPage = () => {
     [visiblePayments],
   );
 
-  const studentOptions = [
-    {
-      label: "Selecione um aluno",
-      value: "",
-      disabled: filterMode === "student",
-    },
-    ...(students?.map((student) => ({
-      label: student.name,
+  const studentOptions =
+    students?.map((student) => ({
+      label: student.label,
       value: String(student.studentId),
-    })) ?? []),
-  ];
+      description: student.email,
+    })) ?? [];
 
   const enrollmentOptions = [
     {
@@ -219,7 +232,7 @@ export const PaymentsPage = () => {
       value: "",
       disabled: filterMode === "enrollment",
     },
-    ...(enrollments?.map((enrollment) => ({
+    ...(enrollments?.content.map((enrollment) => ({
       label: resolveEnrollmentOptionLabel(enrollment),
       value: String(enrollment.enrollmentId),
     })) ?? []),
@@ -347,23 +360,45 @@ export const PaymentsPage = () => {
           <div className={styles.metric}>
             <span className={styles.metricLabel}>Total exibido</span>
             <strong className={styles.metricValue}>
-              {visiblePayments.length}
+              {tableLoading ? (
+                <Skeleton width="48px" height="30px" />
+              ) : (
+                visiblePayments.length
+              )}
             </strong>
             <p className={styles.metricHint}>Pagamentos no recorte atual.</p>
           </div>
           <div className={styles.metric}>
             <span className={styles.metricLabel}>Pagos</span>
-            <strong className={styles.metricValue}>{paidCount}</strong>
+            <strong className={styles.metricValue}>
+              {tableLoading ? (
+                <Skeleton width="48px" height="30px" />
+              ) : (
+                paidCount
+              )}
+            </strong>
             <p className={styles.metricHint}>Baixas confirmadas no sistema.</p>
           </div>
           <div className={styles.metric}>
             <span className={styles.metricLabel}>Atrasados</span>
-            <strong className={styles.metricValue}>{overdueCount}</strong>
+            <strong className={styles.metricValue}>
+              {tableLoading ? (
+                <Skeleton width="48px" height="30px" />
+              ) : (
+                overdueCount
+              )}
+            </strong>
             <p className={styles.metricHint}>Cobrancas vencidas no recorte.</p>
           </div>
           <div className={styles.metric}>
             <span className={styles.metricLabel}>Pendentes</span>
-            <strong className={styles.metricValue}>{pendingCount}</strong>
+            <strong className={styles.metricValue}>
+              {tableLoading ? (
+                <Skeleton width="48px" height="30px" />
+              ) : (
+                pendingCount
+              )}
+            </strong>
             <p className={styles.metricHint}>Aguardando confirmacao.</p>
           </div>
         </div>
@@ -385,7 +420,9 @@ export const PaymentsPage = () => {
             onChange={(e) => {
               setFilterMode(e.target.value as PaymentFilterMode);
               setStudentId("");
+              setStudentSearch("");
               setEnrollmentId("");
+              setPage(0);
             }}
             options={[
               { label: "Todos", value: "all" },
@@ -400,9 +437,10 @@ export const PaymentsPage = () => {
             label="Status"
             id="paymentStatusFilter"
             value={statusFilter}
-            onChange={(e) =>
-              setStatusFilter(e.target.value as PaymentStatusFilter)
-            }
+            onChange={(e) => {
+              setStatusFilter(e.target.value as PaymentStatusFilter);
+              setPage(0);
+            }}
             options={[
               { label: "Todos", value: "all" },
               { label: "Pendente", value: "PENDING" },
@@ -413,13 +451,30 @@ export const PaymentsPage = () => {
           />
 
           {filterMode === "student" && (
-            <SelectField
+            <Autocomplete
               label="Aluno"
               id="paymentStudentFilter"
-              value={studentId}
-              onChange={(e) => setStudentId(e.target.value)}
+              search={studentSearch}
+              onSearchChange={(value) => {
+                setStudentSearch(value);
+                setStudentId("");
+                setPage(0);
+              }}
               options={studentOptions}
-              containerProps={{ className: styles.filterFieldLarge }}
+              onSelect={(option) => {
+                setStudentSearch(option.label);
+                setStudentId(option.value);
+                setPage(0);
+              }}
+              onClear={() => {
+                setStudentSearch("");
+                setStudentId("");
+                setPage(0);
+              }}
+              loading={isFetchingStudents}
+              placeholder="Digite nome, CPF ou e-mail"
+              emptyMessage="Nenhum aluno encontrado."
+              containerClassName={styles.filterFieldLarge}
             />
           )}
 
@@ -428,7 +483,10 @@ export const PaymentsPage = () => {
               label="Matricula"
               id="paymentEnrollmentFilter"
               value={enrollmentId}
-              onChange={(e) => setEnrollmentId(e.target.value)}
+              onChange={(e) => {
+                setEnrollmentId(e.target.value);
+                setPage(0);
+              }}
               options={enrollmentOptions}
               containerProps={{ className: styles.filterFieldLarge }}
             />
@@ -456,7 +514,8 @@ export const PaymentsPage = () => {
             <h3 className={styles.sectionTitle}>Lista principal</h3>
             <p className={styles.sectionDescription}>
               Consulte aluno, plano, valor, vencimento, baixa, metodo e status
-              financeiro em uma visao unica.
+              financeiro em uma visao unica. Total encontrado:{" "}
+              {payments?.totalElements ?? 0}.
             </p>
           </div>
         </div>
@@ -479,47 +538,50 @@ export const PaymentsPage = () => {
             </TableHead>
 
             <TableBody>
-              {visiblePayments.map((payment) => (
-                <TableRow
-                  key={
-                    getPaymentId(payment) ||
-                    `${payment.enrollmentId}-${payment.dueDate}`
-                  }
-                >
-                  <TableCell>
-                    <div className={styles.nameCell}>
-                      <span className={styles.namePrimary}>
-                        {resolveStudentName(payment)}
-                      </span>
-                    </div>
-                  </TableCell>
-                  <TableCell>{resolveStudentEmail(payment)}</TableCell>
-                  <TableCell>{resolvePlanName(payment)}</TableCell>
-                  <TableCell>{formatCurrency(payment.amount)}</TableCell>
-                  <TableCell>{formatDate(payment.dueDate)}</TableCell>
-                  <TableCell>{formatDateTime(payment.paidAt)}</TableCell>
-                  <TableCell center>
-                    <span
-                      className={`${styles.statusBadge} ${
-                        styles[`status${payment.status}`]
-                      }`}
-                    >
-                      {statusLabels[payment.status] ?? payment.status}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    {resolvePaymentMethod(payment.paymentMethod)}
-                  </TableCell>
-                  <TableCell className={styles.notesCell}>
-                    {payment.notes || "-"}
-                  </TableCell>
-                  <TableCell center>
-                    <Dropdown items={getPaymentActions(payment)} />
-                  </TableCell>
-                </TableRow>
-              ))}
+              {tableLoading && <TableSkeletonRows columns={10} />}
 
-              {!isLoading && visiblePayments.length === 0 && (
+              {!tableLoading &&
+                visiblePayments.map((payment) => (
+                  <TableRow
+                    key={
+                      getPaymentId(payment) ||
+                      `${payment.enrollmentId}-${payment.dueDate}`
+                    }
+                  >
+                    <TableCell>
+                      <div className={styles.nameCell}>
+                        <span className={styles.namePrimary}>
+                          {resolveStudentName(payment)}
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell>{resolveStudentEmail(payment)}</TableCell>
+                    <TableCell>{resolvePlanName(payment)}</TableCell>
+                    <TableCell>{formatCurrency(payment.amount)}</TableCell>
+                    <TableCell>{formatDate(payment.dueDate)}</TableCell>
+                    <TableCell>{formatDateTime(payment.paidAt)}</TableCell>
+                    <TableCell center>
+                      <span
+                        className={`${styles.statusBadge} ${
+                          styles[`status${payment.status}`]
+                        }`}
+                      >
+                        {statusLabels[payment.status] ?? payment.status}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      {resolvePaymentMethod(payment.paymentMethod)}
+                    </TableCell>
+                    <TableCell className={styles.notesCell}>
+                      {payment.notes || "-"}
+                    </TableCell>
+                    <TableCell center>
+                      <Dropdown items={getPaymentActions(payment)} />
+                    </TableCell>
+                  </TableRow>
+                ))}
+
+              {!tableLoading && visiblePayments.length === 0 && (
                 <TableEmptyState
                   colSpan={10}
                   message="Nenhum pagamento encontrado para os filtros atuais."
@@ -528,6 +590,17 @@ export const PaymentsPage = () => {
             </TableBody>
           </Table>
         </div>
+
+        <Pagination
+          page={payments}
+          currentPage={page}
+          loading={isFetching}
+          onPageChange={setPage}
+          onSizeChange={(nextSize) => {
+            setSize(nextSize);
+            setPage(0);
+          }}
+        />
       </section>
 
       {selectedPayment && (

@@ -1,6 +1,8 @@
 import { Button } from "@/components/Button/Button";
 import { Dropdown, type DropdownItem } from "@/components/Dropdown/Dropdown";
+import { Pagination } from "@/components/Pagination/Pagination";
 import { SearchBar } from "@/components/SearchBar/SearchBar";
+import { Skeleton } from "@/components/Skeleton/Skeleton";
 import {
   Table,
   TableBody,
@@ -9,10 +11,12 @@ import {
   TableHead,
   TableHeaderCell,
   TableRow,
+  TableSkeletonRows,
 } from "@/components/Table/Table";
 import { useDeleteInstructor } from "@/mutations/useDeleteInstructor";
 import type { Instructor } from "@/pages/Instructors/types";
 import { useGetInstructors } from "@/queries/useGetInstructors";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useNavigate } from "@tanstack/react-router";
 import {
   BadgeCheck,
@@ -48,20 +52,29 @@ const formatDate = (value?: string) =>
 export const InstructorsPage = () => {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
-  const { data: instructors, isLoading } = useGetInstructors(search);
+  const [page, setPage] = useState(0);
+  const [size, setSize] = useState(10);
+  const debouncedSearch = useDebouncedValue(search);
+  const { data, isLoading, isFetching } = useGetInstructors(debouncedSearch, {
+    page,
+    size,
+    sort: "user.name,asc",
+  });
+  const instructors = data?.content ?? [];
   const { mutate: deleteInstructor, isPending: isDeleting } =
     useDeleteInstructor();
+  const tableLoading = isLoading || isFetching;
 
   const activeCount = useMemo(
-    () => instructors?.filter((instructor) => instructor.active).length ?? 0,
+    () => instructors.filter((instructor) => instructor.active).length,
     [instructors],
   );
 
-  const inactiveCount = (instructors?.length ?? 0) - activeCount;
+  const inactiveCount = instructors.length - activeCount;
 
   const specialtyCount = useMemo(() => {
     const specialties = new Set(
-      instructors?.map((instructor) => instructor.specialty).filter(Boolean),
+      instructors.map((instructor) => instructor.specialty).filter(Boolean),
     );
 
     return specialties.size;
@@ -113,25 +126,47 @@ export const InstructorsPage = () => {
           <div className={styles.metric}>
             <span className={styles.metricLabel}>Total exibido</span>
             <strong className={styles.metricValue}>
-              {instructors?.length ?? 0}
+              {tableLoading ? (
+                <Skeleton width="48px" height="30px" />
+              ) : (
+                instructors.length
+              )}
             </strong>
             <p className={styles.metricHint}>Instrutores no recorte atual.</p>
           </div>
           <div className={styles.metric}>
             <span className={styles.metricLabel}>Ativos</span>
-            <strong className={styles.metricValue}>{activeCount}</strong>
+            <strong className={styles.metricValue}>
+              {tableLoading ? (
+                <Skeleton width="48px" height="30px" />
+              ) : (
+                activeCount
+              )}
+            </strong>
             <p className={styles.metricHint}>Professores disponiveis.</p>
           </div>
           <div className={styles.metric}>
             <span className={styles.metricLabel}>Inativos</span>
-            <strong className={styles.metricValue}>{inactiveCount}</strong>
+            <strong className={styles.metricValue}>
+              {tableLoading ? (
+                <Skeleton width="48px" height="30px" />
+              ) : (
+                inactiveCount
+              )}
+            </strong>
             <p className={styles.metricHint}>
               Registros preservados sem acesso.
             </p>
           </div>
           <div className={styles.metric}>
             <span className={styles.metricLabel}>Especialidades</span>
-            <strong className={styles.metricValue}>{specialtyCount}</strong>
+            <strong className={styles.metricValue}>
+              {tableLoading ? (
+                <Skeleton width="48px" height="30px" />
+              ) : (
+                specialtyCount
+              )}
+            </strong>
             <p className={styles.metricHint}>Areas cadastradas no time.</p>
           </div>
         </div>
@@ -149,7 +184,10 @@ export const InstructorsPage = () => {
           <SearchBar
             icon={<Search size={15} />}
             placeholder="Buscar por nome, CREF ou email"
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(0);
+            }}
           />
           <Button
             leftIcon={<UserRoundPlus size={18} />}
@@ -166,6 +204,7 @@ export const InstructorsPage = () => {
             <h3 className={styles.sectionTitle}>Lista principal</h3>
             <p className={styles.sectionDescription}>
               Consulte contato, registro profissional, especialidade e status.
+              Total encontrado: {data?.totalElements ?? 0}.
             </p>
           </div>
         </div>
@@ -185,45 +224,48 @@ export const InstructorsPage = () => {
             </TableHead>
 
             <TableBody>
-              {instructors?.map((instructor) => (
-                <TableRow key={instructor.instructorId}>
-                  <TableCell>
-                    <div className={styles.nameCell}>
-                      <span className={styles.namePrimary}>
-                        {instructor.name}
-                      </span>
-                      <span className={styles.nameSecondary}>
-                        Criado em {formatDate(instructor.createdAt)}
-                      </span>
-                    </div>
-                  </TableCell>
-                  <TableCell>{instructor.cref}</TableCell>
-                  <TableCell>{instructor.phone}</TableCell>
-                  <TableCell>{instructor.email}</TableCell>
-                  <TableCell>{instructor.specialty || "-"}</TableCell>
-                  <TableCell center>
-                    <span
-                      className={`${styles.statusBadge} ${
-                        instructor.active
-                          ? styles.statusActive
-                          : styles.statusInactive
-                      }`}
-                    >
-                      {instructor.active ? (
-                        <BadgeCheck size={14} />
-                      ) : (
-                        <BadgeX size={14} />
-                      )}
-                      {instructor.active ? "Ativo" : "Inativo"}
-                    </span>
-                  </TableCell>
-                  <TableCell center>
-                    <Dropdown items={getInstructorActions(instructor)} />
-                  </TableCell>
-                </TableRow>
-              ))}
+              {tableLoading && <TableSkeletonRows columns={7} />}
 
-              {!isLoading && instructors?.length === 0 && (
+              {!tableLoading &&
+                instructors.map((instructor) => (
+                  <TableRow key={instructor.instructorId}>
+                    <TableCell>
+                      <div className={styles.nameCell}>
+                        <span className={styles.namePrimary}>
+                          {instructor.name}
+                        </span>
+                        <span className={styles.nameSecondary}>
+                          Criado em {formatDate(instructor.createdAt)}
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell>{instructor.cref}</TableCell>
+                    <TableCell>{instructor.phone}</TableCell>
+                    <TableCell>{instructor.email}</TableCell>
+                    <TableCell>{instructor.specialty || "-"}</TableCell>
+                    <TableCell center>
+                      <span
+                        className={`${styles.statusBadge} ${
+                          instructor.active
+                            ? styles.statusActive
+                            : styles.statusInactive
+                        }`}
+                      >
+                        {instructor.active ? (
+                          <BadgeCheck size={14} />
+                        ) : (
+                          <BadgeX size={14} />
+                        )}
+                        {instructor.active ? "Ativo" : "Inativo"}
+                      </span>
+                    </TableCell>
+                    <TableCell center>
+                      <Dropdown items={getInstructorActions(instructor)} />
+                    </TableCell>
+                  </TableRow>
+                ))}
+
+              {!tableLoading && instructors.length === 0 && (
                 <TableEmptyState
                   colSpan={7}
                   message="Nenhum instrutor encontrado."
@@ -232,6 +274,17 @@ export const InstructorsPage = () => {
             </TableBody>
           </Table>
         </div>
+
+        <Pagination
+          page={data}
+          currentPage={page}
+          loading={isFetching}
+          onPageChange={setPage}
+          onSizeChange={(nextSize) => {
+            setSize(nextSize);
+            setPage(0);
+          }}
+        />
       </section>
     </div>
   );

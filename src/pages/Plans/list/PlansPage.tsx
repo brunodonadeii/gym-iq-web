@@ -1,13 +1,17 @@
 import { Button } from "@/components/Button/Button";
 import { Dropdown } from "@/components/Dropdown/Dropdown";
+import { Pagination } from "@/components/Pagination/Pagination";
 import { SelectField } from "@/components/SelectField/SelectField";
+import { Skeleton } from "@/components/Skeleton/Skeleton";
 import {
   Table,
   TableBody,
   TableCell,
+  TableEmptyState,
   TableHead,
   TableHeaderCell,
   TableRow,
+  TableSkeletonRows,
 } from "@/components/Table/Table";
 import { useNavigate } from "@tanstack/react-router";
 import { Pencil, Trash2, UserPlus } from "lucide-react";
@@ -30,15 +34,24 @@ const studentColumns = [
 export const PlansPage = () => {
   const navigate = useNavigate();
   const [statusFilter, setStatusFilter] = useState<PlanStatusFilter>("active");
+  const [page, setPage] = useState(0);
+  const [size, setSize] = useState(10);
   const queryMode = statusFilter === "active" ? "active" : "all";
-  const { data } = useGetPlans(queryMode);
+  const { data, isLoading, isFetching } = useGetPlans(queryMode, {
+    page,
+    size,
+    sort: "name,asc",
+  });
   const { mutate: deletePlan } = useDeletePlan();
+  const tableLoading = isLoading || isFetching;
   const plans = useMemo(() => {
+    const pageContent = data?.content ?? [];
+
     if (statusFilter === "inactive") {
-      return data?.filter((plan) => !plan.active) ?? [];
+      return pageContent.filter((plan) => !plan.active);
     }
 
-    return data ?? [];
+    return pageContent;
   }, [data, statusFilter]);
 
   const activeCount = plans.filter((plan) => plan.active).length;
@@ -49,10 +62,18 @@ export const PlansPage = () => {
       <div className={styles.topBar}>
         <div className={styles.topBarContent}>
           <strong className={styles.topBarTitle}>
-            {plans.length} plano(s) exibido(s)
+            {tableLoading ? (
+              <Skeleton width="160px" height="18px" />
+            ) : (
+              `${plans.length} plano(s) exibido(s)`
+            )}
           </strong>
           <span className={styles.topBarSubtitle}>
-            {activeCount} ativo(s) e {inactiveCount} inativo(s) neste recorte.
+            {tableLoading ? (
+              <Skeleton width="220px" height="14px" />
+            ) : (
+              `${activeCount} ativo(s) e ${inactiveCount} inativo(s) neste recorte.`
+            )}
           </span>
         </div>
 
@@ -61,7 +82,10 @@ export const PlansPage = () => {
             label="Status"
             id="planStatusFilter"
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value as PlanStatusFilter)}
+            onChange={(e) => {
+              setStatusFilter(e.target.value as PlanStatusFilter);
+              setPage(0);
+            }}
             options={[
               { label: "Ativos", value: "active" },
               { label: "Inativos", value: "inactive" },
@@ -82,6 +106,9 @@ export const PlansPage = () => {
         <div className={styles.sectionHeader}>
           <div>
             <h3 className={styles.sectionTitle}>Lista principal</h3>
+            <p className={styles.sectionDescription}>
+              {data?.totalElements ?? 0} plano(s) retornado(s) pelo endpoint.
+            </p>
           </div>
         </div>
 
@@ -99,53 +126,74 @@ export const PlansPage = () => {
             </TableHead>
 
             <TableBody>
-              {plans.map((d) => (
-                <TableRow key={d.planId}>
-                  <TableCell>
-                    <div className={styles.nameCell}>
-                      <span className={styles.namePrimary}>{d.name}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>{d.description}</TableCell>
-                  <TableCell>R${d.monthlyPrice}</TableCell>
-                  <TableCell>{d.durationDays} dias</TableCell>
-                  <TableCell center>
-                    <span
-                      className={`${styles.statusBadge} ${
-                        d.active ? styles.statusActive : styles.statusInactive
-                      }`}
-                    >
-                      {d.active === true ? "Ativo" : "Inativo"}
-                    </span>
-                  </TableCell>
-                  <TableCell center>
-                    <Dropdown
-                      items={[
-                        {
-                          label: "Editar",
-                          icon: <Pencil size={15} />,
-                          onSelect: () =>
-                            navigate({
-                              to: "/plans/$planId",
-                              params: { planId: String(d.planId) },
-                            }),
-                        },
-                        {
-                          label: "Excluir",
-                          icon: <Trash2 size={15} />,
-                          danger: true,
-                          onSelect: () => {
-                            deletePlan({ id: String(d.planId) });
+              {tableLoading && <TableSkeletonRows columns={6} />}
+
+              {!tableLoading &&
+                plans.map((d) => (
+                  <TableRow key={d.planId}>
+                    <TableCell>
+                      <div className={styles.nameCell}>
+                        <span className={styles.namePrimary}>{d.name}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>{d.description}</TableCell>
+                    <TableCell>R${d.monthlyPrice}</TableCell>
+                    <TableCell>{d.durationDays} dias</TableCell>
+                    <TableCell center>
+                      <span
+                        className={`${styles.statusBadge} ${
+                          d.active ? styles.statusActive : styles.statusInactive
+                        }`}
+                      >
+                        {d.active === true ? "Ativo" : "Inativo"}
+                      </span>
+                    </TableCell>
+                    <TableCell center>
+                      <Dropdown
+                        items={[
+                          {
+                            label: "Editar",
+                            icon: <Pencil size={15} />,
+                            onSelect: () =>
+                              navigate({
+                                to: "/plans/$planId",
+                                params: { planId: String(d.planId) },
+                              }),
                           },
-                        },
-                      ]}
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
+                          {
+                            label: "Excluir",
+                            icon: <Trash2 size={15} />,
+                            danger: true,
+                            onSelect: () => {
+                              deletePlan({ id: String(d.planId) });
+                            },
+                          },
+                        ]}
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
+
+              {!tableLoading && plans.length === 0 && (
+                <TableEmptyState
+                  colSpan={6}
+                  message="Nenhum plano encontrado para o filtro atual."
+                />
+              )}
             </TableBody>
           </Table>
         </div>
+
+        <Pagination
+          page={data}
+          currentPage={page}
+          loading={isFetching}
+          onPageChange={setPage}
+          onSizeChange={(nextSize) => {
+            setSize(nextSize);
+            setPage(0);
+          }}
+        />
       </section>
     </div>
   );

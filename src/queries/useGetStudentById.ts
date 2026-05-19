@@ -17,5 +17,8 @@ export function useGetStudentById(id: string) {
     queryKey: ["students", id],
     queryFn: () => fetchStudent(id),
     enabled: !!id,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 15 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 }

@@ -26,3 +26,11 @@ export type Student = {
 export type StudentCreateFormData = StudentEditFormData & {
   password: string;
 };
+
+export type StudentOption = {
+  studentId: number;
+  name: string;
+  email: string;
+  cpf: string;
+  label: string;
+};

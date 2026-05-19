@@ -1,3 +1,4 @@
+import { Skeleton } from "@/components/Skeleton/Skeleton";
 import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { Suspense } from "react";
@@ -11,7 +12,7 @@ interface RouterContext {
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   component: () => (
-    <Suspense fallback={<div>Carregando...</div>}>
+    <Suspense fallback={<Skeleton height="100vh" radius="0" />}>
       <Outlet />
       <TanStackRouterDevtools />
     </Suspense>

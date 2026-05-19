@@ -26,5 +26,8 @@ export function useGetActiveStudentEnrollment(
     queryKey: ["enrollments", "student", studentId, "active"],
     queryFn: () => fetchActiveStudentEnrollment(studentId),
     enabled,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 15 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 }
