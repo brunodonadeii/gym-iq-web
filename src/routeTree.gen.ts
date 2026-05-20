@@ -33,7 +33,6 @@ import { Route as SidebarStudentsCreateRouteImport } from './routes/_sidebar/stu
 import { Route as SidebarStudentsStudentIdRouteImport } from './routes/_sidebar/students/$studentId'
 import { Route as SidebarPlansCreateRouteImport } from './routes/_sidebar/plans/create'
 import { Route as SidebarPlansPlanIdRouteImport } from './routes/_sidebar/plans/$planId'
-import { Route as SidebarPaymentsCreateRouteImport } from './routes/_sidebar/payments/create'
 import { Route as SidebarInstructorsCreateRouteImport } from './routes/_sidebar/instructors/create'
 import { Route as SidebarInstructorsInstructorIdRouteImport } from './routes/_sidebar/instructors/$instructorId'
 import { Route as SidebarExercisesCreateRouteImport } from './routes/_sidebar/exercises/create'
@@ -164,11 +163,6 @@ const SidebarPlansPlanIdRoute = SidebarPlansPlanIdRouteImport.update({
   path: '/$planId',
   getParentRoute: () => SidebarPlansRoute,
 } as any)
-const SidebarPaymentsCreateRoute = SidebarPaymentsCreateRouteImport.update({
-  id: '/create',
-  path: '/create',
-  getParentRoute: () => SidebarPaymentsRoute,
-} as any)
 const SidebarInstructorsCreateRoute =
   SidebarInstructorsCreateRouteImport.update({
     id: '/create',
@@ -222,7 +216,6 @@ export interface FileRoutesByFullPath {
   '/exercises/create': typeof SidebarExercisesCreateRoute
   '/instructors/$instructorId': typeof SidebarInstructorsInstructorIdRoute
   '/instructors/create': typeof SidebarInstructorsCreateRoute
-  '/payments/create': typeof SidebarPaymentsCreateRoute
   '/plans/$planId': typeof SidebarPlansPlanIdRoute
   '/plans/create': typeof SidebarPlansCreateRoute
   '/students/$studentId': typeof SidebarStudentsStudentIdRoute
@@ -247,7 +240,6 @@ export interface FileRoutesByTo {
   '/exercises/create': typeof SidebarExercisesCreateRoute
   '/instructors/$instructorId': typeof SidebarInstructorsInstructorIdRoute
   '/instructors/create': typeof SidebarInstructorsCreateRoute
-  '/payments/create': typeof SidebarPaymentsCreateRoute
   '/plans/$planId': typeof SidebarPlansPlanIdRoute
   '/plans/create': typeof SidebarPlansCreateRoute
   '/students/$studentId': typeof SidebarStudentsStudentIdRoute
@@ -281,7 +273,6 @@ export interface FileRoutesById {
   '/_sidebar/exercises/create': typeof SidebarExercisesCreateRoute
   '/_sidebar/instructors/$instructorId': typeof SidebarInstructorsInstructorIdRoute
   '/_sidebar/instructors/create': typeof SidebarInstructorsCreateRoute
-  '/_sidebar/payments/create': typeof SidebarPaymentsCreateRoute
   '/_sidebar/plans/$planId': typeof SidebarPlansPlanIdRoute
   '/_sidebar/plans/create': typeof SidebarPlansCreateRoute
   '/_sidebar/students/$studentId': typeof SidebarStudentsStudentIdRoute
@@ -315,7 +306,6 @@ export interface FileRouteTypes {
     | '/exercises/create'
     | '/instructors/$instructorId'
     | '/instructors/create'
-    | '/payments/create'
     | '/plans/$planId'
     | '/plans/create'
     | '/students/$studentId'
@@ -340,7 +330,6 @@ export interface FileRouteTypes {
     | '/exercises/create'
     | '/instructors/$instructorId'
     | '/instructors/create'
-    | '/payments/create'
     | '/plans/$planId'
     | '/plans/create'
     | '/students/$studentId'
@@ -373,7 +362,6 @@ export interface FileRouteTypes {
     | '/_sidebar/exercises/create'
     | '/_sidebar/instructors/$instructorId'
     | '/_sidebar/instructors/create'
-    | '/_sidebar/payments/create'
     | '/_sidebar/plans/$planId'
     | '/_sidebar/plans/create'
     | '/_sidebar/students/$studentId'
@@ -565,13 +553,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SidebarPlansPlanIdRouteImport
       parentRoute: typeof SidebarPlansRoute
     }
-    '/_sidebar/payments/create': {
-      id: '/_sidebar/payments/create'
-      path: '/create'
-      fullPath: '/payments/create'
-      preLoaderRoute: typeof SidebarPaymentsCreateRouteImport
-      parentRoute: typeof SidebarPaymentsRoute
-    }
     '/_sidebar/instructors/create': {
       id: '/_sidebar/instructors/create'
       path: '/create'
@@ -663,12 +644,10 @@ const SidebarInstructorsRouteWithChildren =
   SidebarInstructorsRoute._addFileChildren(SidebarInstructorsRouteChildren)
 
 interface SidebarPaymentsRouteChildren {
-  SidebarPaymentsCreateRoute: typeof SidebarPaymentsCreateRoute
   SidebarPaymentsIndexRoute: typeof SidebarPaymentsIndexRoute
 }
 
 const SidebarPaymentsRouteChildren: SidebarPaymentsRouteChildren = {
-  SidebarPaymentsCreateRoute: SidebarPaymentsCreateRoute,
   SidebarPaymentsIndexRoute: SidebarPaymentsIndexRoute,
 }
 

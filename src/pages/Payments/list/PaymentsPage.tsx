@@ -28,14 +28,7 @@ import type {
 import { useGetEnrollments } from "@/queries/useGetEnrollments";
 import { useGetPayments } from "@/queries/useGetPayments";
 import { useGetStudentOptions } from "@/queries/useGetStudentOptions";
-import { useNavigate } from "@tanstack/react-router";
-import {
-  CheckCircle2,
-  ClockAlert,
-  PlusCircle,
-  RefreshCcw,
-  X,
-} from "lucide-react";
+import { CheckCircle2, ClockAlert, RefreshCcw, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import styles from "./PaymentsPage.module.css";
@@ -118,7 +111,6 @@ const isKnownPaymentMethod = (value?: string | null): value is PaymentMethod =>
   !!value && Object.prototype.hasOwnProperty.call(paymentMethodLabels, value);
 
 export const PaymentsPage = () => {
-  const navigate = useNavigate();
   const [filterMode, setFilterMode] = useState<PaymentFilterMode>("all");
   const [statusFilter, setStatusFilter] = useState<PaymentStatusFilter>("all");
   const [studentId, setStudentId] = useState("");
@@ -158,14 +150,14 @@ export const PaymentsPage = () => {
         ? enrollmentId !== ""
         : true;
 
-  const { data: payments, isLoading, isFetching } = useGetPayments(
-    paymentsQuery,
-    filterEnabled,
-    {
-      page,
-      size,
-    },
-  );
+  const {
+    data: payments,
+    isLoading,
+    isFetching,
+  } = useGetPayments(paymentsQuery, filterEnabled, {
+    page,
+    size,
+  });
 
   const visiblePayments = useMemo(() => {
     const source = filterEnabled ? (payments?.content ?? []) : [];
@@ -406,12 +398,6 @@ export const PaymentsPage = () => {
             loading={isRefreshingOverdue}
           >
             Atualizar vencidos
-          </Button>
-          <Button
-            leftIcon={<PlusCircle size={18} />}
-            onClick={() => navigate({ to: "/payments/create" })}
-          >
-            Nova cobranca
           </Button>
         </div>
       </div>

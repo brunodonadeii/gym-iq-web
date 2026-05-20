@@ -8,7 +8,7 @@ interface ApiError {
 
 async function refreshOverduePayments() {
   const response = await authFetch("payments/refresh-overdue", {
-    method: "POST",
+    method: "PATCH",
     headers: {
       "Content-Type": "application/json",
     },
