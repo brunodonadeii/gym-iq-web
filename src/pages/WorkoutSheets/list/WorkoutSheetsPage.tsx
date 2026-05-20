@@ -18,10 +18,14 @@ import { useDeleteWorkoutSheet } from "@/mutations/useDeleteWorkoutSheet";
 import type { WorkoutSheet } from "@/pages/WorkoutSheets/types";
 import { useGetInstructors } from "@/queries/useGetInstructors";
 import { useGetStudentOptions } from "@/queries/useGetStudentOptions";
-import { useGetWorkoutSheets } from "@/queries/useGetWorkoutSheets";
+import {
+  fetchWorkoutSheets,
+  useGetWorkoutSheets,
+} from "@/queries/useGetWorkoutSheets";
+import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { Eye, PlusCircle, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import styles from "./WorkoutSheetsPage.module.css";
 
@@ -63,32 +67,39 @@ const resolveInstructorName = (sheet: WorkoutSheet) =>
 
 export const WorkoutSheetsPage = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [filterMode, setFilterMode] = useState<WorkoutSheetFilterMode>("all");
   const [studentId, setStudentId] = useState("");
   const [studentSearch, setStudentSearch] = useState("");
   const [instructorId, setInstructorId] = useState("");
+  const [instructorSearch, setInstructorSearch] = useState("");
   const [onlyActive, setOnlyActive] = useState("false");
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
   const debouncedStudentSearch = useDebouncedValue(studentSearch);
+  const debouncedInstructorSearch = useDebouncedValue(instructorSearch);
 
   const { data: studentOptions, isFetching: isFetchingStudents } =
     useGetStudentOptions(debouncedStudentSearch, filterMode === "student");
-  const { data: instructors } = useGetInstructors("", {
-    size: 100,
-    sort: "user.name,asc",
-  });
+  const { data: instructors, isFetching: isFetchingInstructors } =
+    useGetInstructors(debouncedInstructorSearch, {
+      size: 20,
+      sort: "user.name,asc",
+    });
 
-  const query =
-    filterMode === "student"
-      ? ({
-          mode: "student",
-          studentId,
-          onlyActive: onlyActive === "true",
-        } as const)
-      : filterMode === "instructor"
-        ? ({ mode: "instructor", instructorId } as const)
-        : ({ mode: "all" } as const);
+  const query = useMemo(
+    () =>
+      filterMode === "student"
+        ? ({
+            mode: "student",
+            studentId,
+            onlyActive: onlyActive === "true",
+          } as const)
+        : filterMode === "instructor"
+          ? ({ mode: "instructor", instructorId } as const)
+          : ({ mode: "all" } as const),
+    [filterMode, instructorId, onlyActive, studentId],
+  );
 
   const enabled =
     filterMode === "student"
@@ -103,8 +114,25 @@ export const WorkoutSheetsPage = () => {
     sort: "createdAt,desc",
   });
   const { mutate: deleteWorkoutSheet } = useDeleteWorkoutSheet();
-  const tableLoading = isLoading || isFetching;
+  const tableLoading = isLoading;
   const sheets = enabled ? (data?.content ?? []) : [];
+
+  useEffect(() => {
+    if (!enabled || !data || data.last) return;
+
+    const nextPagination = {
+      page: page + 1,
+      size,
+      sort: "createdAt,desc",
+    };
+
+    queryClient.prefetchQuery({
+      queryKey: ["workout-sheets", query, nextPagination],
+      queryFn: () => fetchWorkoutSheets(query, nextPagination),
+      staleTime: 5 * 60 * 1000,
+      gcTime: 15 * 60 * 1000,
+    });
+  }, [data, enabled, page, query, queryClient, size]);
 
   const autocompleteStudentOptions =
     studentOptions?.map((student) => ({
@@ -113,13 +141,12 @@ export const WorkoutSheetsPage = () => {
       description: student.email,
     })) ?? [];
 
-  const instructorOptions = [
-    { label: "Selecione um instrutor", value: "", disabled: true },
-    ...(instructors?.content.map((instructor) => ({
+  const instructorOptions =
+    instructors?.content.map((instructor) => ({
       label: instructor.name,
       value: String(instructor.instructorId),
-    })) ?? []),
-  ];
+      description: instructor.email,
+    })) ?? [];
 
   const handleDelete = (id: string) => {
     deleteWorkoutSheet(
@@ -152,6 +179,7 @@ export const WorkoutSheetsPage = () => {
               setStudentId("");
               setStudentSearch("");
               setInstructorId("");
+              setInstructorSearch("");
               setPage(0);
             }}
             options={[
@@ -206,16 +234,29 @@ export const WorkoutSheetsPage = () => {
           )}
 
           {filterMode === "instructor" && (
-            <SelectField
+            <Autocomplete
               label="Instrutor"
               id="workoutSheetInstructorFilter"
-              value={instructorId}
-              onChange={(e) => {
-                setInstructorId(e.target.value);
+              search={instructorSearch}
+              onSearchChange={(value) => {
+                setInstructorSearch(value);
+                setInstructorId("");
+                setPage(0);
+              }}
+              onSelect={(option) => {
+                setInstructorSearch(option.label);
+                setInstructorId(option.value);
+                setPage(0);
+              }}
+              onClear={() => {
+                setInstructorSearch("");
+                setInstructorId("");
                 setPage(0);
               }}
               options={instructorOptions}
-              containerProps={{ className: styles.filterFieldLarge }}
+              loading={isFetchingInstructors}
+              placeholder="Digite nome, CREF ou e-mail"
+              containerClassName={styles.filterFieldLarge}
             />
           )}
         </div>

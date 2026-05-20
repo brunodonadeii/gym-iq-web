@@ -1,7 +1,6 @@
 import { Autocomplete } from "@/components/Autocomplete/Autocomplete";
 import { Button } from "@/components/Button/Button";
 import { Form } from "@/components/Form/Form";
-import { SelectField } from "@/components/SelectField/SelectField";
 import { TextField } from "@/components/TextField/TextField";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useFormInputs } from "@/hooks/useFormInputs";
@@ -23,6 +22,7 @@ const EMPTY_FORM: EnrollmentCreateFormData = {
 export const EnrollmentsCreate = () => {
   const [data, setData] = useState<EnrollmentCreateFormData>(EMPTY_FORM);
   const [studentSearch, setStudentSearch] = useState("");
+  const [planSearch, setPlanSearch] = useState("");
   const debouncedStudentSearch = useDebouncedValue(studentSearch);
   const { set } = useFormInputs(setData);
   const navigate = useNavigate();
@@ -43,13 +43,16 @@ export const EnrollmentsCreate = () => {
       description: student.email,
     })) ?? [];
 
-  const planOptions = [
-    { label: "Selecione um plano", value: "", disabled: true },
-    ...(plans?.content.map((plan) => ({
-      label: plan.name,
-      value: String(plan.planId),
-    })) ?? []),
-  ];
+  const autocompletePlanOptions =
+    plans?.content
+      .filter((plan) =>
+        plan.name.toLowerCase().includes(planSearch.toLowerCase()),
+      )
+      .map((plan) => ({
+        label: plan.name,
+        value: String(plan.planId),
+        description: `R$ ${plan.monthlyPrice} - ${plan.durationDays} dias`,
+      })) ?? [];
 
   const handleSubmit = () => {
     mutate(data, {
@@ -115,12 +118,25 @@ export const EnrollmentsCreate = () => {
           helperText="Busca leve em /students/options."
           required
         />
-        <SelectField
+        <Autocomplete
           label="Plano"
           id="planId"
-          value={data.planId}
-          onChange={set("planId")}
-          options={planOptions}
+          search={planSearch}
+          onSearchChange={(value) => {
+            setPlanSearch(value);
+            setData((prev) => ({ ...prev, planId: "" }));
+          }}
+          onSelect={(option) => {
+            setPlanSearch(option.label);
+            setData((prev) => ({ ...prev, planId: option.value }));
+          }}
+          onClear={() => {
+            setPlanSearch("");
+            setData((prev) => ({ ...prev, planId: "" }));
+          }}
+          options={autocompletePlanOptions}
+          loading={isLoadingPlans}
+          placeholder="Digite o nome do plano"
           required
         />
       </div>

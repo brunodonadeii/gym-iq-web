@@ -1,7 +1,6 @@
 import { Autocomplete } from "@/components/Autocomplete/Autocomplete";
 import { Button } from "@/components/Button/Button";
 import { Form } from "@/components/Form/Form";
-import { SelectField } from "@/components/SelectField/SelectField";
 import { TextField } from "@/components/TextField/TextField";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useFormInputs } from "@/hooks/useFormInputs";
@@ -42,17 +41,19 @@ const EMPTY_FORM: WorkoutSheetFormData = {
 export const WorkoutSheetsCreate = () => {
   const [data, setData] = useState<WorkoutSheetFormData>(EMPTY_FORM);
   const [studentSearch, setStudentSearch] = useState("");
+  const [instructorSearch, setInstructorSearch] = useState("");
   const [exerciseSearch, setExerciseSearch] = useState("");
   const debouncedStudentSearch = useDebouncedValue(studentSearch);
+  const debouncedInstructorSearch = useDebouncedValue(instructorSearch);
   const debouncedExerciseSearch = useDebouncedValue(exerciseSearch);
   const { set } = useFormInputs(setData);
   const navigate = useNavigate();
   const { mutate, isPending } = useCreateWorkoutSheet();
   const { data: studentOptions, isFetching: isFetchingStudents } =
     useGetStudentOptions(debouncedStudentSearch);
-  const { data: instructors, isLoading: isLoadingInstructors } =
-    useGetInstructors("", {
-      size: 100,
+  const { data: instructors, isFetching: isFetchingInstructors } =
+    useGetInstructors(debouncedInstructorSearch, {
+      size: 20,
       sort: "user.name,asc",
     });
   const { data: exercises, isFetching: isFetchingExercises } = useGetExercises(
@@ -73,13 +74,12 @@ export const WorkoutSheetsCreate = () => {
       description: student.email,
     })) ?? [];
 
-  const instructorOptions = [
-    { label: "Selecione um instrutor", value: "", disabled: true },
-    ...(instructors?.content.map((instructor) => ({
+  const instructorOptions =
+    instructors?.content.map((instructor) => ({
       label: instructor.name,
       value: String(instructor.instructorId),
-    })) ?? []),
-  ];
+      description: instructor.email,
+    })) ?? [];
 
   const exerciseOptions =
     exercises?.content.map((exercise) => ({
@@ -128,7 +128,7 @@ export const WorkoutSheetsCreate = () => {
     <Form
       title="Dados da ficha"
       description="Vincule aluno, instrutor e periodo de vigencia da ficha."
-      loading={isLoadingInstructors}
+      loading={false}
       actions={
         <>
           <Button
@@ -177,12 +177,25 @@ export const WorkoutSheetsCreate = () => {
           placeholder="Digite nome, CPF ou e-mail"
           required
         />
-        <SelectField
+        <Autocomplete
           label="Instrutor"
           id="instructorId"
-          value={data.instructorId}
-          onChange={set("instructorId")}
+          search={instructorSearch}
+          onSearchChange={(value) => {
+            setInstructorSearch(value);
+            setData((prev) => ({ ...prev, instructorId: "" }));
+          }}
+          onSelect={(option) => {
+            setInstructorSearch(option.label);
+            setData((prev) => ({ ...prev, instructorId: option.value }));
+          }}
+          onClear={() => {
+            setInstructorSearch("");
+            setData((prev) => ({ ...prev, instructorId: "" }));
+          }}
           options={instructorOptions}
+          loading={isFetchingInstructors}
+          placeholder="Digite nome, CREF ou e-mail"
           required
         />
       </div>

@@ -3,7 +3,6 @@ import { Button } from "@/components/Button/Button";
 import { Dropdown, type DropdownItem } from "@/components/Dropdown/Dropdown";
 import { Pagination } from "@/components/Pagination/Pagination";
 import { SelectField } from "@/components/SelectField/SelectField";
-import { Skeleton } from "@/components/Skeleton/Skeleton";
 import {
   Table,
   TableBody,
@@ -51,15 +50,11 @@ const EMPTY_PAY_FORM: PaymentPayFormData = {
 };
 
 const paymentColumns = [
-  { width: "10%" },
-  { width: "10%" },
-  { width: "10%" },
-  { width: "10%" },
-  { width: "10%" },
-  { width: "10%" },
-  { width: "10%" },
-  { width: "10%" },
-  { width: "10%" },
+  { width: "24%" },
+  { width: "22%" },
+  { width: "16%" },
+  { width: "16%" },
+  { width: "12%" },
   { width: "10%" },
 ];
 
@@ -95,17 +90,6 @@ const formatDate = (value?: string | null) =>
       })
     : "Nao informado";
 
-const formatDateTime = (value?: string | null) =>
-  value
-    ? new Date(value).toLocaleString("pt-BR", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      })
-    : "Nao informado";
-
 const formatCurrency = (value?: number) =>
   new Intl.NumberFormat("pt-BR", {
     style: "currency",
@@ -122,20 +106,10 @@ const resolveStudentName = (payment: Payment) =>
   payment.enrollment?.studentName ??
   `Aluno #${payment.studentId ?? payment.enrollment?.studentId ?? "-"}`;
 
-const resolveStudentEmail = (payment: Payment) =>
-  payment.student?.email ??
-  payment.enrollment?.student?.email ??
-  payment.studentEmail ??
-  payment.enrollment?.studentEmail ??
-  "Sem email";
-
 const resolvePlanName = (payment: Payment) =>
   payment.planName ??
   payment.enrollment?.planName ??
   `Plano #${payment.planId ?? payment.enrollment?.planId ?? "-"}`;
-
-const resolvePaymentMethod = (paymentMethod?: string | null) =>
-  paymentMethod ? (paymentMethodLabels[paymentMethod] ?? paymentMethod) : "-";
 
 const resolveEnrollmentOptionLabel = (enrollment: Enrollment) =>
   `${enrollment.student?.name ?? enrollment.studentName ?? `Aluno #${enrollment.studentId}`} - ${enrollment.plan?.name ?? enrollment.planName ?? `Plano #${enrollment.planId}`}`;
@@ -201,23 +175,6 @@ export const PaymentsPage = () => {
     return source.filter((payment) => payment.status === statusFilter);
   }, [filterEnabled, payments, statusFilter]);
   const tableLoading = isLoading || isFetching;
-
-  const paidCount = useMemo(
-    () => visiblePayments.filter((payment) => payment.status === "PAID").length,
-    [visiblePayments],
-  );
-
-  const overdueCount = useMemo(
-    () =>
-      visiblePayments.filter((payment) => payment.status === "OVERDUE").length,
-    [visiblePayments],
-  );
-
-  const pendingCount = useMemo(
-    () =>
-      visiblePayments.filter((payment) => payment.status === "PENDING").length,
-    [visiblePayments],
-  );
 
   const studentOptions =
     students?.map((student) => ({
@@ -355,55 +312,6 @@ export const PaymentsPage = () => {
 
   return (
     <div className={styles.page}>
-      <section className={styles.hero}>
-        <div className={styles.metricsCard}>
-          <div className={styles.metric}>
-            <span className={styles.metricLabel}>Total exibido</span>
-            <strong className={styles.metricValue}>
-              {tableLoading ? (
-                <Skeleton width="48px" height="30px" />
-              ) : (
-                visiblePayments.length
-              )}
-            </strong>
-            <p className={styles.metricHint}>Pagamentos no recorte atual.</p>
-          </div>
-          <div className={styles.metric}>
-            <span className={styles.metricLabel}>Pagos</span>
-            <strong className={styles.metricValue}>
-              {tableLoading ? (
-                <Skeleton width="48px" height="30px" />
-              ) : (
-                paidCount
-              )}
-            </strong>
-            <p className={styles.metricHint}>Baixas confirmadas no sistema.</p>
-          </div>
-          <div className={styles.metric}>
-            <span className={styles.metricLabel}>Atrasados</span>
-            <strong className={styles.metricValue}>
-              {tableLoading ? (
-                <Skeleton width="48px" height="30px" />
-              ) : (
-                overdueCount
-              )}
-            </strong>
-            <p className={styles.metricHint}>Cobrancas vencidas no recorte.</p>
-          </div>
-          <div className={styles.metric}>
-            <span className={styles.metricLabel}>Pendentes</span>
-            <strong className={styles.metricValue}>
-              {tableLoading ? (
-                <Skeleton width="48px" height="30px" />
-              ) : (
-                pendingCount
-              )}
-            </strong>
-            <p className={styles.metricHint}>Aguardando confirmacao.</p>
-          </div>
-        </div>
-      </section>
-
       <div className={styles.topBar}>
         <div className={styles.topBarContent}>
           <strong className={styles.topBarTitle}>Filtros e acoes</strong>
@@ -513,32 +421,27 @@ export const PaymentsPage = () => {
           <div>
             <h3 className={styles.sectionTitle}>Lista principal</h3>
             <p className={styles.sectionDescription}>
-              Consulte aluno, plano, valor, vencimento, baixa, metodo e status
-              financeiro em uma visao unica. Total encontrado:{" "}
-              {payments?.totalElements ?? 0}.
+              Consulte os pagamentos com foco no que importa para acao rapida.
+              Total encontrado: {payments?.totalElements ?? 0}.
             </p>
           </div>
         </div>
 
         <div className={styles.tableWrap}>
-          <Table columns={paymentColumns} minWidth="1360px">
+          <Table columns={paymentColumns} minWidth="920px">
             <TableHead>
               <TableRow>
-                <TableHeaderCell>Aluno</TableHeaderCell>
-                <TableHeaderCell>E-mail</TableHeaderCell>
+                <TableHeaderCell>Nome</TableHeaderCell>
                 <TableHeaderCell>Plano</TableHeaderCell>
                 <TableHeaderCell>Valor</TableHeaderCell>
                 <TableHeaderCell>Vencimento</TableHeaderCell>
-                <TableHeaderCell>Pagamento</TableHeaderCell>
                 <TableHeaderCell center>Status</TableHeaderCell>
-                <TableHeaderCell>Metodo</TableHeaderCell>
-                <TableHeaderCell>Observacoes</TableHeaderCell>
                 <TableHeaderCell center>Acoes</TableHeaderCell>
               </TableRow>
             </TableHead>
 
             <TableBody>
-              {tableLoading && <TableSkeletonRows columns={10} />}
+              {tableLoading && <TableSkeletonRows columns={6} />}
 
               {!tableLoading &&
                 visiblePayments.map((payment) => (
@@ -555,11 +458,9 @@ export const PaymentsPage = () => {
                         </span>
                       </div>
                     </TableCell>
-                    <TableCell>{resolveStudentEmail(payment)}</TableCell>
                     <TableCell>{resolvePlanName(payment)}</TableCell>
                     <TableCell>{formatCurrency(payment.amount)}</TableCell>
                     <TableCell>{formatDate(payment.dueDate)}</TableCell>
-                    <TableCell>{formatDateTime(payment.paidAt)}</TableCell>
                     <TableCell center>
                       <span
                         className={`${styles.statusBadge} ${
@@ -569,12 +470,6 @@ export const PaymentsPage = () => {
                         {statusLabels[payment.status] ?? payment.status}
                       </span>
                     </TableCell>
-                    <TableCell>
-                      {resolvePaymentMethod(payment.paymentMethod)}
-                    </TableCell>
-                    <TableCell className={styles.notesCell}>
-                      {payment.notes || "-"}
-                    </TableCell>
                     <TableCell center>
                       <Dropdown items={getPaymentActions(payment)} />
                     </TableCell>
@@ -583,7 +478,7 @@ export const PaymentsPage = () => {
 
               {!tableLoading && visiblePayments.length === 0 && (
                 <TableEmptyState
-                  colSpan={10}
+                  colSpan={6}
                   message="Nenhum pagamento encontrado para os filtros atuais."
                 />
               )}

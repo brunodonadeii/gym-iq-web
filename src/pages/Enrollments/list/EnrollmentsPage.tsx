@@ -30,7 +30,7 @@ import {
   RefreshCcw,
   UserRoundSearch,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import styles from "./EnrollmentsPage.module.css";
 
@@ -130,16 +130,6 @@ export const EnrollmentsPage = () => {
     : isFetchingAllEnrollments;
   const tableLoading = isLoadingEnrollments || isFetchingEnrollments;
 
-  const activeCount = useMemo(
-    () => enrollments.filter((item) => item.status === "ACTIVE").length,
-    [enrollments],
-  );
-
-  const selectedPlanCount = useMemo(() => {
-    const ids = new Set(enrollments.map((item) => item.planId));
-    return ids.size;
-  }, [enrollments]);
-
   const autocompleteStudentOptions =
     studentOptions?.map((student) => ({
       label: student.label,
@@ -188,7 +178,13 @@ export const EnrollmentsPage = () => {
     };
 
     if (enrollment.status === "CANCELED") {
-      return [renewAction];
+      return [
+        {
+          label: "Renovacao indisponivel para cancelada",
+          icon: <RefreshCcw size={15} />,
+          disabled: true,
+        },
+      ];
     }
 
     const statusActions =
@@ -225,52 +221,6 @@ export const EnrollmentsPage = () => {
 
   return (
     <div className={styles.page}>
-      <section className={styles.hero}>
-        <div className={styles.metricsCard}>
-          <div className={styles.metric}>
-            <span className={styles.metricLabel}>Total exibído</span>
-            <strong className={styles.metricValue}>
-              {tableLoading ? (
-                <Skeleton width="48px" height="30px" />
-              ) : (
-                enrollments.length
-              )}
-            </strong>
-            <p className={styles.metricHint}>
-              {studentFilterEnabled
-                ? "Histórico filtrado por aluno."
-                : "Matriz completa de matrículas."}
-            </p>
-          </div>
-          <div className={styles.metric}>
-            <span className={styles.metricLabel}>Acesso ativo</span>
-            <strong className={styles.metricValue}>
-              {tableLoading ? (
-                <Skeleton width="48px" height="30px" />
-              ) : (
-                activeCount
-              )}
-            </strong>
-            <p className={styles.metricHint}>
-              Matrículas válidas com acesso liberado.
-            </p>
-          </div>
-          <div className={styles.metric}>
-            <span className={styles.metricLabel}>Planos no recorte</span>
-            <strong className={styles.metricValue}>
-              {tableLoading ? (
-                <Skeleton width="48px" height="30px" />
-              ) : (
-                selectedPlanCount
-              )}
-            </strong>
-            <p className={styles.metricHint}>
-              Diversidade de planos vinculados.
-            </p>
-          </div>
-        </div>
-      </section>
-
       <div className={styles.topBar}>
         <div className={styles.topBarContent}>
           <strong className={styles.topBarTitle}>Filtro por aluno</strong>

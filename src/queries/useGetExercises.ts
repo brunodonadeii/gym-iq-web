@@ -4,7 +4,7 @@ import type { PageRequest, PageResponse } from "@/types/pagination";
 import { buildPaginationParams } from "@/utils/pagination";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
-type ExercisesQueryMode = "active" | "all";
+export type ExercisesQueryMode = "active" | "all";
 
 const DEFAULT_EXERCISES_PAGE: PageRequest = {
   page: 0,

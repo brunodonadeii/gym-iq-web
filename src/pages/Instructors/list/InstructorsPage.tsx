@@ -2,7 +2,6 @@ import { Button } from "@/components/Button/Button";
 import { Dropdown, type DropdownItem } from "@/components/Dropdown/Dropdown";
 import { Pagination } from "@/components/Pagination/Pagination";
 import { SearchBar } from "@/components/SearchBar/SearchBar";
-import { Skeleton } from "@/components/Skeleton/Skeleton";
 import {
   Table,
   TableBody,
@@ -26,7 +25,7 @@ import {
   Trash2,
   UserRoundPlus,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import styles from "./InstructorsPage.module.css";
 
@@ -64,21 +63,6 @@ export const InstructorsPage = () => {
   const { mutate: deleteInstructor, isPending: isDeleting } =
     useDeleteInstructor();
   const tableLoading = isLoading || isFetching;
-
-  const activeCount = useMemo(
-    () => instructors.filter((instructor) => instructor.active).length,
-    [instructors],
-  );
-
-  const inactiveCount = instructors.length - activeCount;
-
-  const specialtyCount = useMemo(() => {
-    const specialties = new Set(
-      instructors.map((instructor) => instructor.specialty).filter(Boolean),
-    );
-
-    return specialties.size;
-  }, [instructors]);
 
   const handleDelete = (instructor: Instructor) => {
     deleteInstructor(
@@ -121,57 +105,6 @@ export const InstructorsPage = () => {
 
   return (
     <div className={styles.page}>
-      <section className={styles.hero}>
-        <div className={styles.metricsCard}>
-          <div className={styles.metric}>
-            <span className={styles.metricLabel}>Total exibido</span>
-            <strong className={styles.metricValue}>
-              {tableLoading ? (
-                <Skeleton width="48px" height="30px" />
-              ) : (
-                instructors.length
-              )}
-            </strong>
-            <p className={styles.metricHint}>Instrutores no recorte atual.</p>
-          </div>
-          <div className={styles.metric}>
-            <span className={styles.metricLabel}>Ativos</span>
-            <strong className={styles.metricValue}>
-              {tableLoading ? (
-                <Skeleton width="48px" height="30px" />
-              ) : (
-                activeCount
-              )}
-            </strong>
-            <p className={styles.metricHint}>Professores disponiveis.</p>
-          </div>
-          <div className={styles.metric}>
-            <span className={styles.metricLabel}>Inativos</span>
-            <strong className={styles.metricValue}>
-              {tableLoading ? (
-                <Skeleton width="48px" height="30px" />
-              ) : (
-                inactiveCount
-              )}
-            </strong>
-            <p className={styles.metricHint}>
-              Registros preservados sem acesso.
-            </p>
-          </div>
-          <div className={styles.metric}>
-            <span className={styles.metricLabel}>Especialidades</span>
-            <strong className={styles.metricValue}>
-              {tableLoading ? (
-                <Skeleton width="48px" height="30px" />
-              ) : (
-                specialtyCount
-              )}
-            </strong>
-            <p className={styles.metricHint}>Areas cadastradas no time.</p>
-          </div>
-        </div>
-      </section>
-
       <div className={styles.topBar}>
         <div className={styles.topBarContent}>
           <strong className={styles.topBarTitle}>Busca e cadastro</strong>

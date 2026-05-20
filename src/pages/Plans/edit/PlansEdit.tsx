@@ -8,6 +8,7 @@ import { Form } from "@/components/Form/Form";
 import type { PlanFormData } from "../types";
 import { useGetPlanById } from "@/queries/useGetPlanById";
 import { useUpdatePlan } from "@/mutations/useUpdatePlan";
+import { formatCurrencyInput, parseCurrencyInput } from "@/utils/currency";
 import styles from "./PlansEdit.module.css";
 
 const EMPTY_FORM: PlanFormData = {
@@ -21,7 +22,7 @@ export const PlansEdit = () => {
   const params = useParams({ strict: false });
   const planId = params.planId;
   const [data, setData] = useState<PlanFormData>(EMPTY_FORM);
-  const { set, setMasked } = useFormInputs(setData);
+  const { set } = useFormInputs(setData);
   const { mutate: mutateUpdate, isPending } = useUpdatePlan();
   const { data: details, isLoading } = useGetPlanById(planId);
   const navigate = useNavigate();
@@ -34,8 +35,6 @@ export const PlansEdit = () => {
       });
     }
   }, [details]);
-
-  console.log(planId);
 
   const handleSubmit = () => {
     mutateUpdate(
@@ -100,9 +99,15 @@ export const PlansEdit = () => {
         <TextField
           label="Valor mensal"
           id="monthlyPrice"
-          value={data.monthlyPrice}
-          onChange={setMasked("monthlyPrice", "###.##")}
-          placeholder="50.00"
+          inputMode="numeric"
+          value={formatCurrencyInput(data.monthlyPrice)}
+          onChange={(event) =>
+            setData((prev) => ({
+              ...prev,
+              monthlyPrice: parseCurrencyInput(event.target.value),
+            }))
+          }
+          placeholder="50,00"
           required
         />
         <TextField

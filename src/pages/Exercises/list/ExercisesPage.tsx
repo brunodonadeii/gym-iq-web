@@ -16,10 +16,11 @@ import {
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useDeleteExercise } from "@/mutations/useDeleteExercise";
 import type { Exercise } from "@/pages/Exercises/types";
-import { useGetExercises } from "@/queries/useGetExercises";
+import { fetchExercises, useGetExercises } from "@/queries/useGetExercises";
+import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { Pencil, PlusCircle, Search, Trash2 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import styles from "./ExercisesPage.module.css";
 
@@ -37,6 +38,7 @@ const getExerciseId = (exercise: Exercise) => String(exercise.exerciseId);
 
 export const ExercisesPage = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] =
     useState<ExerciseStatusFilter>("active");
@@ -55,7 +57,25 @@ export const ExercisesPage = () => {
     },
   );
   const { mutate: deleteExercise } = useDeleteExercise();
-  const tableLoading = isLoading || isFetching;
+  const tableLoading = isLoading;
+
+  useEffect(() => {
+    if (!data || data.last) return;
+
+    const nextPagination = {
+      page: page + 1,
+      size,
+      sort: "name,asc",
+    };
+
+    queryClient.prefetchQuery({
+      queryKey: ["exercises", queryMode, debouncedSearch, nextPagination],
+      queryFn: () =>
+        fetchExercises(queryMode, debouncedSearch, nextPagination),
+      staleTime: 5 * 60 * 1000,
+      gcTime: 15 * 60 * 1000,
+    });
+  }, [data, debouncedSearch, page, queryClient, queryMode, size]);
 
   const exercises = useMemo(() => {
     const content = data?.content ?? [];

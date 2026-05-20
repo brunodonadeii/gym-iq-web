@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { useFormInputs } from "@/hooks/useFormInputs";
 import { Form } from "@/components/Form/Form";
 import type { PlanFormData } from "../types";
+import { formatCurrencyInput, parseCurrencyInput } from "@/utils/currency";
 import styles from "./PlansCreate.module.css";
 
 import { useCreatePlan } from "@/mutations/useCreatePlan";
@@ -19,7 +20,7 @@ const EMPTY_FORM: PlanFormData = {
 
 export const PlansCreate = () => {
   const [data, setData] = useState<PlanFormData>(EMPTY_FORM);
-  const { set, setMasked } = useFormInputs(setData);
+  const { set } = useFormInputs(setData);
   const { mutate, isPending } = useCreatePlan();
   const navigate = useNavigate();
 
@@ -85,9 +86,15 @@ export const PlansCreate = () => {
         <TextField
           label="Valor mensal"
           id="monthlyPrice"
-          value={data.monthlyPrice}
-          onChange={setMasked("monthlyPrice", "###.##")}
-          placeholder="50.00"
+          inputMode="numeric"
+          value={formatCurrencyInput(data.monthlyPrice)}
+          onChange={(event) =>
+            setData((prev) => ({
+              ...prev,
+              monthlyPrice: parseCurrencyInput(event.target.value),
+            }))
+          }
+          placeholder="50,00"
           required
         />
         <TextField

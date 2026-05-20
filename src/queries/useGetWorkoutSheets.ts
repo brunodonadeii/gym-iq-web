@@ -4,7 +4,7 @@ import type { PageRequest, PageResponse } from "@/types/pagination";
 import { buildPaginationParams } from "@/utils/pagination";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
-type WorkoutSheetsQuery =
+export type WorkoutSheetsQuery =
   | { mode: "all" }
   | { mode: "student"; studentId: string; onlyActive?: boolean }
   | { mode: "instructor"; instructorId: string };
@@ -21,7 +21,7 @@ const getWorkoutSheetsUrl = (query: WorkoutSheetsQuery) => {
   return "workout-sheets";
 };
 
-async function fetchWorkoutSheets(
+export async function fetchWorkoutSheets(
   query: WorkoutSheetsQuery,
   pagination: PageRequest,
 ): Promise<PageResponse<WorkoutSheet>> {
