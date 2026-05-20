@@ -1,0 +1,63 @@
+import type {
+  WorkoutSheetExercise,
+  WorkoutSheetExerciseFormData,
+} from "@/pages/WorkoutSheets/types";
+import { authFetch } from "@/services/api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+interface ApiError {
+  erro: string;
+  mensagem: string;
+}
+
+type CreateWorkoutSheetExerciseData = {
+  workoutSheetId: string;
+  data: WorkoutSheetExerciseFormData;
+};
+
+const normalizeExercise = (data: WorkoutSheetExerciseFormData) => ({
+  exerciseId: Number(data.exerciseId),
+  sets: Number(data.sets),
+  repetitions: data.repetitions,
+  loadKg: data.loadKg ? Number(data.loadKg) : undefined,
+  restSeconds: data.restSeconds ? Number(data.restSeconds) : undefined,
+  executionOrder: Number(data.executionOrder),
+  notes: data.notes || undefined,
+});
+
+async function createWorkoutSheetExercise({
+  workoutSheetId,
+  data,
+}: CreateWorkoutSheetExerciseData) {
+  const response = await authFetch(`workout-sheets/${workoutSheetId}/exercises`, {
+    method: "POST",
+    body: JSON.stringify(normalizeExercise(data)),
+  });
+  const responseData = await response.json();
+
+  if (!response.ok) {
+    throw responseData;
+  }
+
+  return responseData;
+}
+
+export function useCreateWorkoutSheetExercise() {
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    WorkoutSheetExercise,
+    ApiError,
+    CreateWorkoutSheetExerciseData
+  >({
+    mutationFn: createWorkoutSheetExercise,
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["workout-sheets", variables.workoutSheetId, "exercises"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["workout-sheets", variables.workoutSheetId],
+      });
+    },
+  });
+}

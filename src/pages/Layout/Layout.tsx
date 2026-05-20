@@ -2,6 +2,8 @@ import { Header } from "@/components/Header/Header";
 import { Sidebar } from "@/components/Sidebar/Sidebar";
 import { Outlet } from "@tanstack/react-router";
 import {
+  Activity,
+  ClipboardCheck,
   ClipboardList,
   CreditCard,
   Dumbbell,
@@ -30,6 +32,16 @@ const sidebarItems = [
     label: "Instrutores",
     icon: <Dumbbell size={20} />,
     to: "/instructors",
+  },
+  {
+    label: "Exercicios",
+    icon: <Activity size={20} />,
+    to: "/exercises",
+  },
+  {
+    label: "Fichas",
+    icon: <ClipboardCheck size={20} />,
+    to: "/workout-sheets",
   },
   {
     label: "Pagamentos",
