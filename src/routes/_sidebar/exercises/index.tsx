@@ -4,7 +4,7 @@ import { createFileRoute } from "@tanstack/react-router";
 export const Route = createFileRoute("/_sidebar/exercises/")({
   component: ExercisesPage,
   staticData: {
-    breadcrumb: "Exercicios",
-    headline: "Listagem de exercicios",
+    breadcrumb: "Exercícios",
+    headline: "Listagem de exercícios",
   },
 });

@@ -111,7 +111,7 @@ export const StudentsPage = () => {
                 <TableHeaderCell>Telefone</TableHeaderCell>
                 <TableHeaderCell>Email</TableHeaderCell>
                 <TableHeaderCell center>Status</TableHeaderCell>
-                <TableHeaderCell center>Acoes</TableHeaderCell>
+                <TableHeaderCell center>Ações</TableHeaderCell>
               </TableRow>
             </TableHead>
 

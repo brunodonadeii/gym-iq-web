@@ -25,7 +25,7 @@ const formatDate = (value?: string) =>
         month: "2-digit",
         year: "numeric",
       })
-    : "Nao informado";
+    : "Não informado";
 
 const resolveStudentName = (enrollment?: Enrollment) =>
   enrollment?.student?.name ??
@@ -78,7 +78,7 @@ export const EnrollmentsRenew = () => {
       { id: String(enrollmentId), newPlanId: data.newPlanId },
       {
         onSuccess: () => {
-          toast.success("Matricula renovada com sucesso!");
+          toast.success("Matrícula renovada com sucesso!");
           navigate({ to: "/enrollments" });
         },
         onError: (e) => {
@@ -96,7 +96,7 @@ export const EnrollmentsRenew = () => {
 
   return (
     <Form
-      title="Renovacao de matricula"
+      title="Renovação de matrícula"
       description="Escolha o novo plano para renovar o contrato do aluno selecionado."
       loading={isLoadingEnrollments || isLoadingPlans}
       actions={
@@ -133,7 +133,7 @@ export const EnrollmentsRenew = () => {
         </div>
 
         <div className={styles.summaryCard}>
-          <span className={styles.summaryLabel}>Vigencia atual</span>
+          <span className={styles.summaryLabel}>Vigência atual</span>
           <strong className={styles.summaryValue}>
             {formatDate(enrollment?.endDate)}
           </strong>

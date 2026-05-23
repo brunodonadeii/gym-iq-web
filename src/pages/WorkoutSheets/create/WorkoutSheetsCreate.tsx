@@ -127,7 +127,7 @@ export const WorkoutSheetsCreate = () => {
   return (
     <Form
       title="Dados da ficha"
-      description="Vincule aluno, instrutor e periodo de vigencia da ficha."
+      description="Vincule aluno, instrutor e período de vigência da ficha."
       loading={false}
       actions={
         <>
@@ -220,7 +220,7 @@ export const WorkoutSheetsCreate = () => {
 
       <div className={styles.row}>
         <TextField
-          label="Data de inicio"
+          label="Data de início"
           id="startDate"
           type="date"
           value={data.startDate}
@@ -237,7 +237,7 @@ export const WorkoutSheetsCreate = () => {
 
       <div className={styles.row}>
         <TextField
-          label="Observacoes da ficha"
+          label="Observações da ficha"
           id="notes"
           value={data.notes}
           onChange={set("notes")}
@@ -247,7 +247,7 @@ export const WorkoutSheetsCreate = () => {
 
       <div className={styles.row}>
         <Autocomplete
-          label="Exercicio inicial"
+          label="Exercício inicial"
           id="exerciseId"
           search={exerciseSearch}
           onSearchChange={(value) => {
@@ -264,7 +264,7 @@ export const WorkoutSheetsCreate = () => {
           }}
           options={exerciseOptions}
           loading={isFetchingExercises}
-          placeholder="Digite o nome do exercicio"
+          placeholder="Digite o nome do exercício"
           required
         />
         <TextField
@@ -323,7 +323,7 @@ export const WorkoutSheetsCreate = () => {
 
       <div className={styles.row}>
         <TextField
-          label="Observacoes do exercicio"
+          label="Observações do exercício"
           id="exerciseNotes"
           value={firstExercise.notes}
           onChange={(event) => updateFirstExercise("notes", event.target.value)}

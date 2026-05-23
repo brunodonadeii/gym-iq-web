@@ -8,6 +8,7 @@ import {
   CreditCard,
   Dumbbell,
   Layers,
+  ShieldPlus,
   Users,
 } from "lucide-react";
 import styles from "./Layout.module.css";
@@ -24,7 +25,7 @@ const sidebarItems = [
     to: "/plans",
   },
   {
-    label: "Matriculas",
+    label: "Matrículas",
     icon: <ClipboardList size={20} />,
     to: "/enrollments",
   },
@@ -34,7 +35,7 @@ const sidebarItems = [
     to: "/instructors",
   },
   {
-    label: "Exercicios",
+    label: "Exercícios",
     icon: <Activity size={20} />,
     to: "/exercises",
   },
@@ -47,6 +48,11 @@ const sidebarItems = [
     label: "Pagamentos",
     icon: <CreditCard size={20} />,
     to: "/payments",
+  },
+  {
+    label: "Usuários",
+    icon: <ShieldPlus size={20} />,
+    to: "/admin-users/create",
   },
 ];
 

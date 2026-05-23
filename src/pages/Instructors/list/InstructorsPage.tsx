@@ -46,7 +46,7 @@ const formatDate = (value?: string) =>
         month: "2-digit",
         year: "numeric",
       })
-    : "Nao informado";
+    : "Não informado";
 
 export const InstructorsPage = () => {
   const navigate = useNavigate();
@@ -152,7 +152,7 @@ export const InstructorsPage = () => {
                 <TableHeaderCell>E-mail</TableHeaderCell>
                 <TableHeaderCell>Especialidade</TableHeaderCell>
                 <TableHeaderCell center>Status</TableHeaderCell>
-                <TableHeaderCell center>Acoes</TableHeaderCell>
+                <TableHeaderCell center>Ações</TableHeaderCell>
               </TableRow>
             </TableHead>
 

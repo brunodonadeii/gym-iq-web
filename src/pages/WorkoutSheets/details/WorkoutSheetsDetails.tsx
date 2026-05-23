@@ -72,7 +72,7 @@ const getSheetExerciseId = (exercise: WorkoutSheetExercise) =>
 
 const resolveExerciseName = (exercise: WorkoutSheetExercise) =>
   exercise.exerciseName ??
-  `Exercicio #${exercise.exerciseId}`;
+  `Exercício #${exercise.exerciseId}`;
 
 const resolveExerciseId = (exercise: WorkoutSheetExercise) =>
   String(exercise.exerciseId);
@@ -240,8 +240,8 @@ export const WorkoutSheetsDetails = () => {
       onSuccess: () => {
         toast.success(
           editingExerciseId
-            ? "Exercicio atualizado com sucesso!"
-            : "Exercicio adicionado com sucesso!",
+            ? "Exercício atualizado com sucesso!"
+            : "Exercício adicionado com sucesso!",
         );
         resetExerciseForm();
       },
@@ -288,7 +288,7 @@ export const WorkoutSheetsDetails = () => {
     deleteExercise(
       { id, workoutSheetId: String(workoutSheetId) },
       {
-        onSuccess: () => toast.success("Exercicio removido da ficha!"),
+        onSuccess: () => toast.success("Exercício removido da ficha!"),
         onError: (e) => {
           toast.error(
             <div>
@@ -309,7 +309,7 @@ export const WorkoutSheetsDetails = () => {
           <div>
             <h3 className={styles.sectionTitle}>Dados da ficha</h3>
             <p className={styles.sectionDescription}>
-              Atualize aluno, instrutor, nome, objetivo e periodo da ficha.
+              Atualize aluno, instrutor, nome, objetivo e período da ficha.
             </p>
           </div>
         </div>
@@ -381,7 +381,7 @@ export const WorkoutSheetsDetails = () => {
               onChange={setSheetField("goal")}
             />
             <TextField
-              label="Data de inicio"
+              label="Data de início"
               id="startDate"
               type="date"
               value={sheetForm.startDate}
@@ -395,7 +395,7 @@ export const WorkoutSheetsDetails = () => {
               onChange={setSheetField("endDate")}
             />
             <TextField
-              label="Observacoes"
+              label="Observações"
               id="notes"
               value={sheetForm.notes}
               onChange={setSheetField("notes")}
@@ -430,7 +430,7 @@ export const WorkoutSheetsDetails = () => {
       <section className={styles.card}>
         <div className={styles.sectionHeader}>
           <div>
-            <h3 className={styles.sectionTitle}>Exercicios da ficha</h3>
+            <h3 className={styles.sectionTitle}>Exercícios da ficha</h3>
             <p className={styles.sectionDescription}>
               Adicione ou edite series, repeticoes, carga, descanso e ordem.
             </p>
@@ -439,7 +439,7 @@ export const WorkoutSheetsDetails = () => {
 
         <div className={styles.compactGrid}>
           <Autocomplete
-            label="Exercicio"
+            label="Exercício"
             id="exerciseId"
             search={exerciseSearch}
             onSearchChange={(value) => {
@@ -459,7 +459,7 @@ export const WorkoutSheetsDetails = () => {
             }}
             options={exerciseOptions}
             loading={isFetchingExercises}
-            placeholder="Digite o nome do exercicio"
+            placeholder="Digite o nome do exercício"
           />
           <TextField
             label="Series"
@@ -502,7 +502,7 @@ export const WorkoutSheetsDetails = () => {
 
         <div className={styles.grid}>
           <TextField
-            label="Observacoes"
+            label="Observações"
             id="notes"
             value={exerciseForm.notes}
             onChange={setExerciseField("notes")}
@@ -526,7 +526,7 @@ export const WorkoutSheetsDetails = () => {
               !exerciseForm.executionOrder
             }
           >
-            {editingExerciseId ? "Salvar exercicio" : "Adicionar exercicio"}
+            {editingExerciseId ? "Salvar exercício" : "Adicionar exercício"}
           </Button>
         </div>
       </section>
@@ -535,7 +535,7 @@ export const WorkoutSheetsDetails = () => {
         <div className={styles.tableHeader}>
           <h3 className={styles.sectionTitle}>Ordem da ficha</h3>
           <p className={styles.sectionDescription}>
-            {sheetExercises?.totalElements ?? 0} exercicio(s) vinculados.
+            {sheetExercises?.totalElements ?? 0} exercício(s) vinculados.
           </p>
         </div>
 
@@ -543,13 +543,13 @@ export const WorkoutSheetsDetails = () => {
           <Table columns={exerciseColumns} minWidth="1040px">
             <TableHead>
               <TableRow>
-                <TableHeaderCell>Exercicio</TableHeaderCell>
+                <TableHeaderCell>Exercício</TableHeaderCell>
                 <TableHeaderCell>Series</TableHeaderCell>
                 <TableHeaderCell>Repeticoes</TableHeaderCell>
                 <TableHeaderCell>Carga</TableHeaderCell>
                 <TableHeaderCell>Descanso</TableHeaderCell>
-                <TableHeaderCell>Observacoes</TableHeaderCell>
-                <TableHeaderCell center>Acoes</TableHeaderCell>
+                <TableHeaderCell>Observações</TableHeaderCell>
+                <TableHeaderCell center>Ações</TableHeaderCell>
               </TableRow>
             </TableHead>
 
@@ -608,7 +608,7 @@ export const WorkoutSheetsDetails = () => {
               {!tableLoading && exerciseRows.length === 0 && (
                 <TableEmptyState
                   colSpan={7}
-                  message="Nenhum exercicio vinculado a esta ficha."
+                  message="Nenhum exercício vinculado a esta ficha."
                 />
               )}
             </TableBody>

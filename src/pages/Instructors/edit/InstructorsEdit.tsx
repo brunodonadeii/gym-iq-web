@@ -26,7 +26,7 @@ const formatDate = (value?: string) =>
         month: "2-digit",
         year: "numeric",
       })
-    : "Nao informado";
+    : "Não informado";
 
 export const InstructorsEdit = () => {
   const params = useParams({ strict: false });
@@ -103,7 +103,7 @@ export const InstructorsEdit = () => {
             <strong>#{details.instructorId}</strong>
           </div>
           <div className={styles.summaryItem}>
-            <span>Usuario</span>
+            <span>Usuário</span>
             <strong>#{details.userId}</strong>
           </div>
           <div className={styles.summaryItem}>

@@ -171,7 +171,7 @@ export const WorkoutSheetsPage = () => {
       <div className={styles.topBar}>
         <div className={styles.topBarActions}>
           <SelectField
-            label="Visao"
+            label="Visão"
             id="workoutSheetFilterMode"
             value={filterMode}
             onChange={(e) => {
@@ -285,10 +285,10 @@ export const WorkoutSheetsPage = () => {
                 <TableHeaderCell>Instrutor</TableHeaderCell>
                 <TableHeaderCell>Ficha</TableHeaderCell>
                 <TableHeaderCell>Objetivo</TableHeaderCell>
-                <TableHeaderCell>Inicio</TableHeaderCell>
+                <TableHeaderCell>Início</TableHeaderCell>
                 <TableHeaderCell>Fim</TableHeaderCell>
                 <TableHeaderCell center>Status</TableHeaderCell>
-                <TableHeaderCell center>Acoes</TableHeaderCell>
+                <TableHeaderCell center>Ações</TableHeaderCell>
               </TableRow>
             </TableHead>
 

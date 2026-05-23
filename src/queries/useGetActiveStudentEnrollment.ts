@@ -12,7 +12,7 @@ async function fetchActiveStudentEnrollment(
   }
 
   if (!response.ok) {
-    throw new Error("Erro ao buscar matricula ativa do aluno");
+    throw new Error("Erro ao buscar matrícula ativa do aluno");
   }
 
   return response.json();

@@ -59,7 +59,7 @@ export const PlansEdit = () => {
   return (
     <Form
       title="Dados do plano"
-      description="Informações base para identificar criar um plano."
+      description="Informações base para identificar e criar um plano."
       loading={isLoading}
       actions={
         <>

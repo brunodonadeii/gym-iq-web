@@ -91,7 +91,7 @@ export const ExercisesPage = () => {
     deleteExercise(
       { id },
       {
-        onSuccess: () => toast.success("Exercicio inativado com sucesso!"),
+        onSuccess: () => toast.success("Exercício inativado com sucesso!"),
         onError: (e) => {
           toast.error(
             <div>
@@ -110,7 +110,7 @@ export const ExercisesPage = () => {
       <div className={styles.topBar}>
         <SearchBar
           icon={<Search size={15} />}
-          placeholder="Buscar exercicio"
+          placeholder="Buscar exercício"
           onChange={(e) => {
             setSearch(e.target.value);
             setPage(0);
@@ -137,7 +137,7 @@ export const ExercisesPage = () => {
             leftIcon={<PlusCircle size={18} />}
             onClick={() => navigate({ to: "/exercises/create" })}
           >
-            Novo exercicio
+            Novo exercício
           </Button>
         </div>
       </div>
@@ -146,7 +146,7 @@ export const ExercisesPage = () => {
         <div className={styles.sectionHeader}>
           <h3 className={styles.sectionTitle}>Lista principal</h3>
           <p className={styles.sectionDescription}>
-            {data?.totalElements ?? 0} exercicio(s) retornado(s) pelo endpoint.
+            {data?.totalElements ?? 0} exercício(s) retornado(s) pelo endpoint.
           </p>
         </div>
 
@@ -156,9 +156,9 @@ export const ExercisesPage = () => {
               <TableRow>
                 <TableHeaderCell>Nome</TableHeaderCell>
                 <TableHeaderCell>Grupo muscular</TableHeaderCell>
-                <TableHeaderCell>Descricao</TableHeaderCell>
+                <TableHeaderCell>Descrição</TableHeaderCell>
                 <TableHeaderCell center>Status</TableHeaderCell>
-                <TableHeaderCell center>Acoes</TableHeaderCell>
+                <TableHeaderCell center>Ações</TableHeaderCell>
               </TableRow>
             </TableHead>
 
@@ -224,7 +224,7 @@ export const ExercisesPage = () => {
               {!tableLoading && exercises.length === 0 && (
                 <TableEmptyState
                   colSpan={5}
-                  message="Nenhum exercicio encontrado."
+                  message="Nenhum exercício encontrado."
                 />
               )}
             </TableBody>

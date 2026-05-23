@@ -27,7 +27,7 @@ const getClassName = (...classNames: Array<string | false | undefined>) =>
 export const Dropdown = ({
   trigger,
   items,
-  triggerLabel = "Acoes",
+  triggerLabel = "Ações",
   align = "end",
   sideOffset = 8,
   contentClassName,

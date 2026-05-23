@@ -60,18 +60,18 @@ const statusLabels: Record<PaymentStatus, string> = {
 const paymentMethodLabels: Record<string, string> = {
   PIX: "PIX",
   CASH: "Dinheiro",
-  CREDIT_CARD: "Cartao de credito",
-  DEBIT_CARD: "Cartao de debito",
-  BANK_TRANSFER: "Transferencia",
+  CREDIT_CARD: "Cartão de crédito",
+  DEBIT_CARD: "Cartão de débito",
+  BANK_TRANSFER: "Transferência",
 };
 
 const paymentMethodOptions = [
-  { label: "Nao informar", value: "" },
+  { label: "Não informar", value: "" },
   { label: "PIX", value: "PIX" },
   { label: "Dinheiro", value: "CASH" },
-  { label: "Cartao de credito", value: "CREDIT_CARD" },
-  { label: "Cartao de debito", value: "DEBIT_CARD" },
-  { label: "Transferencia bancaria", value: "BANK_TRANSFER" },
+  { label: "Cartão de crédito", value: "CREDIT_CARD" },
+  { label: "Cartão de débito", value: "DEBIT_CARD" },
+  { label: "Transferência bancária", value: "BANK_TRANSFER" },
 ];
 
 const formatDate = (value?: string | null) =>
@@ -81,7 +81,7 @@ const formatDate = (value?: string | null) =>
         month: "2-digit",
         year: "numeric",
       })
-    : "Nao informado";
+    : "Não informado";
 
 const formatCurrency = (value?: number) =>
   new Intl.NumberFormat("pt-BR", {
@@ -177,7 +177,7 @@ export const PaymentsPage = () => {
 
   const enrollmentOptions = [
     {
-      label: "Selecione uma matricula",
+      label: "Selecione uma matrícula",
       value: "",
       disabled: filterMode === "enrollment",
     },
@@ -306,15 +306,15 @@ export const PaymentsPage = () => {
     <div className={styles.page}>
       <div className={styles.topBar}>
         <div className={styles.topBarContent}>
-          <strong className={styles.topBarTitle}>Filtros e acoes</strong>
+          <strong className={styles.topBarTitle}>Filtros e ações</strong>
           <span className={styles.topBarSubtitle}>
-            Combine visao por aluno, matricula, atrasados e status financeiro.
+            Combine visão por aluno, matrícula, atrasados e status financeiro.
           </span>
         </div>
 
         <div className={styles.topBarActions}>
           <SelectField
-            label="Visao"
+            label="Visão"
             id="paymentFilterMode"
             value={filterMode}
             onChange={(e) => {
@@ -327,7 +327,7 @@ export const PaymentsPage = () => {
             options={[
               { label: "Todos", value: "all" },
               { label: "Por aluno", value: "student" },
-              { label: "Por matricula", value: "enrollment" },
+              { label: "Por matrícula", value: "enrollment" },
               { label: "Atrasados", value: "overdue" },
             ]}
             containerProps={{ className: styles.filterField }}
@@ -380,7 +380,7 @@ export const PaymentsPage = () => {
 
           {filterMode === "enrollment" && (
             <SelectField
-              label="Matricula"
+              label="Matrícula"
               id="paymentEnrollmentFilter"
               value={enrollmentId}
               onChange={(e) => {
@@ -422,7 +422,7 @@ export const PaymentsPage = () => {
                 <TableHeaderCell>Valor</TableHeaderCell>
                 <TableHeaderCell>Vencimento</TableHeaderCell>
                 <TableHeaderCell center>Status</TableHeaderCell>
-                <TableHeaderCell center>Acoes</TableHeaderCell>
+                <TableHeaderCell center>Ações</TableHeaderCell>
               </TableRow>
             </TableHead>
 
@@ -554,13 +554,13 @@ export const PaymentsPage = () => {
               />
 
               <TextField
-                label="Observacoes"
+                label="Observações"
                 id="payNotes"
                 value={payForm.notes}
                 onChange={(e) =>
                   setPayForm((prev) => ({ ...prev, notes: e.target.value }))
                 }
-                placeholder="Pago na recepcao"
+                placeholder="Pago na recepção"
               />
             </div>
 

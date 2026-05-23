@@ -79,7 +79,7 @@ export const Autocomplete = ({
               onClear();
               setOpen(false);
             }}
-            aria-label="Limpar selecao"
+            aria-label="Limpar seleção"
           >
             <X size={15} />
           </button>

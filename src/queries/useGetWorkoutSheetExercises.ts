@@ -16,7 +16,7 @@ async function fetchWorkoutSheetExercises(
   );
 
   if (!response.ok) {
-    throw new Error("Erro ao buscar exercicios da ficha");
+    throw new Error("Erro ao buscar exercícios da ficha");
   }
 
   return response.json();

@@ -19,7 +19,7 @@ async function fetchStudentEnrollments(
   );
 
   if (!response.ok) {
-    throw new Error("Erro ao buscar matriculas do aluno");
+    throw new Error("Erro ao buscar matrículas do aluno");
   }
 
   return response.json();

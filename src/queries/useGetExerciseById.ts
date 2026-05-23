@@ -6,7 +6,7 @@ async function fetchExercise(id: string): Promise<Exercise> {
   const response = await authFetch(`exercises/${id}`);
 
   if (!response.ok) {
-    throw new Error("Erro ao buscar exercicio");
+    throw new Error("Erro ao buscar exercício");
   }
 
   return response.json();

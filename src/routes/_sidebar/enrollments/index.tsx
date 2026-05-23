@@ -4,7 +4,7 @@ import { createFileRoute } from "@tanstack/react-router";
 export const Route = createFileRoute("/_sidebar/enrollments/")({
   component: EnrollmentsPage,
   staticData: {
-    breadcrumb: "Matriculas",
-    headline: "Listagem de matriculas",
+    breadcrumb: "Matrículas",
+    headline: "Listagem de matrículas",
   },
 });

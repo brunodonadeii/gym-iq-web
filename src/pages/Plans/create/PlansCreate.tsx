@@ -47,7 +47,7 @@ export const PlansCreate = () => {
   return (
     <Form
       title="Dados do plano"
-      description="Informações base para identificar criar um plano."
+      description="Informações base para identificar e criar um plano."
       actions={
         <>
           <Button

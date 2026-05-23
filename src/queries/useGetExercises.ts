@@ -26,7 +26,7 @@ export async function fetchExercises(
   const response = await authFetch(`${baseUrl}?${query}`);
 
   if (!response.ok) {
-    throw new Error("Erro ao buscar exercicios");
+    throw new Error("Erro ao buscar exercícios");
   }
 
   return response.json();

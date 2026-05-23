@@ -18,7 +18,7 @@ async function fetchEnrollments(
   );
 
   if (!response.ok) {
-    throw new Error("Erro ao buscar matriculas");
+    throw new Error("Erro ao buscar matrículas");
   }
 
   return response.json();

@@ -58,7 +58,7 @@ const formatDate = (value?: string) =>
         month: "2-digit",
         year: "numeric",
       })
-    : "Nao informado";
+    : "Não informado";
 
 const resolveStudentName = (enrollment: Enrollment) =>
   enrollment.student?.name ??
@@ -180,7 +180,7 @@ export const EnrollmentsPage = () => {
     if (enrollment.status === "CANCELED") {
       return [
         {
-          label: "Renovacao indisponivel para cancelada",
+          label: "Renovação indisponível para cancelada",
           icon: <RefreshCcw size={15} />,
           disabled: true,
         },
@@ -226,7 +226,7 @@ export const EnrollmentsPage = () => {
           <strong className={styles.topBarTitle}>Filtro por aluno</strong>
           <span className={styles.topBarSubtitle}>
             Escolha um aluno para ver histórico e matrícula ativa, ou mantenha a
-            visão geral.
+            visÃƒÆ’Ã‚Â£o geral.
           </span>
         </div>
 
@@ -310,14 +310,14 @@ export const EnrollmentsPage = () => {
                     {summaryPlanLabel ?? resolvePlanName(activeEnrollment)}
                   </p>
                   <p className={styles.panelHint}>
-                    Vigência ate {formatDate(activeEnrollment.endDate)}
+                    Vigência até {formatDate(activeEnrollment.endDate)}
                   </p>
                 </>
               ) : (
                 <>
                   <p className={styles.panelValue}>Nenhuma matrícula ativa</p>
                   <p className={styles.panelHint}>
-                    Esse aluno não possui contrato ativo no momento.
+                    Esse aluno nÃƒÆ’Ã‚Â£o possui contrato ativo no momento.
                   </p>
                 </>
               )}
@@ -332,7 +332,7 @@ export const EnrollmentsPage = () => {
             <h3 className={styles.sectionTitle}>Lista principal</h3>
             <p className={styles.sectionDescription}>
               Consulte aluno, plano, vigência, status de acesso e data de
-              criação em uma visão única. Total encontrado:{" "}
+              criaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o em uma visÃƒÆ’Ã‚Â£o ÃƒÆ’Ã‚Âºnica. Total encontrado:{" "}
               {currentPage?.totalElements ?? 0}.
             </p>
           </div>
@@ -345,11 +345,11 @@ export const EnrollmentsPage = () => {
                 <TableHeaderCell>Aluno</TableHeaderCell>
                 <TableHeaderCell>E-mail</TableHeaderCell>
                 <TableHeaderCell>Plano</TableHeaderCell>
-                <TableHeaderCell>Início</TableHeaderCell>
+                <TableHeaderCell>InÃƒÆ’Ã‚Â­cio</TableHeaderCell>
                 <TableHeaderCell>Fim</TableHeaderCell>
                 <TableHeaderCell center>Status</TableHeaderCell>
-                <TableHeaderCell>Criação</TableHeaderCell>
-                <TableHeaderCell center>Ações</TableHeaderCell>
+                <TableHeaderCell>CriaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o</TableHeaderCell>
+                <TableHeaderCell center>AÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes</TableHeaderCell>
               </TableRow>
             </TableHead>
 
@@ -389,7 +389,7 @@ export const EnrollmentsPage = () => {
               {!tableLoading && enrollments.length === 0 && (
                 <TableEmptyState
                   colSpan={8}
-                  message="Nenhuma matricula encontrada."
+                  message="Nenhuma matrícula encontrada."
                 />
               )}
             </TableBody>
