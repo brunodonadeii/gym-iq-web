@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as CheckInRouteImport } from './routes/check-in'
 import { Route as SidebarRouteRouteImport } from './routes/_sidebar/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SidebarWorkoutSheetsRouteImport } from './routes/_sidebar/workout-sheets'
@@ -45,6 +46,11 @@ import { Route as SidebarAdminUsersCreateRouteImport } from './routes/_sidebar/a
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckInRoute = CheckInRouteImport.update({
+  id: '/check-in',
+  path: '/check-in',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SidebarRouteRoute = SidebarRouteRouteImport.update({
@@ -213,6 +219,7 @@ const SidebarAdminUsersCreateRoute = SidebarAdminUsersCreateRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/check-in': typeof CheckInRoute
   '/login': typeof LoginRoute
   '/admin-users': typeof SidebarAdminUsersRouteWithChildren
   '/dashboard': typeof SidebarDashboardRoute
@@ -246,6 +253,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/check-in': typeof CheckInRoute
   '/login': typeof LoginRoute
   '/admin-users': typeof SidebarAdminUsersRouteWithChildren
   '/dashboard': typeof SidebarDashboardRoute
@@ -274,6 +282,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_sidebar': typeof SidebarRouteRouteWithChildren
+  '/check-in': typeof CheckInRoute
   '/login': typeof LoginRoute
   '/_sidebar/admin-users': typeof SidebarAdminUsersRouteWithChildren
   '/_sidebar/dashboard': typeof SidebarDashboardRoute
@@ -309,6 +318,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/check-in'
     | '/login'
     | '/admin-users'
     | '/dashboard'
@@ -342,6 +352,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/check-in'
     | '/login'
     | '/admin-users'
     | '/dashboard'
@@ -369,6 +380,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_sidebar'
+    | '/check-in'
     | '/login'
     | '/_sidebar/admin-users'
     | '/_sidebar/dashboard'
@@ -404,6 +416,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   SidebarRouteRoute: typeof SidebarRouteRouteWithChildren
+  CheckInRoute: typeof CheckInRoute
   LoginRoute: typeof LoginRoute
 }
 
@@ -414,6 +427,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/check-in': {
+      id: '/check-in'
+      path: '/check-in'
+      fullPath: '/check-in'
+      preLoaderRoute: typeof CheckInRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_sidebar': {
@@ -783,6 +803,7 @@ const SidebarRouteRouteWithChildren = SidebarRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   SidebarRouteRoute: SidebarRouteRouteWithChildren,
+  CheckInRoute: CheckInRoute,
   LoginRoute: LoginRoute,
 }
 export const routeTree = rootRouteImport
