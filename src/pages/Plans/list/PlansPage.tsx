@@ -13,16 +13,16 @@ import {
   TableRow,
   TableSkeletonRows,
 } from "@/components/Table/Table";
+import { useDeletePlan } from "@/mutations/useDeletePlan";
+import { useGetPlans } from "@/queries/useGetPlans";
 import { useNavigate } from "@tanstack/react-router";
 import { Pencil, Trash2, UserPlus } from "lucide-react";
-import styles from "./Plans.module.css";
-import { useGetPlans } from "@/queries/useGetPlans";
-import { useDeletePlan } from "@/mutations/useDeletePlan";
 import { useMemo, useState } from "react";
+import styles from "./Plans.module.css";
 
 type PlanStatusFilter = "active" | "inactive" | "all";
 
-const studentColumns = [
+const planColumns = [
   { width: "20%" },
   { width: "20%" },
   { width: "20%" },
@@ -113,13 +113,13 @@ export const PlansPage = () => {
         </div>
 
         <div className={styles.tableWrap}>
-          <Table columns={studentColumns}>
+          <Table columns={planColumns}>
             <TableHead>
               <TableRow>
                 <TableHeaderCell>Nome</TableHeaderCell>
                 <TableHeaderCell>Descrição</TableHeaderCell>
                 <TableHeaderCell>Valor mensal</TableHeaderCell>
-                <TableHeaderCell>Duração em dias</TableHeaderCell>
+                <TableHeaderCell>Duração em meses</TableHeaderCell>
                 <TableHeaderCell center>Status</TableHeaderCell>
                 <TableHeaderCell center>Ações</TableHeaderCell>
               </TableRow>
@@ -129,23 +129,25 @@ export const PlansPage = () => {
               {tableLoading && <TableSkeletonRows columns={6} />}
 
               {!tableLoading &&
-                plans.map((d) => (
-                  <TableRow key={d.planId}>
+                plans.map((plan) => (
+                  <TableRow key={plan.planId}>
                     <TableCell>
                       <div className={styles.nameCell}>
-                        <span className={styles.namePrimary}>{d.name}</span>
+                        <span className={styles.namePrimary}>{plan.name}</span>
                       </div>
                     </TableCell>
-                    <TableCell>{d.description}</TableCell>
-                    <TableCell>R${d.monthlyPrice}</TableCell>
-                    <TableCell>{d.durationDays} dias</TableCell>
+                    <TableCell>{plan.description}</TableCell>
+                    <TableCell>R${plan.monthlyPrice}</TableCell>
+                    <TableCell>{plan.durationMonths} meses</TableCell>
                     <TableCell center>
                       <span
                         className={`${styles.statusBadge} ${
-                          d.active ? styles.statusActive : styles.statusInactive
+                          plan.active
+                            ? styles.statusActive
+                            : styles.statusInactive
                         }`}
                       >
-                        {d.active === true ? "Ativo" : "Inativo"}
+                        {plan.active ? "Ativo" : "Inativo"}
                       </span>
                     </TableCell>
                     <TableCell center>
@@ -157,7 +159,7 @@ export const PlansPage = () => {
                             onSelect: () =>
                               navigate({
                                 to: "/plans/$planId",
-                                params: { planId: String(d.planId) },
+                                params: { planId: String(plan.planId) },
                               }),
                           },
                           {
@@ -165,7 +167,7 @@ export const PlansPage = () => {
                             icon: <Trash2 size={15} />,
                             danger: true,
                             onSelect: () => {
-                              deletePlan({ id: String(d.planId) });
+                              deletePlan({ id: String(plan.planId) });
                             },
                           },
                         ]}

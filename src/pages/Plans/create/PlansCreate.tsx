@@ -1,20 +1,19 @@
 import { Button } from "@/components/Button/Button";
-import { TextField } from "@/components/TextField/TextField";
-import { useState } from "react";
-import { useNavigate } from "@tanstack/react-router";
-import { toast } from "sonner";
-import { useFormInputs } from "@/hooks/useFormInputs";
 import { Form } from "@/components/Form/Form";
-import type { PlanFormData } from "../types";
-import { formatCurrencyInput, parseCurrencyInput } from "@/utils/currency";
-import styles from "./PlansCreate.module.css";
-
+import { TextField } from "@/components/TextField/TextField";
+import { useFormInputs } from "@/hooks/useFormInputs";
 import { useCreatePlan } from "@/mutations/useCreatePlan";
+import type { PlanFormData } from "@/pages/Plans/types";
+import { formatCurrencyInput, parseCurrencyInput } from "@/utils/currency";
+import { useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
+import { toast } from "sonner";
+import styles from "./PlansCreate.module.css";
 
 const EMPTY_FORM: PlanFormData = {
   name: "",
   description: "",
-  durationDays: 0,
+  durationMonths: 1,
   monthlyPrice: 0,
 };
 
@@ -29,7 +28,8 @@ export const PlansCreate = () => {
       { data },
       {
         onSuccess: () => {
-          toast.success("Plano editado com sucesso!");
+          toast.success("Plano criado com sucesso!");
+          navigate({ to: "/plans" });
         },
         onError: (e) => {
           toast.error(
@@ -98,10 +98,10 @@ export const PlansCreate = () => {
           required
         />
         <TextField
-          label="Duração em dias"
-          id="durationDays"
-          value={data.durationDays}
-          onChange={set("durationDays")}
+          label="Duração em meses"
+          id="durationMonths"
+          value={data.durationMonths}
+          onChange={set("durationMonths")}
           required
         />
       </div>

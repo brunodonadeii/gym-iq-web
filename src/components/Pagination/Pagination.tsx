@@ -63,20 +63,20 @@ export const Pagination = ({
             className={styles.navButton}
             onClick={() => onPageChange(activePage - 1)}
             disabled={loading || isFirstPage}
-            aria-label="Pagina anterior"
+            aria-label="Página anterior"
           >
             <ChevronLeft size={16} />
           </button>
 
           <span className={styles.pageIndicator}>
-            Pagina {activePage + 1} de {totalPages}
+            Página {activePage + 1} de {totalPages}
           </span>
 
           <button
             className={styles.navButton}
             onClick={() => onPageChange(activePage + 1)}
             disabled={loading || isLastPage}
-            aria-label="Proxima pagina"
+            aria-label="Próxima página"
           >
             <ChevronRight size={16} />
           </button>

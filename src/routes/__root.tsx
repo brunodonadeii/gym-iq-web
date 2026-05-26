@@ -1,4 +1,5 @@
 import { Skeleton } from "@/components/Skeleton/Skeleton";
+import type { UserRole } from "@/utils/auth";
 import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { Suspense } from "react";
@@ -7,6 +8,8 @@ interface RouterContext {
   auth: {
     isAuthenticated: boolean;
     token: string | null;
+    role: UserRole | null;
+    hasAnyRole: (roles: UserRole[]) => boolean;
   };
 }
 

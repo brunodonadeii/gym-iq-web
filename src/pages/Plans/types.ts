@@ -3,7 +3,7 @@ export type Plan = {
   name: string;
   description: string;
   monthlyPrice: number;
-  durationDays: number;
+  durationMonths: number;
   active: boolean;
   createdAt: string;
 };
@@ -12,5 +12,5 @@ export type PlanFormData = {
   name: string;
   description: string;
   monthlyPrice: number;
-  durationDays: number;
+  durationMonths: number;
 };

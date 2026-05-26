@@ -51,7 +51,7 @@ export const EnrollmentsCreate = () => {
       .map((plan) => ({
         label: plan.name,
         value: String(plan.planId),
-        description: `R$ ${plan.monthlyPrice} - ${plan.durationDays} dias`,
+        description: `R$ ${plan.monthlyPrice} - ${plan.durationMonths} meses`,
       })) ?? [];
 
   const handleSubmit = () => {

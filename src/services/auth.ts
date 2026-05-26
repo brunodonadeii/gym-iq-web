@@ -8,6 +8,7 @@ export type LoginRequest = {
 export type AuthResponse = {
   token: string;
   type: string;
+  role?: string;
 };
 
 // api/auth.ts
@@ -22,6 +23,11 @@ export async function login(data: LoginRequest): Promise<AuthResponse> {
 
   const jsonData = await res.json();
   localStorage.setItem("token", jsonData.token);
+  localStorage.removeItem("role");
+
+  if (jsonData.role) {
+    localStorage.setItem("role", jsonData.role);
+  }
 
   return jsonData;
 }

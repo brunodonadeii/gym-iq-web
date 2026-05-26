@@ -73,7 +73,7 @@ export const PresenceCheckInPage = () => {
         onError: (error) => {
           setErrorMessage(
             resolveErrorMessage(error) ??
-              "N\u00e3o foi poss\u00edvel registrar o check-in.",
+              "Não foi possível registrar o check-in.",
           );
         },
       },
@@ -145,7 +145,7 @@ export const PresenceCheckInPage = () => {
                 Entrada registrada
               </strong>
               <p className={styles.statusText}>
-                {presence.studentName} entrou {"\u00e0s "}
+                {presence.studentName} entrou às{" "}
                 {formatDateTime(presence.checkInAt)}.
               </p>
               <button
@@ -163,7 +163,7 @@ export const PresenceCheckInPage = () => {
             <div className={`${styles.status} ${styles.statusError}`}>
               <strong className={styles.statusTitle}>
                 <AlertCircle size={28} />
-                {"Check-in n\u00e3o registrado"}
+                Check-in não registrado
               </strong>
               <p className={styles.statusText}>{errorMessage}</p>
             </div>

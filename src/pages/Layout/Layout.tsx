@@ -1,5 +1,6 @@
 import { Header } from "@/components/Header/Header";
 import { Sidebar } from "@/components/Sidebar/Sidebar";
+import { auth, type UserRole } from "@/utils/auth";
 import { Outlet } from "@tanstack/react-router";
 import {
   Activity,
@@ -11,9 +12,17 @@ import {
   ShieldPlus,
   Users,
 } from "lucide-react";
+import type { ReactNode } from "react";
 import styles from "./Layout.module.css";
 
-const sidebarItems = [
+type SidebarItem = {
+  label: string;
+  icon: ReactNode;
+  to: string;
+  roles?: UserRole[];
+};
+
+const sidebarItems: SidebarItem[] = [
   {
     label: "Alunos",
     icon: <Users size={20} />,
@@ -53,13 +62,18 @@ const sidebarItems = [
     label: "Usuários",
     icon: <ShieldPlus size={20} />,
     to: "/admin-users/create",
+    roles: ["ADMIN"],
   },
 ];
 
 export function Layout() {
+  const visibleSidebarItems = sidebarItems.filter(
+    (item) => !item.roles || auth.hasAnyRole(item.roles),
+  );
+
   return (
     <div className={styles.shell}>
-      <Sidebar items={sidebarItems} />
+      <Sidebar items={visibleSidebarItems} />
 
       <main className={styles.main}>
         <div className={styles.content}>

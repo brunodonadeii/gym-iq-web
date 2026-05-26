@@ -9,6 +9,8 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as UnauthorizedRouteImport } from './routes/unauthorized'
+import { Route as StudentRouteImport } from './routes/student'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as CheckInRouteImport } from './routes/check-in'
 import { Route as SidebarRouteRouteImport } from './routes/_sidebar/route'
@@ -43,6 +45,16 @@ import { Route as SidebarEnrollmentsCreateRouteImport } from './routes/_sidebar/
 import { Route as SidebarEnrollmentsEnrollmentIdRouteImport } from './routes/_sidebar/enrollments/$enrollmentId'
 import { Route as SidebarAdminUsersCreateRouteImport } from './routes/_sidebar/admin-users/create'
 
+const UnauthorizedRoute = UnauthorizedRouteImport.update({
+  id: '/unauthorized',
+  path: '/unauthorized',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StudentRoute = StudentRouteImport.update({
+  id: '/student',
+  path: '/student',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -221,6 +233,8 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/check-in': typeof CheckInRoute
   '/login': typeof LoginRoute
+  '/student': typeof StudentRoute
+  '/unauthorized': typeof UnauthorizedRoute
   '/admin-users': typeof SidebarAdminUsersRouteWithChildren
   '/dashboard': typeof SidebarDashboardRoute
   '/enrollments': typeof SidebarEnrollmentsRouteWithChildren
@@ -255,6 +269,8 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/check-in': typeof CheckInRoute
   '/login': typeof LoginRoute
+  '/student': typeof StudentRoute
+  '/unauthorized': typeof UnauthorizedRoute
   '/admin-users': typeof SidebarAdminUsersRouteWithChildren
   '/dashboard': typeof SidebarDashboardRoute
   '/admin-users/create': typeof SidebarAdminUsersCreateRoute
@@ -284,6 +300,8 @@ export interface FileRoutesById {
   '/_sidebar': typeof SidebarRouteRouteWithChildren
   '/check-in': typeof CheckInRoute
   '/login': typeof LoginRoute
+  '/student': typeof StudentRoute
+  '/unauthorized': typeof UnauthorizedRoute
   '/_sidebar/admin-users': typeof SidebarAdminUsersRouteWithChildren
   '/_sidebar/dashboard': typeof SidebarDashboardRoute
   '/_sidebar/enrollments': typeof SidebarEnrollmentsRouteWithChildren
@@ -320,6 +338,8 @@ export interface FileRouteTypes {
     | '/'
     | '/check-in'
     | '/login'
+    | '/student'
+    | '/unauthorized'
     | '/admin-users'
     | '/dashboard'
     | '/enrollments'
@@ -354,6 +374,8 @@ export interface FileRouteTypes {
     | '/'
     | '/check-in'
     | '/login'
+    | '/student'
+    | '/unauthorized'
     | '/admin-users'
     | '/dashboard'
     | '/admin-users/create'
@@ -382,6 +404,8 @@ export interface FileRouteTypes {
     | '/_sidebar'
     | '/check-in'
     | '/login'
+    | '/student'
+    | '/unauthorized'
     | '/_sidebar/admin-users'
     | '/_sidebar/dashboard'
     | '/_sidebar/enrollments'
@@ -418,10 +442,26 @@ export interface RootRouteChildren {
   SidebarRouteRoute: typeof SidebarRouteRouteWithChildren
   CheckInRoute: typeof CheckInRoute
   LoginRoute: typeof LoginRoute
+  StudentRoute: typeof StudentRoute
+  UnauthorizedRoute: typeof UnauthorizedRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/unauthorized': {
+      id: '/unauthorized'
+      path: '/unauthorized'
+      fullPath: '/unauthorized'
+      preLoaderRoute: typeof UnauthorizedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/student': {
+      id: '/student'
+      path: '/student'
+      fullPath: '/student'
+      preLoaderRoute: typeof StudentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -805,6 +845,8 @@ const rootRouteChildren: RootRouteChildren = {
   SidebarRouteRoute: SidebarRouteRouteWithChildren,
   CheckInRoute: CheckInRoute,
   LoginRoute: LoginRoute,
+  StudentRoute: StudentRoute,
+  UnauthorizedRoute: UnauthorizedRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

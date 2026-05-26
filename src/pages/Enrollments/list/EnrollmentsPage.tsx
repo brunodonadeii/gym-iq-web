@@ -2,6 +2,7 @@ import { Autocomplete } from "@/components/Autocomplete/Autocomplete";
 import { Button } from "@/components/Button/Button";
 import { Dropdown, type DropdownItem } from "@/components/Dropdown/Dropdown";
 import { Pagination } from "@/components/Pagination/Pagination";
+import { Skeleton } from "@/components/Skeleton/Skeleton";
 import {
   Table,
   TableBody,
@@ -12,15 +13,14 @@ import {
   TableRow,
   TableSkeletonRows,
 } from "@/components/Table/Table";
-import { Skeleton } from "@/components/Skeleton/Skeleton";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import { useUpdateEnrollmentStatus } from "@/mutations/useUpdateEnrollmentStatus";
 import type { Enrollment, EnrollmentStatus } from "@/pages/Enrollments/types";
 import { useGetActiveStudentEnrollment } from "@/queries/useGetActiveStudentEnrollment";
 import { useGetEnrollments } from "@/queries/useGetEnrollments";
 import { useGetPlans } from "@/queries/useGetPlans";
-import { useGetStudentOptions } from "@/queries/useGetStudentOptions";
 import { useGetStudentEnrollments } from "@/queries/useGetStudentEnrollments";
-import { useUpdateEnrollmentStatus } from "@/mutations/useUpdateEnrollmentStatus";
+import { useGetStudentOptions } from "@/queries/useGetStudentOptions";
 import { useNavigate } from "@tanstack/react-router";
 import {
   BadgeCheck,
@@ -66,7 +66,7 @@ const resolveStudentName = (enrollment: Enrollment) =>
   `Aluno #${enrollment.studentId}`;
 
 const resolveStudentEmail = (enrollment: Enrollment) =>
-  enrollment.student?.email ?? enrollment.studentEmail ?? "Sem email";
+  enrollment.student?.email ?? enrollment.studentEmail ?? "Sem e-mail";
 
 const resolvePlanName = (enrollment: Enrollment) =>
   enrollment.plan?.name ?? enrollment.planName ?? `Plano #${enrollment.planId}`;
@@ -226,7 +226,7 @@ export const EnrollmentsPage = () => {
           <strong className={styles.topBarTitle}>Filtro por aluno</strong>
           <span className={styles.topBarSubtitle}>
             Escolha um aluno para ver histórico e matrícula ativa, ou mantenha a
-            visÃƒÆ’Ã‚Â£o geral.
+            visão geral.
           </span>
         </div>
 
@@ -269,7 +269,7 @@ export const EnrollmentsPage = () => {
             leftIcon={<PlusCircle size={18} />}
             onClick={() => navigate({ to: "/enrollments/create" })}
           >
-            Nova Matrícula
+            Nova matrícula
           </Button>
         </div>
       </div>
@@ -283,7 +283,7 @@ export const EnrollmentsPage = () => {
                 {selectedStudentName || `Aluno #${selectedStudentId}`}
               </h3>
               <p className={styles.summaryDescription}>
-                {selectedStudentEmail || "Sem email informado"}
+                {selectedStudentEmail || "Sem e-mail informado"}
               </p>
             </div>
             <div className={styles.summaryBadge}>
@@ -317,7 +317,7 @@ export const EnrollmentsPage = () => {
                 <>
                   <p className={styles.panelValue}>Nenhuma matrícula ativa</p>
                   <p className={styles.panelHint}>
-                    Esse aluno nÃƒÆ’Ã‚Â£o possui contrato ativo no momento.
+                    Esse aluno não possui contrato ativo no momento.
                   </p>
                 </>
               )}
@@ -332,7 +332,7 @@ export const EnrollmentsPage = () => {
             <h3 className={styles.sectionTitle}>Lista principal</h3>
             <p className={styles.sectionDescription}>
               Consulte aluno, plano, vigência, status de acesso e data de
-              criaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o em uma visÃƒÆ’Ã‚Â£o ÃƒÆ’Ã‚Âºnica. Total encontrado:{" "}
+              criação em uma visão única. Total encontrado:{" "}
               {currentPage?.totalElements ?? 0}.
             </p>
           </div>
@@ -345,11 +345,11 @@ export const EnrollmentsPage = () => {
                 <TableHeaderCell>Aluno</TableHeaderCell>
                 <TableHeaderCell>E-mail</TableHeaderCell>
                 <TableHeaderCell>Plano</TableHeaderCell>
-                <TableHeaderCell>InÃƒÆ’Ã‚Â­cio</TableHeaderCell>
+                <TableHeaderCell>Início</TableHeaderCell>
                 <TableHeaderCell>Fim</TableHeaderCell>
                 <TableHeaderCell center>Status</TableHeaderCell>
-                <TableHeaderCell>CriaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o</TableHeaderCell>
-                <TableHeaderCell center>AÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes</TableHeaderCell>
+                <TableHeaderCell>Criação</TableHeaderCell>
+                <TableHeaderCell center>Ações</TableHeaderCell>
               </TableRow>
             </TableHead>
 

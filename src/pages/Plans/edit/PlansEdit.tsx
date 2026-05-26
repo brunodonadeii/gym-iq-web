@@ -1,20 +1,20 @@
 import { Button } from "@/components/Button/Button";
-import { TextField } from "@/components/TextField/TextField";
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "@tanstack/react-router";
-import { toast } from "sonner";
-import { useFormInputs } from "@/hooks/useFormInputs";
 import { Form } from "@/components/Form/Form";
-import type { PlanFormData } from "../types";
-import { useGetPlanById } from "@/queries/useGetPlanById";
+import { TextField } from "@/components/TextField/TextField";
+import { useFormInputs } from "@/hooks/useFormInputs";
 import { useUpdatePlan } from "@/mutations/useUpdatePlan";
+import type { PlanFormData } from "@/pages/Plans/types";
+import { useGetPlanById } from "@/queries/useGetPlanById";
 import { formatCurrencyInput, parseCurrencyInput } from "@/utils/currency";
+import { useNavigate, useParams } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import styles from "./PlansEdit.module.css";
 
 const EMPTY_FORM: PlanFormData = {
   name: "",
   description: "",
-  durationDays: 0,
+  durationMonths: 1,
   monthlyPrice: 0,
 };
 
@@ -31,7 +31,10 @@ export const PlansEdit = () => {
     if (details) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setData({
-        ...details,
+        name: details.name,
+        description: details.description,
+        monthlyPrice: details.monthlyPrice,
+        durationMonths: details.durationMonths,
       });
     }
   }, [details]);
@@ -42,6 +45,7 @@ export const PlansEdit = () => {
       {
         onSuccess: () => {
           toast.success("Plano editado com sucesso!");
+          navigate({ to: "/plans" });
         },
         onError: (e) => {
           toast.error(
@@ -59,7 +63,7 @@ export const PlansEdit = () => {
   return (
     <Form
       title="Dados do plano"
-      description="Informações base para identificar e criar um plano."
+      description="Informações base para identificar e editar um plano."
       loading={isLoading}
       actions={
         <>
@@ -111,10 +115,10 @@ export const PlansEdit = () => {
           required
         />
         <TextField
-          label="Duração em dias"
-          id="durationDays"
-          value={data.durationDays}
-          onChange={set("durationDays")}
+          label="Duração em meses"
+          id="durationMonths"
+          value={data.durationMonths}
+          onChange={set("durationMonths")}
           required
         />
       </div>

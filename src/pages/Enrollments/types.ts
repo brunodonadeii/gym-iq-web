@@ -12,7 +12,7 @@ export type Enrollment = {
   status: EnrollmentStatus;
   createdAt: string;
   student?: Pick<Student, "studentId" | "name" | "email">;
-  plan?: Pick<Plan, "planId" | "name" | "durationDays" | "monthlyPrice">;
+  plan?: Pick<Plan, "planId" | "name" | "durationMonths" | "monthlyPrice">;
   studentName?: string;
   studentEmail?: string;
   planName?: string;

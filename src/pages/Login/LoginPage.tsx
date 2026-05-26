@@ -7,6 +7,7 @@ import { TextField } from "@/components/TextField/TextField";
 import { FormHeader } from "./components/FormHeader/FormHeader";
 import { router } from "@/router";
 import { useNavigate, useSearch } from "@tanstack/react-router";
+import { auth, getDefaultPathByRole } from "@/utils/auth";
 
 export const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -20,7 +21,9 @@ export const LoginPage = () => {
     try {
       await login({ email, password });
       await router.invalidate();
-      navigate({ to: redirect });
+      navigate({
+        to: redirect === "/dashboard" ? getDefaultPathByRole(auth.role) : redirect,
+      });
     } catch (err) {
       console.log("Credenciais inválidas", err);
     }
@@ -34,12 +37,12 @@ export const LoginPage = () => {
             <img className={styles.logo} src="/logo.svg" alt="Gym IQ" />
           </div>
           <h2>
-            Dados, <span className={styles.accent}>previsoes</span> e gestao em
+            Dados, <span className={styles.accent}>previsões</span> e gestão em
             um só sistema.
           </h2>
           <p className={styles.muted}>
-            Centralize alunos, pagamentos, metricas e analises preditivas em uma
-            unica plataforma.
+            Centralize alunos, pagamentos, métricas e análises preditivas em uma
+            única plataforma.
           </p>
         </div>
       </div>

@@ -17,7 +17,7 @@ export const Header = () => {
       {breadcrumbs.map((crumb, index) => (
         <div key={crumb.path} className={styles.header}>
           <span className={styles.eyebrow}>
-            Pagina administrativa / {crumb.label}
+            Página administrativa / {crumb.label}
             {index < breadcrumbs.length - 1 && " / "}
           </span>
           <h2>{crumb.headline}</h2>
