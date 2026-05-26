@@ -1,3 +1,5 @@
+import { clearAuthStorage } from "@/utils/auth";
+
 const API_URL = import.meta.env.VITE_API_URL;
 
 export type LoginRequest = {
@@ -11,7 +13,6 @@ export type AuthResponse = {
   role?: string;
 };
 
-// api/auth.ts
 export async function login(data: LoginRequest): Promise<AuthResponse> {
   const res = await fetch(`${API_URL}/auth/login`, {
     method: "POST",
@@ -22,8 +23,8 @@ export async function login(data: LoginRequest): Promise<AuthResponse> {
   if (!res.ok) throw new Error("Credenciais inválidas");
 
   const jsonData = await res.json();
+  clearAuthStorage();
   localStorage.setItem("token", jsonData.token);
-  localStorage.removeItem("role");
 
   if (jsonData.role) {
     localStorage.setItem("role", jsonData.role);

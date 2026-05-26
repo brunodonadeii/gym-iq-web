@@ -1,6 +1,7 @@
 export type UserRole = "ADMIN" | "RECEPTION" | "INSTRUCTOR" | "STUDENT";
 
 type JwtPayload = {
+  exp?: number;
   role?: string;
   roles?: string[] | string;
   authority?: string;
@@ -63,9 +64,35 @@ const resolveRoleFromPayload = (payload: JwtPayload | null): UserRole | null => 
   );
 };
 
+const isExpiredPayload = (payload: JwtPayload | null) => {
+  if (!payload?.exp) return false;
+
+  return payload.exp * 1000 <= Date.now();
+};
+
+export const clearAuthStorage = () => {
+  localStorage.removeItem("token");
+  localStorage.removeItem("role");
+};
+
+const getStoredValidToken = () => {
+  const token = localStorage.getItem("token");
+
+  if (!token) return null;
+
+  const payload = decodeJwtPayload(token);
+
+  if (!payload || isExpiredPayload(payload)) {
+    clearAuthStorage();
+    return null;
+  }
+
+  return token;
+};
+
 export const auth = {
   get token() {
-    return localStorage.getItem("token");
+    return getStoredValidToken();
   },
 
   get isAuthenticated() {
@@ -73,13 +100,13 @@ export const auth = {
   },
 
   get role() {
-    const storedRole = normalizeRole(localStorage.getItem("role"));
-
-    if (storedRole) return storedRole;
-
     const token = this.token;
 
     if (!token) return null;
+
+    const storedRole = normalizeRole(localStorage.getItem("role"));
+
+    if (storedRole) return storedRole;
 
     return resolveRoleFromPayload(decodeJwtPayload(token));
   },

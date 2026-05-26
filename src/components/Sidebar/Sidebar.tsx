@@ -1,7 +1,9 @@
+import { clearAuthStorage } from "@/utils/auth";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { LogOut } from "lucide-react";
 import type { ReactNode } from "react";
-import styles from "./Sidebar.module.css";
-import { Link } from "@tanstack/react-router";
 import { ThemeToggle } from "../ThemeToggle/ThemeToggle";
+import styles from "./Sidebar.module.css";
 
 type SidebarItems = {
   label: string;
@@ -14,6 +16,13 @@ type SidebarProps = {
 };
 
 export const Sidebar = ({ items }: SidebarProps) => {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    clearAuthStorage();
+    navigate({ to: "/login" });
+  };
+
   return (
     <aside className={styles.sidebar}>
       <div className={styles.sectionHeader}>
@@ -22,15 +31,26 @@ export const Sidebar = ({ items }: SidebarProps) => {
       </div>
 
       <ul className={styles.navigation}>
-        {items.map((i) => (
-          <li key={i.to}>
-            <Link to={i.to} className={styles.link}>
-              {i.icon}
-              <span>{i.label}</span>
+        {items.map((item) => (
+          <li key={item.to}>
+            <Link to={item.to} className={styles.link}>
+              {item.icon}
+              <span>{item.label}</span>
             </Link>
           </li>
         ))}
       </ul>
+
+      <div className={styles.sidebarFooter}>
+        <button
+          type="button"
+          className={styles.logoutButton}
+          onClick={handleLogout}
+        >
+          <LogOut size={18} />
+          <span>Sair</span>
+        </button>
+      </div>
     </aside>
   );
 };

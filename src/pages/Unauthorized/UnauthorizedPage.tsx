@@ -1,5 +1,5 @@
 import { Button } from "@/components/Button/Button";
-import { auth } from "@/utils/auth";
+import { auth, clearAuthStorage } from "@/utils/auth";
 import { useNavigate } from "@tanstack/react-router";
 import styles from "./UnauthorizedPage.module.css";
 
@@ -12,8 +12,7 @@ export const UnauthorizedPage = () => {
       return;
     }
 
-    localStorage.removeItem("token");
-    localStorage.removeItem("role");
+    clearAuthStorage();
     navigate({ to: "/login" });
   };
 

@@ -1,21 +1,44 @@
+import { auth, clearAuthStorage } from "@/utils/auth";
+
 const API_URL = import.meta.env.VITE_API_URL;
 
-export function authFetch(url: string, options: RequestInit = {}) {
-  const token = localStorage.getItem("token");
+const redirectToLogin = () => {
+  const currentPath = `${window.location.pathname}${window.location.search}`;
+
+  if (window.location.pathname === "/login") return;
+
+  window.location.assign(
+    `/login?redirect=${encodeURIComponent(currentPath || "/dashboard")}`,
+  );
+};
+
+export async function authFetch(url: string, options: RequestInit = {}) {
+  const token = auth.token;
+
+  if (!token) {
+    clearAuthStorage();
+    redirectToLogin();
+    throw new Error("Sessão expirada. Faça login novamente.");
+  }
 
   const headers = new Headers(options.headers);
 
   headers.set("Content-Type", "application/json");
 
-  if (token) {
-    headers.set(
-      "Authorization",
-      token.startsWith("Bearer ") ? token : `Bearer ${token}`,
-    );
-  }
+  headers.set(
+    "Authorization",
+    token.startsWith("Bearer ") ? token : `Bearer ${token}`,
+  );
 
-  return fetch(`${API_URL}/${url}`, {
+  const response = await fetch(`${API_URL}/${url}`, {
     ...options,
     headers,
   });
+
+  if (response.status === 401) {
+    clearAuthStorage();
+    redirectToLogin();
+  }
+
+  return response;
 }

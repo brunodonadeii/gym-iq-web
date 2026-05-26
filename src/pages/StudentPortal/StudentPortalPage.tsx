@@ -8,6 +8,7 @@ import { useGetMyPayments } from "@/queries/useGetMyPayments";
 import { useGetMyPresences } from "@/queries/useGetMyPresences";
 import { useGetMyWorkoutSheets } from "@/queries/useGetMyWorkoutSheets";
 import { useGetStudentMe } from "@/queries/useGetStudentMe";
+import { clearAuthStorage } from "@/utils/auth";
 import { useNavigate } from "@tanstack/react-router";
 import styles from "./StudentPortalPage.module.css";
 
@@ -77,8 +78,7 @@ export const StudentPortalPage = () => {
     useGetMyWorkoutSheets();
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("role");
+    clearAuthStorage();
     navigate({ to: "/login" });
   };
 
