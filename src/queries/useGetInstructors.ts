@@ -4,6 +4,8 @@ import type { PageRequest, PageResponse } from "@/types/pagination";
 import { buildPaginationParams } from "@/utils/pagination";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
+export type InstructorStatusFilter = "ACTIVE" | "INACTIVE" | "ALL";
+
 const DEFAULT_INSTRUCTORS_PAGE: PageRequest = {
   page: 0,
   size: 10,
@@ -12,9 +14,13 @@ const DEFAULT_INSTRUCTORS_PAGE: PageRequest = {
 
 async function fetchInstructors(
   search: string,
+  status: InstructorStatusFilter,
   pagination: PageRequest,
 ): Promise<PageResponse<Instructor>> {
-  const query = buildPaginationParams(pagination, search ? { q: search } : {});
+  const query = buildPaginationParams(pagination, {
+    ...(search ? { q: search } : {}),
+    status,
+  });
   const url = search ? `instructors/search?${query}` : `instructors?${query}`;
   const response = await authFetch(url);
 
@@ -27,11 +33,20 @@ async function fetchInstructors(
 
 export function useGetInstructors(
   search: string,
+  status: InstructorStatusFilter = "ACTIVE",
   pagination: PageRequest = DEFAULT_INSTRUCTORS_PAGE,
 ) {
   return useQuery({
-    queryKey: ["instructors", search, pagination],
-    queryFn: () => fetchInstructors(search, pagination),
+    queryKey: [
+      "instructors",
+      {
+        page: pagination.page,
+        size: pagination.size,
+        search,
+        status,
+      },
+    ],
+    queryFn: () => fetchInstructors(search, status, pagination),
     placeholderData: keepPreviousData,
     staleTime: 5 * 60 * 1000,
     gcTime: 15 * 60 * 1000,

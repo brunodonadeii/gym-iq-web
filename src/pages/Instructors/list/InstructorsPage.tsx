@@ -2,6 +2,7 @@ import { Button } from "@/components/Button/Button";
 import { Dropdown, type DropdownItem } from "@/components/Dropdown/Dropdown";
 import { Pagination } from "@/components/Pagination/Pagination";
 import { SearchBar } from "@/components/SearchBar/SearchBar";
+import { SelectField } from "@/components/SelectField/SelectField";
 import {
   Table,
   TableBody,
@@ -12,10 +13,13 @@ import {
   TableRow,
   TableSkeletonRows,
 } from "@/components/Table/Table";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useDeleteInstructor } from "@/mutations/useDeleteInstructor";
 import type { Instructor } from "@/pages/Instructors/types";
-import { useGetInstructors } from "@/queries/useGetInstructors";
-import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import {
+  type InstructorStatusFilter,
+  useGetInstructors,
+} from "@/queries/useGetInstructors";
 import { useNavigate } from "@tanstack/react-router";
 import {
   BadgeCheck,
@@ -39,6 +43,12 @@ const instructorColumns = [
   { width: "6%" },
 ];
 
+const statusOptions: { label: string; value: InstructorStatusFilter }[] = [
+  { label: "Ativos", value: "ACTIVE" },
+  { label: "Inativos", value: "INACTIVE" },
+  { label: "Todos", value: "ALL" },
+];
+
 const formatDate = (value?: string) =>
   value
     ? new Date(value).toLocaleDateString("pt-BR", {
@@ -51,14 +61,20 @@ const formatDate = (value?: string) =>
 export const InstructorsPage = () => {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] =
+    useState<InstructorStatusFilter>("ACTIVE");
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
   const debouncedSearch = useDebouncedValue(search);
-  const { data, isLoading, isFetching } = useGetInstructors(debouncedSearch, {
-    page,
-    size,
-    sort: "user.name,asc",
-  });
+  const { data, isLoading, isFetching } = useGetInstructors(
+    debouncedSearch,
+    statusFilter,
+    {
+      page,
+      size,
+      sort: "user.name,asc",
+    },
+  );
   const instructors = data?.content ?? [];
   const { mutate: deleteInstructor, isPending: isDeleting } =
     useDeleteInstructor();
@@ -76,7 +92,11 @@ export const InstructorsPage = () => {
             <div>
               <strong>{e?.erro ?? "Erro"}</strong>
               <br />
-              <span>{e?.mensagem ?? "Erro inesperado"}</span>
+              <span>
+                {e?.mensagem ??
+                  e?.message ??
+                  "Não foi possível inativar o instrutor."}
+              </span>
             </div>,
           );
         },
@@ -114,9 +134,20 @@ export const InstructorsPage = () => {
         </div>
 
         <div className={styles.topBarActions}>
+          <SelectField
+            label="Status"
+            id="instructorStatusFilter"
+            value={statusFilter}
+            onChange={(event) => {
+              setStatusFilter(event.target.value as InstructorStatusFilter);
+              setPage(0);
+            }}
+            options={statusOptions}
+            containerProps={{ className: styles.filterField }}
+          />
           <SearchBar
             icon={<Search size={15} />}
-            placeholder="Buscar por nome, CREF ou email"
+            placeholder="Buscar por nome, CREF ou e-mail"
             onChange={(e) => {
               setSearch(e.target.value);
               setPage(0);

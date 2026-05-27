@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 interface ApiError {
   erro: string;
   mensagem: string;
+  message?: string;
 }
 
 async function deleteInstructor({ id }: { id: string }) {
@@ -14,7 +15,7 @@ async function deleteInstructor({ id }: { id: string }) {
     },
   });
 
-  const responseData = await response.json();
+  const responseData = response.status === 204 ? null : await response.json();
 
   if (!response.ok) {
     throw responseData;
