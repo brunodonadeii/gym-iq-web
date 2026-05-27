@@ -1,13 +1,13 @@
-import { login } from "@/services/auth";
-import { useState } from "react";
-import styles from "./LoginPage.module.css";
-import { Card } from "@/components/Card/Card";
 import { Button } from "@/components/Button/Button";
+import { Card } from "@/components/Card/Card";
 import { TextField } from "@/components/TextField/TextField";
-import { FormHeader } from "./components/FormHeader/FormHeader";
 import { router } from "@/router";
-import { useNavigate, useSearch } from "@tanstack/react-router";
+import { login } from "@/services/auth";
 import { auth, getDefaultPathByRole } from "@/utils/auth";
+import { useNavigate, useSearch } from "@tanstack/react-router";
+import { useState } from "react";
+import { FormHeader } from "./components/FormHeader/FormHeader";
+import styles from "./LoginPage.module.css";
 
 export const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -16,13 +16,14 @@ export const LoginPage = () => {
   const redirect = search.redirect ?? "/dashboard";
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     try {
       await login({ email, password });
       await router.invalidate();
       navigate({
-        to: redirect === "/dashboard" ? getDefaultPathByRole(auth.role) : redirect,
+        to:
+          redirect === "/dashboard" ? getDefaultPathByRole(auth.role) : redirect,
       });
     } catch (err) {
       console.log("Credenciais inválidas", err);
@@ -52,7 +53,7 @@ export const LoginPage = () => {
           <Card>
             <FormHeader />
             <TextField
-              label="Email"
+              label="E-mail"
               type="email"
               id="email"
               value={email}
@@ -75,7 +76,7 @@ export const LoginPage = () => {
               </p>
               <div className={styles.demoCredentials}>
                 <div className={styles.demoItem}>
-                  <span>Email:</span> admin@gymiq.com
+                  <span>E-mail:</span> admin@gymiq.com
                 </div>
                 <div className={styles.demoItem}>
                   <span>Senha:</span> gymiq@2026

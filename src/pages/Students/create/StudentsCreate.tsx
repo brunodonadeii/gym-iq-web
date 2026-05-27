@@ -1,14 +1,13 @@
 import { Button } from "@/components/Button/Button";
+import { Form } from "@/components/Form/Form";
 import { TextField } from "@/components/TextField/TextField";
+import { useFormInputs } from "@/hooks/useFormInputs";
+import { useCreateStudent } from "@/mutations/useCreateStudent";
+import type { StudentCreateFormData } from "@/pages/Students/types";
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-
-import styles from "./StudentsCreate.module.css";
-import { useCreateStudent } from "@/mutations/useCreateStudent";
 import { toast } from "sonner";
-import { useFormInputs } from "@/hooks/useFormInputs";
-import type { StudentCreateFormData } from "../types";
-import { Form } from "@/components/Form/Form";
+import styles from "./StudentsCreate.module.css";
 
 const EMPTY_FORM: StudentCreateFormData = {
   name: "",
@@ -19,6 +18,7 @@ const EMPTY_FORM: StudentCreateFormData = {
   phone: "",
   zipCode: "",
   address: "",
+  lgpdAccepted: false,
 };
 
 export const StudentsCreate = () => {
@@ -26,6 +26,14 @@ export const StudentsCreate = () => {
   const [data, setData] = useState<StudentCreateFormData>(EMPTY_FORM);
   const { set, setMasked } = useFormInputs(setData);
   const { mutate: mutateCreate, isPending } = useCreateStudent();
+  const canSubmit =
+    data.name &&
+    data.email &&
+    data.password &&
+    data.cpf &&
+    data.birthDate &&
+    data.phone &&
+    data.lgpdAccepted;
 
   const handleSubmit = async () => {
     mutateCreate(data, {
@@ -57,7 +65,7 @@ export const StudentsCreate = () => {
           >
             Cancelar
           </Button>
-          <Button onClick={handleSubmit} loading={isPending}>
+          <Button onClick={handleSubmit} loading={isPending} disabled={!canSubmit}>
             Salvar
           </Button>
         </>
@@ -137,14 +145,32 @@ export const StudentsCreate = () => {
 
         <div className={styles.row}>
           <TextField
-            label="Endereco completo"
+            label="Endereço completo"
             id="address"
             value={data.address}
             onChange={set("address")}
-            placeholder="Rua, numero, bairro, cidade - UF"
+            placeholder="Rua, número, bairro, cidade - UF"
           />
         </div>
       </fieldset>
+
+      <label className={styles.lgpdBox}>
+        <input
+          type="checkbox"
+          checked={data.lgpdAccepted}
+          onChange={(event) =>
+            setData((prev) => ({
+              ...prev,
+              lgpdAccepted: event.target.checked,
+            }))
+          }
+          required
+        />
+        <span>
+          Declaro que o aluno aceitou o uso dos dados para cadastro e gestão do
+          acesso na academia.
+        </span>
+      </label>
     </Form>
   );
 };

@@ -16,6 +16,7 @@ const EMPTY_FORM: InstructorCreateFormData = {
   cref: "",
   phone: "",
   specialty: "",
+  lgpdAccepted: false,
 };
 
 export const InstructorsCreate = () => {
@@ -25,7 +26,12 @@ export const InstructorsCreate = () => {
   const { mutate, isPending } = useCreateInstructor();
 
   const canSubmit =
-    data.name && data.email && data.password && data.cref && data.phone;
+    data.name &&
+    data.email &&
+    data.password &&
+    data.cref &&
+    data.phone &&
+    data.lgpdAccepted;
 
   const handleSubmit = () => {
     mutate(data, {
@@ -117,9 +123,27 @@ export const InstructorsCreate = () => {
           id="specialty"
           value={data.specialty}
           onChange={set("specialty")}
-          placeholder="Musculacao"
+          placeholder="Musculação"
         />
       </div>
+
+      <label className={styles.lgpdBox}>
+        <input
+          type="checkbox"
+          checked={data.lgpdAccepted}
+          onChange={(event) =>
+            setData((prev) => ({
+              ...prev,
+              lgpdAccepted: event.target.checked,
+            }))
+          }
+          required
+        />
+        <span>
+          Declaro que o instrutor aceitou o uso dos dados para cadastro e gestão
+          do acesso na academia.
+        </span>
+      </label>
     </Form>
   );
 };

@@ -18,6 +18,10 @@ export type InstructorCreateFormData = {
   cref: string;
   phone: string;
   specialty: string;
+  lgpdAccepted: boolean;
 };
 
-export type InstructorEditFormData = InstructorCreateFormData;
+export type InstructorEditFormData = Omit<
+  InstructorCreateFormData,
+  "lgpdAccepted"
+>;

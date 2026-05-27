@@ -15,4 +15,5 @@ export type AdminUserCreateFormData = {
   email: string;
   password: string;
   role: AdminUserRole;
+  lgpdAccepted: boolean;
 };

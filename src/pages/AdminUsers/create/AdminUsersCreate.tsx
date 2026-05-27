@@ -15,6 +15,7 @@ const EMPTY_FORM: AdminUserCreateFormData = {
   email: "",
   password: "",
   role: "RECEPTION",
+  lgpdAccepted: true,
 };
 
 const roleOptions = [

@@ -25,6 +25,7 @@ export type Student = {
 
 export type StudentCreateFormData = StudentEditFormData & {
   password: string;
+  lgpdAccepted: boolean;
 };
 
 export type StudentOption = {
