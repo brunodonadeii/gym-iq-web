@@ -51,7 +51,25 @@ const statusLabels: Record<EnrollmentStatus, string> = {
   CANCELED: "Cancelada",
 };
 
-const formatDate = (value?: string) =>
+const isRecurringEnrollment = (enrollment?: Enrollment | null) => {
+  if (!enrollment) {
+    return false;
+  }
+
+  const rawEndDate = enrollment.endDate;
+  const normalizedEndDate =
+    typeof rawEndDate === "string" ? rawEndDate.trim().toLowerCase() : rawEndDate;
+
+  return (
+    normalizedEndDate === null ||
+    normalizedEndDate === undefined ||
+    normalizedEndDate === "" ||
+    normalizedEndDate === "null" ||
+    enrollment.plan?.durationMonths === 1
+  );
+};
+
+const formatDate = (value?: string | null) =>
   value
     ? new Date(value).toLocaleDateString("pt-BR", {
         day: "2-digit",
@@ -59,6 +77,12 @@ const formatDate = (value?: string) =>
         year: "numeric",
       })
     : "Não informado";
+
+const formatEndDate = (enrollment?: Enrollment | null) =>
+  isRecurringEnrollment(enrollment) ? "Recorrente" : formatDate(enrollment?.endDate);
+
+const getEnrollmentTermLabel = (enrollment?: Enrollment | null) =>
+  isRecurringEnrollment(enrollment) ? "Mensal recorrente" : "Prazo determinado";
 
 const resolveStudentName = (enrollment: Enrollment) =>
   enrollment.student?.name ??
@@ -165,27 +189,35 @@ export const EnrollmentsPage = () => {
 
   const getEnrollmentActions = (enrollment: Enrollment): DropdownItem[] => {
     const enrollmentId = String(enrollment.enrollmentId);
-    const renewAction = {
-      label: "Renovar matrícula",
-      icon: <RefreshCcw size={15} />,
-      onSelect: () =>
-        navigate({
-          to: "/enrollments/$enrollmentId",
-          params: {
-            enrollmentId,
-          },
-        }),
-    };
 
     if (enrollment.status === "CANCELED") {
       return [
         {
-          label: "Renovação indisponível para cancelada",
+          label: "Nenhuma ação disponível",
           icon: <RefreshCcw size={15} />,
           disabled: true,
         },
       ];
     }
+
+    const recurringEnrollment = isRecurringEnrollment(enrollment);
+    const renewAction: DropdownItem = recurringEnrollment
+      ? {
+          label: "Renovar matrícula",
+          icon: <RefreshCcw size={15} />,
+          disabled: true,
+        }
+      : {
+          label: "Renovar matrícula",
+          icon: <RefreshCcw size={15} />,
+          onSelect: () =>
+            navigate({
+              to: "/enrollments/$enrollmentId",
+              params: {
+                enrollmentId,
+              },
+            }),
+        };
 
     const statusActions =
       enrollment.status === "ACTIVE"
@@ -310,8 +342,11 @@ export const EnrollmentsPage = () => {
                     {summaryPlanLabel ?? resolvePlanName(activeEnrollment)}
                   </p>
                   <p className={styles.panelHint}>
-                    Vigência até {formatDate(activeEnrollment.endDate)}
+                    Vigência: {formatEndDate(activeEnrollment)}
                   </p>
+                  <span className={styles.termBadge}>
+                    {getEnrollmentTermLabel(activeEnrollment)}
+                  </span>
                 </>
               ) : (
                 <>
@@ -369,7 +404,14 @@ export const EnrollmentsPage = () => {
                     <TableCell>{resolveStudentEmail(enrollment)}</TableCell>
                     <TableCell>{resolvePlanName(enrollment)}</TableCell>
                     <TableCell>{formatDate(enrollment.startDate)}</TableCell>
-                    <TableCell>{formatDate(enrollment.endDate)}</TableCell>
+                    <TableCell>
+                      <div className={styles.termCell}>
+                        <span>{formatEndDate(enrollment)}</span>
+                        <span className={styles.termBadge}>
+                          {getEnrollmentTermLabel(enrollment)}
+                        </span>
+                      </div>
+                    </TableCell>
                     <TableCell center>
                       <span
                         className={`${styles.statusBadge} ${

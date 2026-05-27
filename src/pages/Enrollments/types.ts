@@ -8,7 +8,7 @@ export type Enrollment = {
   studentId: number;
   planId: number;
   startDate: string;
-  endDate: string;
+  endDate: string | null;
   status: EnrollmentStatus;
   createdAt: string;
   student?: Pick<Student, "studentId" | "name" | "email">;

@@ -18,7 +18,10 @@ const EMPTY_FORM: EnrollmentRenewFormData = {
   newPlanId: "",
 };
 
-const formatDate = (value?: string) =>
+const isRecurringEnrollment = (enrollment?: Enrollment | null) =>
+  enrollment?.endDate === null;
+
+const formatDate = (value?: string | null) =>
   value
     ? new Date(value).toLocaleDateString("pt-BR", {
         day: "2-digit",
@@ -26,6 +29,9 @@ const formatDate = (value?: string) =>
         year: "numeric",
       })
     : "Não informado";
+
+const formatEndDate = (enrollment?: Enrollment | null) =>
+  isRecurringEnrollment(enrollment) ? "Recorrente" : formatDate(enrollment?.endDate);
 
 const resolveStudentName = (enrollment?: Enrollment) =>
   enrollment?.student?.name ??
@@ -58,12 +64,20 @@ export const EnrollmentsRenew = () => {
       ),
     [enrollmentId, enrollments],
   );
+  const recurring = isRecurringEnrollment(enrollment);
 
   useEffect(() => {
     if (enrollment) {
       setData({ newPlanId: String(enrollment.planId) });
     }
   }, [enrollment]);
+
+  useEffect(() => {
+    if (recurring) {
+      toast.info("Matrículas recorrentes não permitem renovação manual.");
+      navigate({ to: "/enrollments" });
+    }
+  }, [navigate, recurring]);
 
   const planOptions = [
     { label: "Selecione o novo plano", value: "", disabled: true },
@@ -74,6 +88,11 @@ export const EnrollmentsRenew = () => {
   ];
 
   const handleSubmit = () => {
+    if (recurring) {
+      toast.info("Matrículas recorrentes não permitem renovação manual.");
+      return;
+    }
+
     mutate(
       { id: String(enrollmentId), newPlanId: data.newPlanId },
       {
@@ -110,9 +129,9 @@ export const EnrollmentsRenew = () => {
           <Button
             onClick={handleSubmit}
             loading={isPending}
-            disabled={!data.newPlanId}
+            disabled={!data.newPlanId || recurring}
           >
-            Renovar
+            {recurring ? "Renovação automática" : "Renovar"}
           </Button>
         </>
       }
@@ -135,10 +154,16 @@ export const EnrollmentsRenew = () => {
         <div className={styles.summaryCard}>
           <span className={styles.summaryLabel}>Vigência atual</span>
           <strong className={styles.summaryValue}>
-            {formatDate(enrollment?.endDate)}
+            {formatEndDate(enrollment)}
           </strong>
         </div>
       </div>
+
+      {recurring && (
+        <div className={styles.notice}>
+          Essa matrícula é recorrente e não deve ser renovada manualmente.
+        </div>
+      )}
 
       <div className={styles.row}>
         <SelectField
@@ -147,6 +172,7 @@ export const EnrollmentsRenew = () => {
           value={data.newPlanId}
           onChange={set("newPlanId")}
           options={planOptions}
+          disabled={recurring}
           required
         />
       </div>

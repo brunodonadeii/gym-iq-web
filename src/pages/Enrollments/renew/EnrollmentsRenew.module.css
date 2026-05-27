@@ -31,3 +31,12 @@
   grid-template-columns: minmax(0, 1fr);
   gap: 16px;
 }
+
+.notice {
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface-alt);
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
