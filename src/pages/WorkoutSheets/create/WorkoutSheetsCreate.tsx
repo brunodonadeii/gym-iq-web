@@ -52,7 +52,7 @@ export const WorkoutSheetsCreate = () => {
   const { data: studentOptions, isFetching: isFetchingStudents } =
     useGetStudentOptions(debouncedStudentSearch);
   const { data: instructors, isFetching: isFetchingInstructors } =
-    useGetInstructors(debouncedInstructorSearch, {
+    useGetInstructors(debouncedInstructorSearch, "ACTIVE", {
       size: 20,
       sort: "user.name,asc",
     });

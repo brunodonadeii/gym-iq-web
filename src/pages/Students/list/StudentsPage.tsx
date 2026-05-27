@@ -224,6 +224,7 @@ export const StudentsPage = () => {
                           {
                             label: "Editar",
                             icon: <Pencil size={15} />,
+                            disabled: isAnonymizedStudent(student),
                             onSelect: () =>
                               navigate({
                                 to: "/students/$studentId",
