@@ -1,4 +1,5 @@
-import type { Student, StudentEditFormData } from "@/pages/Students/types";
+import { invalidateStudentRelatedQueries } from "@/mutations/studentQueryInvalidation";
+import type { Student, StudentUpdateFormData } from "@/pages/Students/types";
 import { authFetch } from "@/services/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -9,7 +10,7 @@ interface ApiError {
 
 interface UpdateStudentData {
   id: string;
-  data: StudentEditFormData;
+  data: StudentUpdateFormData;
 }
 
 async function updateStudent({ data, id }: UpdateStudentData) {
@@ -36,10 +37,8 @@ export function useUpdateStudent() {
   return useMutation<Student, ApiError, UpdateStudentData>({
     mutationFn: updateStudent,
 
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["students"],
-      });
+    onSuccess: async (_, variables) => {
+      await invalidateStudentRelatedQueries(queryClient, variables.id);
     },
   });
 }

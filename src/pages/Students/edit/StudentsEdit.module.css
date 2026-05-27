@@ -102,6 +102,28 @@
   letter-spacing: 0;
 }
 
+.anonymizedNotice {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(14, 116, 144, 0.18);
+  background: rgba(14, 116, 144, 0.08);
+}
+
+.anonymizedNotice strong {
+  color: #0f766e;
+  font-size: 0.88rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.anonymizedNotice span {
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
 @media (max-width: 980px) {
   .intro {
     grid-template-columns: 1fr;

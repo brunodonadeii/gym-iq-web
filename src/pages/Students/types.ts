@@ -1,4 +1,4 @@
-export type StudentEditFormData = {
+export type StudentBaseFormData = {
   name: string;
   email: string;
   cpf: string;
@@ -10,7 +10,7 @@ export type StudentEditFormData = {
 
 export type Student = {
   active: boolean;
-  address: string;
+  address: string | null;
   birthDate: string;
   cpf: string;
   createdAt: string;
@@ -20,10 +20,14 @@ export type Student = {
   phone: string;
   studentId: number;
   userId: number;
-  zipCode: string;
+  zipCode: string | null;
 };
 
-export type StudentCreateFormData = StudentEditFormData & {
+export type StudentUpdateFormData = StudentBaseFormData;
+
+export type StudentEditFormData = StudentUpdateFormData;
+
+export type StudentCreateFormData = StudentBaseFormData & {
   password: string;
   lgpdAccepted: boolean;
 };
@@ -35,3 +39,6 @@ export type StudentOption = {
   cpf: string;
   label: string;
 };
+
+export const isAnonymizedStudent = (student?: Student | null) =>
+  student?.phone === "ANONYMIZED" || student?.birthDate === "1900-01-01";

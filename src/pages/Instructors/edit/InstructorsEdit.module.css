@@ -32,3 +32,15 @@
   color: var(--text-primary);
   font-size: 0.95rem;
 }
+
+.lgpdBox {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.lgpdBox input {
+  margin-top: 3px;
+}

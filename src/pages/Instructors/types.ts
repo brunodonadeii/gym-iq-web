@@ -21,7 +21,13 @@ export type InstructorCreateFormData = {
   lgpdAccepted: boolean;
 };
 
-export type InstructorEditFormData = Omit<
-  InstructorCreateFormData,
-  "lgpdAccepted"
->;
+export type InstructorUpdateFormData = {
+  name: string;
+  email: string;
+  cref: string;
+  phone: string;
+  specialty: string;
+  lgpdAccepted: boolean;
+};
+
+export type InstructorEditFormData = InstructorUpdateFormData;

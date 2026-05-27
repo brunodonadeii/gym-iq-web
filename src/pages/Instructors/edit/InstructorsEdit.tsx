@@ -3,20 +3,20 @@ import { Form } from "@/components/Form/Form";
 import { TextField } from "@/components/TextField/TextField";
 import { useFormInputs } from "@/hooks/useFormInputs";
 import { useUpdateInstructor } from "@/mutations/useUpdateInstructor";
-import type { InstructorEditFormData } from "@/pages/Instructors/types";
+import type { InstructorUpdateFormData } from "@/pages/Instructors/types";
 import { useGetInstructorById } from "@/queries/useGetInstructorById";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import styles from "./InstructorsEdit.module.css";
 
-const EMPTY_FORM: InstructorEditFormData = {
+const EMPTY_FORM: InstructorUpdateFormData = {
   name: "",
   email: "",
-  password: "",
   cref: "",
   phone: "",
   specialty: "",
+  lgpdAccepted: false,
 };
 
 const formatDate = (value?: string) =>
@@ -32,7 +32,7 @@ export const InstructorsEdit = () => {
   const params = useParams({ strict: false });
   const instructorId = params.instructorId;
   const navigate = useNavigate();
-  const [data, setData] = useState<InstructorEditFormData>(EMPTY_FORM);
+  const [data, setData] = useState<InstructorUpdateFormData>(EMPTY_FORM);
   const { set, setMasked } = useFormInputs(setData);
   const { data: details, isLoading } = useGetInstructorById(instructorId);
   const { mutate, isPending } = useUpdateInstructor();
@@ -44,10 +44,10 @@ export const InstructorsEdit = () => {
     setData({
       name: details.name,
       email: details.email,
-      password: "",
       cref: details.cref,
       phone: details.phone,
       specialty: details.specialty ?? "",
+      lgpdAccepted: details.lgpdAccepted,
     });
   }, [details]);
 
@@ -76,7 +76,7 @@ export const InstructorsEdit = () => {
   return (
     <Form
       title="Detalhes do instrutor"
-      description="Atualize dados profissionais e de contato. A senha so sera enviada se for preenchida."
+      description="Atualize dados profissionais e de contato."
       loading={isLoading}
       actions={
         <>
@@ -140,14 +140,6 @@ export const InstructorsEdit = () => {
           onChange={set("email")}
           required
         />
-        <TextField
-          label="Nova senha"
-          type="password"
-          id="password"
-          value={data.password}
-          onChange={set("password")}
-          helperText="Opcional. Preencha apenas se quiser trocar a senha."
-        />
       </div>
 
       <div className={styles.row}>
@@ -178,6 +170,20 @@ export const InstructorsEdit = () => {
           placeholder="Hipertrofia"
         />
       </div>
+
+      <label className={styles.lgpdBox}>
+        <input
+          type="checkbox"
+          checked={data.lgpdAccepted}
+          onChange={(event) =>
+            setData((prev) => ({
+              ...prev,
+              lgpdAccepted: event.target.checked,
+            }))
+          }
+        />
+        <span>Consentimento LGPD do instrutor confirmado.</span>
+      </label>
     </Form>
   );
 };

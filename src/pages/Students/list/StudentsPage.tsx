@@ -13,7 +13,9 @@ import {
   TableSkeletonRows,
 } from "@/components/Table/Table";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
-import { useDeleteStudent } from "@/mutations/useDeleteStudent";
+import { useAnonymizeStudent } from "@/mutations/useAnonymizeStudent";
+import { useDeactivateStudent } from "@/mutations/useDeactivateStudent";
+import { isAnonymizedStudent } from "@/pages/Students/types";
 import {
   fetchStudents,
   STUDENTS_QUERY_GC_TIME,
@@ -22,8 +24,9 @@ import {
 } from "@/queries/useGetStudents";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
-import { Pencil, Search, Trash2, UserPlus } from "lucide-react";
+import { EyeOff, Pencil, Search, UserMinus, UserPlus } from "lucide-react";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import styles from "./StudentsPage.module.css";
 
 const studentColumns = [
@@ -52,9 +55,77 @@ export const StudentsPage = () => {
     debouncedSearch,
     pagination,
   );
-  const { mutate: deleteStudent } = useDeleteStudent();
+  const { mutate: deactivateStudent, isPending: isDeactivatingStudent } =
+    useDeactivateStudent();
+  const { mutate: anonymizeStudent, isPending: isAnonymizingStudent } =
+    useAnonymizeStudent();
   const students = data?.content ?? [];
   const tableLoading = isLoading;
+
+  const handleDeactivateStudent = (studentId: string) => {
+    const shouldContinue = window.confirm(
+      "Deseja inativar este aluno? O histórico será preservado e ele perderá o acesso ativo.",
+    );
+
+    if (!shouldContinue) return;
+
+    deactivateStudent(
+      { id: studentId },
+      {
+        onSuccess: () => {
+          toast.success("Aluno inativado com sucesso!");
+        },
+        onError: (e) => {
+          toast.error(
+            <div>
+              <strong>{e?.erro ?? "Erro"}</strong>
+              <br />
+              <span>
+                {e?.mensagem ??
+                  e?.message ??
+                  "Não foi possível inativar o aluno."}
+              </span>
+            </div>,
+          );
+        },
+      },
+    );
+  };
+
+  const handleAnonymizeStudent = (studentId: string) => {
+    const shouldContinue = window.confirm(
+      "Deseja anonimizar este aluno? A anonimização só pode ocorrer após a inativação, preserva o histórico e remove os dados pessoais.",
+    );
+
+    if (!shouldContinue) return;
+
+    anonymizeStudent(
+      { id: studentId },
+      {
+        onSuccess: () => {
+          toast.success("Aluno anonimizado com sucesso!");
+        },
+        onError: (e) => {
+          const message =
+            e?.mensagem ??
+            e?.message ??
+            "Não foi possível anonimizar o aluno.";
+
+          toast.error(
+            <div>
+              <strong>{e?.erro ?? "Erro"}</strong>
+              <br />
+              <span>
+                {/ativo/i.test(message)
+                  ? "O aluno precisa estar inativo antes da anonimização."
+                  : message}
+              </span>
+            </div>,
+          );
+        },
+      },
+    );
+  };
 
   useEffect(() => {
     if (!data || data.last) return;
@@ -126,13 +197,24 @@ export const StudentsPage = () => {
                         <span className={styles.namePrimary}>
                           {student.name}
                         </span>
+                        {isAnonymizedStudent(student) && (
+                          <span className={styles.anonymizedBadge}>
+                            Anonimizado
+                          </span>
+                        )}
                       </div>
                     </TableCell>
                     <TableCell>{student.cpf}</TableCell>
                     <TableCell>{student.phone}</TableCell>
                     <TableCell>{student.email}</TableCell>
                     <TableCell center>
-                      <span className={styles.statusBadge}>
+                      <span
+                        className={`${styles.statusBadge} ${
+                          student.active
+                            ? styles.statusActive
+                            : styles.statusInactive
+                        }`}
+                      >
                         {student.active ? "Ativo" : "Inativo"}
                       </span>
                     </TableCell>
@@ -151,15 +233,28 @@ export const StudentsPage = () => {
                               }),
                           },
                           {
-                            label: "Excluir",
-                            icon: <Trash2 size={15} />,
+                            label: "Inativar aluno",
+                            icon: <UserMinus size={15} />,
                             danger: true,
-                            onSelect: () => {
-                              deleteStudent({
-                                id: String(student.studentId),
-                              });
-                            },
+                            disabled: !student.active || isDeactivatingStudent,
+                            onSelect: () =>
+                              handleDeactivateStudent(String(student.studentId)),
                           },
+                          ...(!student.active
+                            ? [
+                                {
+                                  label: "Anonimizar aluno",
+                                  icon: <EyeOff size={15} />,
+                                  disabled:
+                                    isAnonymizingStudent ||
+                                    isAnonymizedStudent(student),
+                                  onSelect: () =>
+                                    handleAnonymizeStudent(
+                                      String(student.studentId),
+                                    ),
+                                },
+                              ]
+                            : []),
                         ]}
                       />
                     </TableCell>

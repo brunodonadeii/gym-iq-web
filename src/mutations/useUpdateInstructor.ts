@@ -1,6 +1,6 @@
 import type {
   Instructor,
-  InstructorEditFormData,
+  InstructorUpdateFormData,
 } from "@/pages/Instructors/types";
 import { authFetch } from "@/services/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -12,7 +12,7 @@ interface ApiError {
 
 interface UpdateInstructorData {
   id?: string;
-  data: InstructorEditFormData;
+  data: InstructorUpdateFormData;
 }
 
 async function updateInstructor({ data, id }: UpdateInstructorData) {
@@ -22,7 +22,7 @@ async function updateInstructor({ data, id }: UpdateInstructorData) {
     cref: data.cref,
     phone: data.phone,
     specialty: data.specialty.trim() || undefined,
-    ...(data.password.trim() ? { password: data.password } : {}),
+    lgpdAccepted: data.lgpdAccepted,
   };
 
   const response = await authFetch(`instructors/${id}`, {

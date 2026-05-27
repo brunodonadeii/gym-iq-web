@@ -7,10 +7,10 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { useFormInputs } from "@/hooks/useFormInputs";
-import type { StudentEditFormData } from "../types";
+import { isAnonymizedStudent, type StudentUpdateFormData } from "../types";
 import { Form } from "@/components/Form/Form";
 
-const EMPTY_FORM: StudentEditFormData = {
+const EMPTY_FORM: StudentUpdateFormData = {
   name: "",
   email: "",
   cpf: "",
@@ -23,17 +23,24 @@ const EMPTY_FORM: StudentEditFormData = {
 export const StudentsEdit = () => {
   const params = useParams({ strict: false });
   const studentId = params.studentId;
-  const [data, setData] = useState<StudentEditFormData>(EMPTY_FORM);
+  const [data, setData] = useState<StudentUpdateFormData>(EMPTY_FORM);
   const { set, setMasked } = useFormInputs(setData);
   const { mutate: mutateUpdate, isPending } = useUpdateStudent();
   const { data: details, isLoading } = useGetStudentById(studentId);
   const navigate = useNavigate();
+  const anonymized = isAnonymizedStudent(details);
 
   useEffect(() => {
     if (details) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setData({
-        ...details,
+        name: details.name,
+        email: details.email,
+        cpf: details.cpf,
+        birthDate: details.birthDate,
+        phone: details.phone,
+        zipCode: details.zipCode ?? "",
+        address: details.address ?? "",
       });
     }
   }, [details]);
@@ -61,7 +68,11 @@ export const StudentsEdit = () => {
   return (
     <Form
       title="Dados pessoais"
-      description="Informações base para identificar o aluno e iniciar o acesso."
+      description={
+        anonymized
+          ? "Aluno anonimizado. O histórico foi preservado e os dados pessoais foram removidos."
+          : "Informações base para identificar o aluno e iniciar o acesso."
+      }
       loading={isLoading}
       actions={
         <>
@@ -77,6 +88,16 @@ export const StudentsEdit = () => {
         </>
       }
     >
+      {anonymized && (
+        <div className={styles.anonymizedNotice}>
+          <strong>Anonimizado</strong>
+          <span>
+            Nome, contato e endereço podem aparecer mascarados conforme o retorno
+            da API.
+          </span>
+        </div>
+      )}
+
       <div className={styles.row}>
         <TextField
           label="Nome"
