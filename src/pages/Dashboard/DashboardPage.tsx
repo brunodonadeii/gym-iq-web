@@ -1,4 +1,19 @@
 import { Skeleton } from "@/components/Skeleton/Skeleton";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableEmptyState,
+  TableHead,
+  TableHeaderCell,
+  TableRow,
+  TableSkeletonRows,
+} from "@/components/Table/Table";
+import type {
+  RetentionAlert,
+  RetentionAlertStatus,
+  RetentionRiskLevel,
+} from "@/pages/Dashboard/types";
 import { useGetFinancialDashboard } from "@/queries/useGetFinancialDashboard";
 import { useGetOperationsDashboard } from "@/queries/useGetOperationsDashboard";
 import { useGetRetentionDashboard } from "@/queries/useGetRetentionDashboard";
@@ -34,6 +49,27 @@ type DashboardSectionProps = {
   error?: unknown;
   children: ReactNode;
 };
+
+const riskLabels: Record<RetentionRiskLevel, string> = {
+  LOW: "Baixo",
+  MEDIUM: "Médio",
+  HIGH: "Alto",
+  CRITICAL: "Crítico",
+};
+
+const alertStatusLabels: Record<RetentionAlertStatus, string> = {
+  OPEN: "Aberto",
+  RESOLVED: "Resolvido",
+};
+
+const riskRankingColumns = [
+  { width: "28%" },
+  { width: "12%" },
+  { width: "14%" },
+  { width: "16%" },
+  { width: "18%" },
+  { width: "12%" },
+];
 
 const formatNumber = (value?: number) =>
   new Intl.NumberFormat("pt-BR").format(value ?? 0);
@@ -74,6 +110,18 @@ const getErrorMessage = (error: unknown, fallback: string) => {
 
 const isForbiddenError = (error: unknown) =>
   error instanceof DashboardRequestError && error.status === 403;
+
+const RiskBadge = ({ level }: { level: RetentionRiskLevel }) => (
+  <span className={`${styles.badge} ${styles[`risk${level}`]}`}>
+    {riskLabels[level] ?? level}
+  </span>
+);
+
+const StatusBadge = ({ status }: { status: RetentionAlertStatus }) => (
+  <span className={`${styles.badge} ${styles[`status${status}`]}`}>
+    {alertStatusLabels[status] ?? status}
+  </span>
+);
 
 const MetricCard = ({ label, value, hint, icon, loading }: MetricCardProps) => (
   <article className={styles.metricCard}>
@@ -124,6 +172,74 @@ const DashboardSection = ({
       children
     )}
   </section>
+);
+
+const RiskRankingTable = ({
+  alerts,
+  loading,
+}: {
+  alerts: RetentionAlert[];
+  loading?: boolean;
+}) => (
+  <div className={styles.rankingBlock}>
+    <div>
+      <h4 className={styles.subsectionTitle}>Ranking de risco</h4>
+      <p className={styles.subsectionDescription}>
+        Alunos com maior probabilidade de abandono segundo a análise atual.
+      </p>
+    </div>
+
+    <Table columns={riskRankingColumns} minWidth="920px">
+      <TableHead>
+        <TableRow>
+          <TableHeaderCell>Aluno</TableHeaderCell>
+          <TableHeaderCell center>Score</TableHeaderCell>
+          <TableHeaderCell center>Nível</TableHeaderCell>
+          <TableHeaderCell center>Dias sem check-in</TableHeaderCell>
+          <TableHeaderCell center>Pagamentos atrasados</TableHeaderCell>
+          <TableHeaderCell center>Status</TableHeaderCell>
+        </TableRow>
+      </TableHead>
+
+      <TableBody>
+        {loading && <TableSkeletonRows columns={6} rows={4} />}
+
+        {!loading &&
+          alerts.map((alert) => (
+            <TableRow key={alert.retentionAlertId}>
+              <TableCell>
+                <div className={styles.nameCell}>
+                  <span className={styles.namePrimary}>
+                    {alert.studentName}
+                  </span>
+                  <span className={styles.nameSecondary}>
+                    {alert.studentEmail}
+                  </span>
+                </div>
+              </TableCell>
+              <TableCell center>{formatNumber(alert.riskScore)}</TableCell>
+              <TableCell center>
+                <RiskBadge level={alert.riskLevel} />
+              </TableCell>
+              <TableCell center>{formatNumber(alert.inactiveDays)}</TableCell>
+              <TableCell center>
+                {formatNumber(alert.overduePayments)}
+              </TableCell>
+              <TableCell center>
+                <StatusBadge status={alert.status} />
+              </TableCell>
+            </TableRow>
+          ))}
+
+        {!loading && alerts.length === 0 && (
+          <TableEmptyState
+            colSpan={6}
+            message="Nenhum aluno em risco retornado pela análise."
+          />
+        )}
+      </TableBody>
+    </Table>
+  </div>
 );
 
 const AccessBlocked = () => (
@@ -205,6 +321,18 @@ export const DashboardPage = () => {
       >
         <div className={styles.metricGrid}>
           <MetricCard
+            label="Alunos ativos"
+            value={formatNumber(retention.data?.activeStudents)}
+            icon={<Users size={18} />}
+            loading={retentionLoading}
+          />
+          <MetricCard
+            label="Alertas abertos"
+            value={formatNumber(retention.data?.openAlerts)}
+            icon={<ShieldAlert size={18} />}
+            loading={retentionLoading}
+          />
+          <MetricCard
             label="Score médio de risco"
             value={formatNumber(retention.data?.averageRiskScore)}
             icon={<AlertTriangle size={18} />}
@@ -225,6 +353,11 @@ export const DashboardPage = () => {
             loading={retentionLoading}
           />
         </div>
+
+        <RiskRankingTable
+          alerts={retention.data?.topRiskStudents ?? []}
+          loading={retentionLoading}
+        />
       </DashboardSection>
 
       <DashboardSection
