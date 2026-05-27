@@ -4,6 +4,7 @@ import { auth, type UserRole } from "@/utils/auth";
 import { Outlet } from "@tanstack/react-router";
 import {
   Activity,
+  BarChart3,
   ClipboardCheck,
   ClipboardList,
   CreditCard,
@@ -23,6 +24,12 @@ type SidebarItem = {
 };
 
 const sidebarItems: SidebarItem[] = [
+  {
+    label: "Dashboard",
+    icon: <BarChart3 size={20} />,
+    to: "/dashboard",
+    roles: ["ADMIN"],
+  },
   {
     label: "Alunos",
     icon: <Users size={20} />,
