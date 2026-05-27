@@ -1,3 +1,4 @@
+import type { Plan } from "@/pages/Plans/types";
 import { authFetch } from "@/services/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -7,9 +8,9 @@ interface ApiError {
   message?: string;
 }
 
-async function deletePlan({ id }: { id: string }) {
-  const response = await authFetch(`plans/${id}`, {
-    method: "DELETE",
+async function activatePlan({ id }: { id: string }) {
+  const response = await authFetch(`plans/${id}/activate`, {
+    method: "PATCH",
   });
 
   const responseData = response.status === 204 ? null : await response.json();
@@ -21,12 +22,11 @@ async function deletePlan({ id }: { id: string }) {
   return responseData;
 }
 
-export function useDeletePlan() {
+export function useActivatePlan() {
   const queryClient = useQueryClient();
 
-  return useMutation<unknown, ApiError, { id: string }>({
-    mutationFn: deletePlan,
-
+  return useMutation<Plan | null, ApiError, { id: string }>({
+    mutationFn: activatePlan,
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["plans"],

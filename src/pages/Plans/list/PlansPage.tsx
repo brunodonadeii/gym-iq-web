@@ -1,5 +1,5 @@
 import { Button } from "@/components/Button/Button";
-import { Dropdown } from "@/components/Dropdown/Dropdown";
+import { Dropdown, type DropdownItem } from "@/components/Dropdown/Dropdown";
 import { Pagination } from "@/components/Pagination/Pagination";
 import { SelectField } from "@/components/SelectField/SelectField";
 import { Skeleton } from "@/components/Skeleton/Skeleton";
@@ -13,14 +13,24 @@ import {
   TableRow,
   TableSkeletonRows,
 } from "@/components/Table/Table";
+import { useActivatePlan } from "@/mutations/useActivatePlan";
+import { useDeactivatePlan } from "@/mutations/useDeactivatePlan";
 import { useDeletePlan } from "@/mutations/useDeletePlan";
+import type { Plan } from "@/pages/Plans/types";
 import { useGetPlans } from "@/queries/useGetPlans";
 import { useNavigate } from "@tanstack/react-router";
-import { Pencil, Trash2, UserPlus } from "lucide-react";
+import { Ban, Pencil, RotateCcw, Trash2, UserPlus } from "lucide-react";
 import { useMemo, useState } from "react";
+import { toast } from "sonner";
 import styles from "./Plans.module.css";
 
 type PlanStatusFilter = "active" | "inactive" | "all";
+
+type ApiError = {
+  erro?: string;
+  mensagem?: string;
+  message?: string;
+};
 
 const planColumns = [
   { width: "20%" },
@@ -30,6 +40,19 @@ const planColumns = [
   { width: "20%" },
   { width: "20%" },
 ];
+
+const showMutationError = (
+  error: ApiError,
+  fallback = "Não foi possível concluir a ação.",
+) => {
+  toast.error(
+    <div>
+      <strong>{error?.erro ?? "Erro"}</strong>
+      <br />
+      <span>{error?.mensagem ?? error?.message ?? fallback}</span>
+    </div>,
+  );
+};
 
 export const PlansPage = () => {
   const navigate = useNavigate();
@@ -42,7 +65,11 @@ export const PlansPage = () => {
     size,
     sort: "name,asc",
   });
-  const { mutate: deletePlan } = useDeletePlan();
+  const { mutate: activatePlan, isPending: isActivating } = useActivatePlan();
+  const { mutate: deactivatePlan, isPending: isDeactivating } =
+    useDeactivatePlan();
+  const { mutate: deletePlan, isPending: isDeleting } = useDeletePlan();
+  const mutationPending = isActivating || isDeactivating || isDeleting;
   const tableLoading = isLoading || isFetching;
   const plans = useMemo(() => {
     const pageContent = data?.content ?? [];
@@ -56,6 +83,84 @@ export const PlansPage = () => {
 
   const activeCount = plans.filter((plan) => plan.active).length;
   const inactiveCount = plans.length - activeCount;
+
+  const handleActivatePlan = (plan: Plan) => {
+    activatePlan(
+      { id: String(plan.planId) },
+      {
+        onSuccess: () => toast.success("Plano ativado com sucesso!"),
+        onError: (error) => showMutationError(error),
+      },
+    );
+  };
+
+  const handleDeactivatePlan = (plan: Plan) => {
+    deactivatePlan(
+      { id: String(plan.planId) },
+      {
+        onSuccess: () => toast.success("Plano inativado com sucesso!"),
+        onError: (error) => showMutationError(error),
+      },
+    );
+  };
+
+  const handleDeletePlan = (plan: Plan) => {
+    deletePlan(
+      { id: String(plan.planId) },
+      {
+        onSuccess: () => toast.success("Plano excluído definitivamente."),
+        onError: (error) =>
+          showMutationError(
+            error,
+            "Não é possível excluir plano vinculado a matrículas.",
+          ),
+      },
+    );
+  };
+
+  const getPlanActions = (plan: Plan): DropdownItem[] => {
+    const actions: DropdownItem[] = [
+      {
+        label: "Editar",
+        icon: <Pencil size={15} />,
+        onSelect: () =>
+          navigate({
+            to: "/plans/$planId",
+            params: { planId: String(plan.planId) },
+          }),
+      },
+    ];
+
+    if (plan.active) {
+      actions.push({
+        label: "Inativar",
+        icon: <Ban size={15} />,
+        danger: true,
+        disabled: mutationPending,
+        onSelect: () => handleDeactivatePlan(plan),
+      });
+
+      return actions;
+    }
+
+    actions.push(
+      {
+        label: "Ativar",
+        icon: <RotateCcw size={15} />,
+        disabled: mutationPending,
+        onSelect: () => handleActivatePlan(plan),
+      },
+      {
+        label: "Excluir definitivamente",
+        icon: <Trash2 size={15} />,
+        danger: true,
+        disabled: mutationPending,
+        onSelect: () => handleDeletePlan(plan),
+      },
+    );
+
+    return actions;
+  };
 
   return (
     <div className={styles.page}>
@@ -151,27 +256,7 @@ export const PlansPage = () => {
                       </span>
                     </TableCell>
                     <TableCell center>
-                      <Dropdown
-                        items={[
-                          {
-                            label: "Editar",
-                            icon: <Pencil size={15} />,
-                            onSelect: () =>
-                              navigate({
-                                to: "/plans/$planId",
-                                params: { planId: String(plan.planId) },
-                              }),
-                          },
-                          {
-                            label: "Excluir",
-                            icon: <Trash2 size={15} />,
-                            danger: true,
-                            onSelect: () => {
-                              deletePlan({ id: String(plan.planId) });
-                            },
-                          },
-                        ]}
-                      />
+                      <Dropdown items={getPlanActions(plan)} />
                     </TableCell>
                   </TableRow>
                 ))}
