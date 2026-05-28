@@ -36,7 +36,7 @@ export function useGenerateRetentionAlerts() {
         queryKey: dashboardKeys.retention(),
       });
       queryClient.invalidateQueries({
-        queryKey: retentionAlertKeys.open(),
+        queryKey: retentionAlertKeys.all,
       });
     },
   });

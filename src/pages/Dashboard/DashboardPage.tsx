@@ -21,6 +21,7 @@ import { useGetFinancialDashboard } from "@/queries/useGetFinancialDashboard";
 import { useGetOperationsDashboard } from "@/queries/useGetOperationsDashboard";
 import { useGetOpenRetentionAlerts } from "@/queries/useGetOpenRetentionAlerts";
 import { useGetRetentionDashboard } from "@/queries/useGetRetentionDashboard";
+import { useGenerateRetentionAlerts } from "@/mutations/useGenerateRetentionAlerts";
 import { useResolveRetentionAlert } from "@/mutations/useResolveRetentionAlert";
 import { DashboardRequestError } from "@/queries/dashboardError";
 import { auth } from "@/utils/auth";
@@ -31,6 +32,7 @@ import {
   CheckCircle2,
   ClipboardList,
   CreditCard,
+  RefreshCw,
   ShieldAlert,
   TrendingUp,
   UserCheck,
@@ -55,6 +57,7 @@ type DashboardSectionProps = {
   generatedAt?: string;
   loading?: boolean;
   error?: unknown;
+  action?: ReactNode;
   children: ReactNode;
 };
 
@@ -189,6 +192,7 @@ const DashboardSection = ({
   generatedAt,
   loading,
   error,
+  action,
   children,
 }: DashboardSectionProps) => (
   <section className={styles.section}>
@@ -197,12 +201,15 @@ const DashboardSection = ({
         <h3 className={styles.sectionTitle}>{title}</h3>
         <p className={styles.sectionDescription}>{description}</p>
       </div>
-      <div className={styles.generatedAt}>
-        {loading ? (
-          <Skeleton width="160px" height="16px" />
-        ) : (
-          `Gerado em ${formatDateTime(generatedAt)}`
-        )}
+      <div className={styles.sectionMeta}>
+        {action}
+        <div className={styles.generatedAt}>
+          {loading ? (
+            <Skeleton width="160px" height="16px" />
+          ) : (
+            `Gerado em ${formatDateTime(generatedAt)}`
+          )}
+        </div>
       </div>
     </div>
 
@@ -602,6 +609,7 @@ export const DashboardPage = () => {
   const financial = useGetFinancialDashboard(isAdmin);
   const operations = useGetOperationsDashboard(isAdmin);
   const openAlerts = useGetOpenRetentionAlerts(undefined, isAdmin);
+  const generateRetentionAlerts = useGenerateRetentionAlerts();
   const resolveAlert = useResolveRetentionAlert();
 
   const blockedByApi =
@@ -634,6 +642,19 @@ export const DashboardPage = () => {
         },
       },
     );
+  };
+
+  const handleRefreshRetentionAnalysis = () => {
+    generateRetentionAlerts.mutate(undefined, {
+      onSuccess: () => {
+        toast.success("Análise de retenção atualizada com sucesso.");
+      },
+      onError: (error) => {
+        toast.error(
+          getErrorMessage(error, "Não foi possível atualizar a análise."),
+        );
+      },
+    });
   };
 
   return (
@@ -681,6 +702,24 @@ export const DashboardPage = () => {
         generatedAt={retention.data?.generatedAt}
         loading={retentionLoading}
         error={retention.error}
+        action={
+          <button
+            className={styles.refreshButton}
+            type="button"
+            disabled={generateRetentionAlerts.isPending}
+            onClick={handleRefreshRetentionAnalysis}
+          >
+            <RefreshCw
+              size={15}
+              className={
+                generateRetentionAlerts.isPending ? styles.spinIcon : undefined
+              }
+            />
+            {generateRetentionAlerts.isPending
+              ? "Atualizando..."
+              : "Atualizar análise"}
+          </button>
+        }
       >
         <div className={styles.metricGrid}>
           <MetricCard
