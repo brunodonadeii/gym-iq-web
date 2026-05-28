@@ -68,9 +68,21 @@ const riskLabels: Record<RetentionRiskLevel, string> = {
   CRITICAL: "Crítico",
 };
 
+const riskDescriptions: Record<RetentionRiskLevel, string> = {
+  LOW: "Baixo risco de abandono",
+  MEDIUM: "Risco médio, vale acompanhar",
+  HIGH: "Alto risco, exige contato",
+  CRITICAL: "Risco crítico, exige ação imediata",
+};
+
 const alertStatusLabels: Record<RetentionAlertStatus, string> = {
   OPEN: "Aberto",
   RESOLVED: "Resolvido",
+};
+
+const alertStatusDescriptions: Record<RetentionAlertStatus, string> = {
+  OPEN: "Alerta pendente de resolução",
+  RESOLVED: "Alerta já resolvido",
 };
 
 const riskRankingColumns = [
@@ -106,30 +118,57 @@ const chartColors = {
   canceled: "#b91c1c",
 };
 
-const formatNumber = (value?: number) =>
-  new Intl.NumberFormat("pt-BR").format(value ?? 0);
+const numberFormatter = new Intl.NumberFormat("pt-BR");
 
-const formatCurrency = (value?: number) =>
-  new Intl.NumberFormat("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  }).format(value ?? 0);
+const decimalFormatter = new Intl.NumberFormat("pt-BR", {
+  maximumFractionDigits: 1,
+});
+
+const currencyFormatter = new Intl.NumberFormat("pt-BR", {
+  style: "currency",
+  currency: "BRL",
+});
+
+const percentFormatter = new Intl.NumberFormat("pt-BR", {
+  maximumFractionDigits: 2,
+});
+
+const chartTooltipSlotProps = {
+  tooltip: {
+    trigger: "item" as const,
+    anchor: "node" as const,
+    position: "top" as const,
+  },
+};
+
+const formatNumber = (value?: number) => numberFormatter.format(value ?? 0);
+
+const formatDecimal = (value?: number) => decimalFormatter.format(value ?? 0);
+
+const formatCurrency = (value?: number) => currencyFormatter.format(value ?? 0);
 
 const formatPercent = (value?: number) =>
-  `${new Intl.NumberFormat("pt-BR", {
-    maximumFractionDigits: 2,
-  }).format(value ?? 0)}%`;
+  `${percentFormatter.format(value ?? 0)}%`;
 
-const formatDateTime = (value?: string) =>
-  value
-    ? new Date(value).toLocaleString("pt-BR", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      })
-    : "Não informado";
+const formatDateTime = (value?: string) => {
+  if (!value) {
+    return "Não informado";
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "Data inválida";
+  }
+
+  return date.toLocaleString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
 
 const getErrorMessage = (error: unknown, fallback: string) => {
   if (error instanceof DashboardRequestError) {
@@ -160,13 +199,19 @@ const hasPositiveValues = (values: number[]) =>
   values.some((value) => value > 0);
 
 const RiskBadge = ({ level }: { level: RetentionRiskLevel }) => (
-  <span className={`${styles.badge} ${styles[`risk${level}`]}`}>
+  <span
+    className={`${styles.badge} ${styles[`risk${level}`]}`}
+    title={riskDescriptions[level] ?? level}
+  >
     {riskLabels[level] ?? level}
   </span>
 );
 
 const StatusBadge = ({ status }: { status: RetentionAlertStatus }) => (
-  <span className={`${styles.badge} ${styles[`status${status}`]}`}>
+  <span
+    className={`${styles.badge} ${styles[`status${status}`]}`}
+    title={alertStatusDescriptions[status] ?? status}
+  >
     {alertStatusLabels[status] ?? status}
   </span>
 );
@@ -216,9 +261,15 @@ const DashboardSection = ({
     {error ? (
       <div className={styles.errorState}>
         <AlertTriangle size={18} />
-        <span>
-          {getErrorMessage(error, "Não foi possível carregar este bloco.")}
-        </span>
+        <div>
+          <strong>Não foi possível carregar este bloco.</strong>
+          <span>
+            {getErrorMessage(
+              error,
+              "Tente atualizar a página ou verificar sua conexão.",
+            )}
+          </span>
+        </div>
       </div>
     ) : (
       children
@@ -228,26 +279,78 @@ const DashboardSection = ({
 
 const ChartPanel = ({
   title,
+  description,
+  summary,
+  legend,
   loading,
   hasData,
   children,
 }: {
   title: string;
+  description: string;
+  summary?: string;
+  legend?: ReactNode;
   loading?: boolean;
   hasData: boolean;
   children: ReactNode;
 }) => (
   <div className={styles.chartPanel}>
-    <h4 className={styles.subsectionTitle}>{title}</h4>
+    <div className={styles.chartHeader}>
+      <div>
+        <h4 className={styles.subsectionTitle}>{title}</h4>
+        <p className={styles.subsectionDescription}>{description}</p>
+      </div>
+      {summary && <span className={styles.chartSummary}>{summary}</span>}
+    </div>
     {loading ? (
-      <Skeleton height="260px" radius="18px" />
+      <div className={styles.chartSkeleton}>
+        <Skeleton height="210px" radius="18px" />
+        <Skeleton width="70%" height="16px" />
+      </div>
     ) : hasData ? (
-      <div className={styles.chartFrame}>{children}</div>
+      <div className={styles.chartFrame}>
+        {children}
+        {legend}
+      </div>
     ) : (
       <div className={styles.emptyChart}>
-        Sem dados suficientes para o gráfico.
+        <strong>Nada para exibir ainda</strong>
+        <span>
+          Assim que a API retornar valores maiores que zero, este gráfico será
+          preenchido automaticamente.
+        </span>
       </div>
     )}
+  </div>
+);
+
+const ChartLegend = ({
+  items,
+  valueFormatter = formatNumber,
+}: {
+  items: Array<{
+    name: string;
+    value: number;
+    fill: string;
+    description: string;
+  }>;
+  valueFormatter?: (value: number) => string;
+}) => (
+  <div className={styles.chartLegend}>
+    {items.map((item) => (
+      <div className={styles.chartLegendItem} key={item.name}>
+        <span
+          className={styles.legendDot}
+          style={{ backgroundColor: item.fill }}
+        />
+        <div>
+          <strong>
+            {item.name}: {valueFormatter(item.value)}
+          </strong>
+          <span>{item.description}</span>
+        </div>
+      </div>
+    ))}
   </div>
 );
 
@@ -263,32 +366,41 @@ const RiskDistributionChart = ({
       name: "Baixo",
       value: data?.lowRiskStudents ?? 0,
       fill: chartColors.low,
+      description: "Alunos com poucos sinais de abandono.",
     },
     {
       name: "Médio",
       value: data?.mediumRiskStudents ?? 0,
       fill: chartColors.medium,
+      description: "Alunos que merecem acompanhamento preventivo.",
     },
     {
       name: "Alto",
       value: data?.highRiskStudents ?? 0,
       fill: chartColors.high,
+      description: "Alunos com sinais fortes de evasão.",
     },
     {
       name: "Crítico",
       value: data?.criticalRiskStudents ?? 0,
       fill: chartColors.critical,
+      description: "Alunos que precisam de ação imediata.",
     },
   ];
+  const total = chartData.reduce((sum, item) => sum + item.value, 0);
 
   return (
     <ChartPanel
       title="Distribuição por risco"
+      description="Quantidade de alunos em cada nível de risco de retenção."
+      summary={`${formatNumber(total)} aluno(s) avaliados`}
       loading={loading}
       hasData={hasPositiveValues(chartData.map((item) => item.value))}
+      legend={<ChartLegend items={chartData} />}
     >
       <BarChart
         height={260}
+        hideLegend
         xAxis={[
           {
             data: chartData.map((item) => item.name),
@@ -303,11 +415,13 @@ const RiskDistributionChart = ({
         yAxis={[{ min: 0 }]}
         series={[
           {
+            label: "Alunos",
             data: chartData.map((item) => item.value),
             valueFormatter: (value) => formatNumber(value ?? 0),
           },
         ]}
         margin={{ top: 16, right: 16, bottom: 34, left: 38 }}
+        slotProps={chartTooltipSlotProps}
       />
     </ChartPanel>
   );
@@ -325,27 +439,37 @@ const FinancialStatusChart = ({
       name: "Pago",
       value: data?.paidAmountCurrentMonth ?? 0,
       fill: chartColors.paid,
+      description: "Valor já recebido no mês atual.",
     },
     {
       name: "Pendente",
       value: data?.pendingAmountCurrentMonth ?? 0,
       fill: chartColors.pending,
+      description: "Valor previsto que ainda não foi pago.",
     },
     {
       name: "Atrasado",
       value: data?.overdueAmountCurrentMonth ?? 0,
       fill: chartColors.overdue,
+      description: "Valor vencido no mês atual.",
     },
   ];
+  const total = chartData.reduce((sum, item) => sum + item.value, 0);
 
   return (
     <ChartPanel
       title="Distribuição financeira"
+      description="Comparação entre valores pagos, pendentes e atrasados."
+      summary={`Total analisado: ${formatCurrency(total)}`}
       loading={loading}
       hasData={hasPositiveValues(chartData.map((item) => item.value))}
+      legend={
+        <ChartLegend items={chartData} valueFormatter={formatCurrency} />
+      }
     >
       <PieChart
         height={260}
+        hideLegend
         series={[
           {
             data: chartData.map((item) => ({
@@ -360,12 +484,7 @@ const FinancialStatusChart = ({
             valueFormatter: (item) => formatCurrency(item.value),
           },
         ]}
-        slotProps={{
-          legend: {
-            direction: "horizontal",
-            position: { vertical: "bottom", horizontal: "center" },
-          },
-        }}
+        slotProps={chartTooltipSlotProps}
       />
     </ChartPanel>
   );
@@ -383,27 +502,35 @@ const EnrollmentStatusChart = ({
       name: "Ativas",
       value: data?.activeEnrollments ?? 0,
       fill: chartColors.active,
+      description: "Matrículas em uso no momento.",
     },
     {
       name: "Suspensas",
       value: data?.suspendedEnrollments ?? 0,
       fill: chartColors.suspended,
+      description: "Matrículas temporariamente pausadas.",
     },
     {
       name: "Canceladas",
       value: data?.canceledEnrollments ?? 0,
       fill: chartColors.canceled,
+      description: "Matrículas encerradas.",
     },
   ];
+  const total = chartData.reduce((sum, item) => sum + item.value, 0);
 
   return (
     <ChartPanel
       title="Status das matrículas"
+      description="Distribuição atual das matrículas por status operacional."
+      summary={`${formatNumber(total)} matrícula(s) no total`}
       loading={loading}
       hasData={hasPositiveValues(chartData.map((item) => item.value))}
+      legend={<ChartLegend items={chartData} />}
     >
       <BarChart
         height={260}
+        hideLegend
         xAxis={[
           {
             data: chartData.map((item) => item.name),
@@ -418,11 +545,13 @@ const EnrollmentStatusChart = ({
         yAxis={[{ min: 0 }]}
         series={[
           {
+            label: "Matrículas",
             data: chartData.map((item) => item.value),
             valueFormatter: (value) => formatNumber(value ?? 0),
           },
         ]}
         margin={{ top: 16, right: 16, bottom: 34, left: 38 }}
+        slotProps={chartTooltipSlotProps}
       />
     </ChartPanel>
   );
@@ -488,7 +617,7 @@ const RiskRankingTable = ({
         {!loading && alerts.length === 0 && (
           <TableEmptyState
             colSpan={6}
-            message="Nenhum aluno em risco retornado pela análise."
+            message="Nenhum aluno em risco retornado pela análise atual."
           />
         )}
       </TableBody>
@@ -582,7 +711,7 @@ const OpenRetentionAlertsTable = ({
         {!loading && alerts.length === 0 && (
           <TableEmptyState
             colSpan={8}
-            message="Nenhum alerta aberto no momento."
+            message="Nenhum alerta aberto no momento. A equipe está em dia com a retenção."
           />
         )}
       </TableBody>
@@ -736,7 +865,7 @@ export const DashboardPage = () => {
           />
           <MetricCard
             label="Score médio de risco"
-            value={formatNumber(retention.data?.averageRiskScore)}
+            value={formatDecimal(retention.data?.averageRiskScore)}
             icon={<AlertTriangle size={18} />}
             loading={retentionLoading}
           />
