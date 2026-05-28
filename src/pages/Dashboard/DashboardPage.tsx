@@ -10,8 +10,11 @@ import {
   TableSkeletonRows,
 } from "@/components/Table/Table";
 import type {
+  FinancialDashboard,
+  OperationsDashboard,
   RetentionAlert,
   RetentionAlertStatus,
+  RetentionDashboard,
   RetentionRiskLevel,
 } from "@/pages/Dashboard/types";
 import { useGetFinancialDashboard } from "@/queries/useGetFinancialDashboard";
@@ -31,6 +34,7 @@ import {
   Users,
 } from "lucide-react";
 import type { ReactNode } from "react";
+import { BarChart, PieChart } from "@mui/x-charts";
 import styles from "./DashboardPage.module.css";
 
 type MetricCardProps = {
@@ -71,6 +75,19 @@ const riskRankingColumns = [
   { width: "12%" },
 ];
 
+const chartColors = {
+  low: "#15803d",
+  medium: "#b45309",
+  high: "#c2410c",
+  critical: "#b91c1c",
+  paid: "#15803d",
+  pending: "#b45309",
+  overdue: "#b91c1c",
+  active: "#15803d",
+  suspended: "#b45309",
+  canceled: "#b91c1c",
+};
+
 const formatNumber = (value?: number) =>
   new Intl.NumberFormat("pt-BR").format(value ?? 0);
 
@@ -110,6 +127,9 @@ const getErrorMessage = (error: unknown, fallback: string) => {
 
 const isForbiddenError = (error: unknown) =>
   error instanceof DashboardRequestError && error.status === 403;
+
+const hasPositiveValues = (values: number[]) =>
+  values.some((value) => value > 0);
 
 const RiskBadge = ({ level }: { level: RetentionRiskLevel }) => (
   <span className={`${styles.badge} ${styles[`risk${level}`]}`}>
@@ -173,6 +193,208 @@ const DashboardSection = ({
     )}
   </section>
 );
+
+const ChartPanel = ({
+  title,
+  loading,
+  hasData,
+  children,
+}: {
+  title: string;
+  loading?: boolean;
+  hasData: boolean;
+  children: ReactNode;
+}) => (
+  <div className={styles.chartPanel}>
+    <h4 className={styles.subsectionTitle}>{title}</h4>
+    {loading ? (
+      <Skeleton height="260px" radius="18px" />
+    ) : hasData ? (
+      <div className={styles.chartFrame}>{children}</div>
+    ) : (
+      <div className={styles.emptyChart}>
+        Sem dados suficientes para o gráfico.
+      </div>
+    )}
+  </div>
+);
+
+const RiskDistributionChart = ({
+  data,
+  loading,
+}: {
+  data?: RetentionDashboard;
+  loading?: boolean;
+}) => {
+  const chartData = [
+    {
+      name: "Baixo",
+      value: data?.lowRiskStudents ?? 0,
+      fill: chartColors.low,
+    },
+    {
+      name: "Médio",
+      value: data?.mediumRiskStudents ?? 0,
+      fill: chartColors.medium,
+    },
+    {
+      name: "Alto",
+      value: data?.highRiskStudents ?? 0,
+      fill: chartColors.high,
+    },
+    {
+      name: "Crítico",
+      value: data?.criticalRiskStudents ?? 0,
+      fill: chartColors.critical,
+    },
+  ];
+
+  return (
+    <ChartPanel
+      title="Distribuição por risco"
+      loading={loading}
+      hasData={hasPositiveValues(chartData.map((item) => item.value))}
+    >
+      <BarChart
+        height={260}
+        xAxis={[
+          {
+            data: chartData.map((item) => item.name),
+            scaleType: "band",
+            colorMap: {
+              type: "ordinal",
+              values: chartData.map((item) => item.name),
+              colors: chartData.map((item) => item.fill),
+            },
+          },
+        ]}
+        yAxis={[{ min: 0 }]}
+        series={[
+          {
+            data: chartData.map((item) => item.value),
+            valueFormatter: (value) => formatNumber(value ?? 0),
+          },
+        ]}
+        margin={{ top: 16, right: 16, bottom: 34, left: 38 }}
+      />
+    </ChartPanel>
+  );
+};
+
+const FinancialStatusChart = ({
+  data,
+  loading,
+}: {
+  data?: FinancialDashboard;
+  loading?: boolean;
+}) => {
+  const chartData = [
+    {
+      name: "Pago",
+      value: data?.paidAmountCurrentMonth ?? 0,
+      fill: chartColors.paid,
+    },
+    {
+      name: "Pendente",
+      value: data?.pendingAmountCurrentMonth ?? 0,
+      fill: chartColors.pending,
+    },
+    {
+      name: "Atrasado",
+      value: data?.overdueAmountCurrentMonth ?? 0,
+      fill: chartColors.overdue,
+    },
+  ];
+
+  return (
+    <ChartPanel
+      title="Distribuição financeira"
+      loading={loading}
+      hasData={hasPositiveValues(chartData.map((item) => item.value))}
+    >
+      <PieChart
+        height={260}
+        series={[
+          {
+            data: chartData.map((item) => ({
+              id: item.name,
+              value: item.value,
+              label: item.name,
+              color: item.fill,
+            })),
+            innerRadius: 58,
+            outerRadius: 92,
+            paddingAngle: 3,
+            valueFormatter: (item) => formatCurrency(item.value),
+          },
+        ]}
+        slotProps={{
+          legend: {
+            direction: "horizontal",
+            position: { vertical: "bottom", horizontal: "center" },
+          },
+        }}
+      />
+    </ChartPanel>
+  );
+};
+
+const EnrollmentStatusChart = ({
+  data,
+  loading,
+}: {
+  data?: OperationsDashboard;
+  loading?: boolean;
+}) => {
+  const chartData = [
+    {
+      name: "Ativas",
+      value: data?.activeEnrollments ?? 0,
+      fill: chartColors.active,
+    },
+    {
+      name: "Suspensas",
+      value: data?.suspendedEnrollments ?? 0,
+      fill: chartColors.suspended,
+    },
+    {
+      name: "Canceladas",
+      value: data?.canceledEnrollments ?? 0,
+      fill: chartColors.canceled,
+    },
+  ];
+
+  return (
+    <ChartPanel
+      title="Status das matrículas"
+      loading={loading}
+      hasData={hasPositiveValues(chartData.map((item) => item.value))}
+    >
+      <BarChart
+        height={260}
+        xAxis={[
+          {
+            data: chartData.map((item) => item.name),
+            scaleType: "band",
+            colorMap: {
+              type: "ordinal",
+              values: chartData.map((item) => item.name),
+              colors: chartData.map((item) => item.fill),
+            },
+          },
+        ]}
+        yAxis={[{ min: 0 }]}
+        series={[
+          {
+            data: chartData.map((item) => item.value),
+            valueFormatter: (value) => formatNumber(value ?? 0),
+          },
+        ]}
+        margin={{ top: 16, right: 16, bottom: 34, left: 38 }}
+      />
+    </ChartPanel>
+  );
+};
 
 const RiskRankingTable = ({
   alerts,
@@ -248,7 +470,8 @@ const AccessBlocked = () => (
     <div>
       <h2>Dashboard disponível apenas para administradores</h2>
       <p>
-        Sua sessão não tem permissão para acessar os indicadores administrativos.
+        Sua sessão não tem permissão para acessar os indicadores
+        administrativos.
       </p>
     </div>
   </section>
@@ -354,6 +577,11 @@ export const DashboardPage = () => {
           />
         </div>
 
+        <RiskDistributionChart
+          data={retention.data}
+          loading={retentionLoading}
+        />
+
         <RiskRankingTable
           alerts={retention.data?.topRiskStudents ?? []}
           loading={retentionLoading}
@@ -402,6 +630,11 @@ export const DashboardPage = () => {
             loading={financialLoading}
           />
         </div>
+
+        <FinancialStatusChart
+          data={financial.data}
+          loading={financialLoading}
+        />
       </DashboardSection>
 
       <DashboardSection
@@ -444,7 +677,9 @@ export const DashboardPage = () => {
           />
           <MetricCard
             label="Vencendo em 7 dias"
-            value={formatNumber(operations.data?.enrollmentsExpiringInNext7Days)}
+            value={formatNumber(
+              operations.data?.enrollmentsExpiringInNext7Days,
+            )}
             icon={<CalendarClock size={18} />}
             loading={operationsLoading}
           />
@@ -455,6 +690,11 @@ export const DashboardPage = () => {
             loading={operationsLoading}
           />
         </div>
+
+        <EnrollmentStatusChart
+          data={operations.data}
+          loading={operationsLoading}
+        />
       </DashboardSection>
     </div>
   );

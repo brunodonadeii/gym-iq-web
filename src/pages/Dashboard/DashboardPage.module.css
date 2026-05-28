@@ -151,6 +151,36 @@
   line-height: 1.5;
 }
 
+.chartPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.chartFrame,
+.emptyChart {
+  width: 100%;
+  min-height: 260px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--surface-alt);
+}
+
+.chartFrame {
+  padding: 12px;
+}
+
+.emptyChart {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  color: var(--muted);
+  text-align: center;
+  font-size: 0.9rem;
+}
+
 .nameCell {
   display: flex;
   flex-direction: column;
