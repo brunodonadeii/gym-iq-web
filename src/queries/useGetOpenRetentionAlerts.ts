@@ -27,10 +27,12 @@ async function fetchOpenRetentionAlerts(
 
 export function useGetOpenRetentionAlerts(
   pagination: PageRequest = DEFAULT_OPEN_RETENTION_ALERTS_PAGE,
+  enabled = true,
 ) {
   return useQuery({
     queryKey: retentionAlertKeys.open(pagination),
     queryFn: () => fetchOpenRetentionAlerts(pagination),
+    enabled,
     placeholderData: keepPreviousData,
     staleTime: 5 * 60 * 1000,
     gcTime: 15 * 60 * 1000,

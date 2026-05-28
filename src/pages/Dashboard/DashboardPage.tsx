@@ -19,13 +19,16 @@ import type {
 } from "@/pages/Dashboard/types";
 import { useGetFinancialDashboard } from "@/queries/useGetFinancialDashboard";
 import { useGetOperationsDashboard } from "@/queries/useGetOperationsDashboard";
+import { useGetOpenRetentionAlerts } from "@/queries/useGetOpenRetentionAlerts";
 import { useGetRetentionDashboard } from "@/queries/useGetRetentionDashboard";
+import { useResolveRetentionAlert } from "@/mutations/useResolveRetentionAlert";
 import { DashboardRequestError } from "@/queries/dashboardError";
 import { auth } from "@/utils/auth";
 import {
   AlertTriangle,
   Banknote,
   CalendarClock,
+  CheckCircle2,
   ClipboardList,
   CreditCard,
   ShieldAlert,
@@ -35,6 +38,7 @@ import {
 } from "lucide-react";
 import type { ReactNode } from "react";
 import { BarChart, PieChart } from "@mui/x-charts";
+import { toast } from "sonner";
 import styles from "./DashboardPage.module.css";
 
 type MetricCardProps = {
@@ -72,6 +76,17 @@ const riskRankingColumns = [
   { width: "14%" },
   { width: "16%" },
   { width: "18%" },
+  { width: "12%" },
+];
+
+const openAlertsColumns = [
+  { width: "22%" },
+  { width: "8%" },
+  { width: "11%" },
+  { width: "12%" },
+  { width: "13%" },
+  { width: "22%" },
+  { width: "12%" },
   { width: "12%" },
 ];
 
@@ -120,6 +135,16 @@ const getErrorMessage = (error: unknown, fallback: string) => {
 
   if (error instanceof Error) {
     return error.message;
+  }
+
+  if (error && typeof error === "object") {
+    const apiError = error as {
+      mensagem?: string;
+      message?: string;
+      erro?: string;
+    };
+
+    return apiError.mensagem ?? apiError.message ?? apiError.erro ?? fallback;
   }
 
   return fallback;
@@ -464,6 +489,100 @@ const RiskRankingTable = ({
   </div>
 );
 
+const OpenRetentionAlertsTable = ({
+  alerts,
+  loading,
+  resolvingAlertId,
+  resolving,
+  onResolve,
+}: {
+  alerts: RetentionAlert[];
+  loading?: boolean;
+  resolvingAlertId?: string;
+  resolving?: boolean;
+  onResolve: (alert: RetentionAlert) => void;
+}) => (
+  <div className={styles.rankingBlock}>
+    <div>
+      <h4 className={styles.subsectionTitle}>Alertas abertos</h4>
+      <p className={styles.subsectionDescription}>
+        Alertas de retenção pendentes de tratamento pela equipe.
+      </p>
+    </div>
+
+    <Table columns={openAlertsColumns} minWidth="1180px">
+      <TableHead>
+        <TableRow>
+          <TableHeaderCell>Aluno</TableHeaderCell>
+          <TableHeaderCell center>Score</TableHeaderCell>
+          <TableHeaderCell center>Nível</TableHeaderCell>
+          <TableHeaderCell center>Dias sem check-in</TableHeaderCell>
+          <TableHeaderCell center>Pagamentos atrasados</TableHeaderCell>
+          <TableHeaderCell>Mensagem</TableHeaderCell>
+          <TableHeaderCell>Atualizado em</TableHeaderCell>
+          <TableHeaderCell center>Ação</TableHeaderCell>
+        </TableRow>
+      </TableHead>
+
+      <TableBody>
+        {loading && <TableSkeletonRows columns={8} rows={5} />}
+
+        {!loading &&
+          alerts.map((alert) => {
+            const alertId = String(alert.retentionAlertId);
+            const isCurrentAlertResolving =
+              resolving && resolvingAlertId === alertId;
+
+            return (
+              <TableRow key={alert.retentionAlertId}>
+                <TableCell>
+                  <div className={styles.nameCell}>
+                    <span className={styles.namePrimary}>
+                      {alert.studentName}
+                    </span>
+                    <span className={styles.nameSecondary}>
+                      {alert.studentEmail}
+                    </span>
+                  </div>
+                </TableCell>
+                <TableCell center>{formatNumber(alert.riskScore)}</TableCell>
+                <TableCell center>
+                  <RiskBadge level={alert.riskLevel} />
+                </TableCell>
+                <TableCell center>{formatNumber(alert.inactiveDays)}</TableCell>
+                <TableCell center>
+                  {formatNumber(alert.overduePayments)}
+                </TableCell>
+                <TableCell>
+                  <span className={styles.messageCell}>{alert.message}</span>
+                </TableCell>
+                <TableCell>{formatDateTime(alert.updatedAt)}</TableCell>
+                <TableCell center>
+                  <button
+                    className={styles.resolveButton}
+                    type="button"
+                    disabled={resolving}
+                    onClick={() => onResolve(alert)}
+                  >
+                    <CheckCircle2 size={14} />
+                    {isCurrentAlertResolving ? "Resolvendo..." : "Resolver"}
+                  </button>
+                </TableCell>
+              </TableRow>
+            );
+          })}
+
+        {!loading && alerts.length === 0 && (
+          <TableEmptyState
+            colSpan={8}
+            message="Nenhum alerta aberto no momento."
+          />
+        )}
+      </TableBody>
+    </Table>
+  </div>
+);
+
 const AccessBlocked = () => (
   <section className={styles.blockedState}>
     <ShieldAlert size={28} />
@@ -482,11 +601,14 @@ export const DashboardPage = () => {
   const retention = useGetRetentionDashboard(isAdmin);
   const financial = useGetFinancialDashboard(isAdmin);
   const operations = useGetOperationsDashboard(isAdmin);
+  const openAlerts = useGetOpenRetentionAlerts(undefined, isAdmin);
+  const resolveAlert = useResolveRetentionAlert();
 
   const blockedByApi =
     isForbiddenError(retention.error) ||
     isForbiddenError(financial.error) ||
-    isForbiddenError(operations.error);
+    isForbiddenError(operations.error) ||
+    isForbiddenError(openAlerts.error);
 
   if (!isAdmin || blockedByApi) {
     return <AccessBlocked />;
@@ -495,6 +617,24 @@ export const DashboardPage = () => {
   const retentionLoading = retention.isLoading || retention.isFetching;
   const financialLoading = financial.isLoading || financial.isFetching;
   const operationsLoading = operations.isLoading || operations.isFetching;
+  const openAlertsLoading = openAlerts.isLoading || openAlerts.isFetching;
+  const resolvingAlertId = resolveAlert.variables?.id;
+
+  const handleResolveAlert = (alert: RetentionAlert) => {
+    resolveAlert.mutate(
+      { id: String(alert.retentionAlertId) },
+      {
+        onSuccess: () => {
+          toast.success("Alerta resolvido com sucesso.");
+        },
+        onError: (error) => {
+          toast.error(
+            getErrorMessage(error, "Não foi possível resolver o alerta."),
+          );
+        },
+      },
+    );
+  };
 
   return (
     <div className={styles.page}>
@@ -585,6 +725,14 @@ export const DashboardPage = () => {
         <RiskRankingTable
           alerts={retention.data?.topRiskStudents ?? []}
           loading={retentionLoading}
+        />
+
+        <OpenRetentionAlertsTable
+          alerts={openAlerts.data?.content ?? []}
+          loading={openAlertsLoading}
+          resolving={resolveAlert.isPending}
+          resolvingAlertId={resolvingAlertId}
+          onResolve={handleResolveAlert}
         />
       </DashboardSection>
 
