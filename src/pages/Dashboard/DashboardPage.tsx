@@ -369,20 +369,29 @@ export const DashboardPage = () => {
       >
         <div className={styles.metricGrid}>
           <MetricCard
+            label="Receita prevista"
+            value={formatCurrency(financial.data?.projectedRevenueCurrentMonth)}
+            icon={<TrendingUp size={18} />}
+            loading={financialLoading}
+          />
+          <MetricCard
             label="Valor pago"
             value={formatCurrency(financial.data?.paidAmountCurrentMonth)}
+            hint={`${formatNumber(financial.data?.paidPaymentsCurrentMonth)} pagamento(s)`}
             icon={<Banknote size={18} />}
             loading={financialLoading}
           />
           <MetricCard
             label="Valor pendente"
             value={formatCurrency(financial.data?.pendingAmountCurrentMonth)}
+            hint={`${formatNumber(financial.data?.pendingPaymentsCurrentMonth)} pagamento(s)`}
             icon={<ClipboardList size={18} />}
             loading={financialLoading}
           />
           <MetricCard
             label="Valor atrasado"
             value={formatCurrency(financial.data?.overdueAmountCurrentMonth)}
+            hint={`${formatNumber(financial.data?.overduePaymentsCurrentMonth)} pagamento(s)`}
             icon={<AlertTriangle size={18} />}
             loading={financialLoading}
           />
@@ -403,6 +412,12 @@ export const DashboardPage = () => {
         error={operations.error}
       >
         <div className={styles.metricGrid}>
+          <MetricCard
+            label="Check-ins hoje"
+            value={formatNumber(operations.data?.checkInsToday)}
+            icon={<UserCheck size={18} />}
+            loading={operationsLoading}
+          />
           <MetricCard
             label="Check-ins abertos"
             value={formatNumber(operations.data?.openCheckIns)}
