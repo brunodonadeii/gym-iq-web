@@ -1,4 +1,5 @@
 import { Skeleton } from "@/components/Skeleton/Skeleton";
+import { Pagination } from "@/components/Pagination/Pagination";
 import {
   Table,
   TableBody,
@@ -16,6 +17,7 @@ import type {
   RetentionDashboard,
   RetentionRiskLevel,
 } from "@/pages/Dashboard/types";
+import type { PageResponse } from "@/types/pagination";
 import { useGetFinancialDashboard } from "@/queries/useGetFinancialDashboard";
 import { useGetOperationsDashboard } from "@/queries/useGetOperationsDashboard";
 import { useGetOpenRetentionAlerts } from "@/queries/useGetOpenRetentionAlerts";
@@ -37,7 +39,7 @@ import {
   UserCheck,
   Users,
 } from "lucide-react";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { BarChart, PieChart } from "@mui/x-charts";
 import { toast } from "sonner";
 import styles from "./DashboardPage.module.css";
@@ -82,6 +84,8 @@ const openAlertsColumns = [
   { width: "16%" },
   { width: "10%" },
 ];
+
+const OPEN_ALERTS_SORT = "riskScore,desc";
 
 const chartColors = {
   low: "#64748b",
@@ -432,9 +436,7 @@ const FinancialStatusChart = ({
       summary={`Total analisado: ${formatCurrency(total)}`}
       loading={loading}
       hasData={hasPositiveValues(chartData.map((item) => item.value))}
-      legend={
-        <ChartLegend items={chartData} valueFormatter={formatCurrency} />
-      }
+      legend={<ChartLegend items={chartData} valueFormatter={formatCurrency} />}
     >
       <PieChart
         height={260}
@@ -528,16 +530,24 @@ const EnrollmentStatusChart = ({
 
 const OpenRetentionAlertsTable = ({
   alerts,
+  page,
+  currentPage,
   loading,
   resolvingAlertId,
   resolving,
   onResolve,
+  onPageChange,
+  onSizeChange,
 }: {
   alerts: RetentionAlert[];
+  page?: PageResponse<RetentionAlert>;
+  currentPage: number;
   loading?: boolean;
   resolvingAlertId?: string;
   resolving?: boolean;
   onResolve: (alert: RetentionAlert) => void;
+  onPageChange: (page: number) => void;
+  onSizeChange: (size: number) => void;
 }) => (
   <div className={styles.rankingBlock}>
     <div>
@@ -612,6 +622,14 @@ const OpenRetentionAlertsTable = ({
         )}
       </TableBody>
     </Table>
+
+    <Pagination
+      page={page}
+      currentPage={currentPage}
+      loading={loading}
+      onPageChange={onPageChange}
+      onSizeChange={onSizeChange}
+    />
   </div>
 );
 
@@ -630,10 +648,19 @@ const AccessBlocked = () => (
 
 export const DashboardPage = () => {
   const isAdmin = auth.hasAnyRole(["ADMIN"]);
+  const [openAlertsPage, setOpenAlertsPage] = useState(0);
+  const [openAlertsSize, setOpenAlertsSize] = useState(10);
   const retention = useGetRetentionDashboard(isAdmin);
   const financial = useGetFinancialDashboard(isAdmin);
   const operations = useGetOperationsDashboard(isAdmin);
-  const openAlerts = useGetOpenRetentionAlerts(undefined, isAdmin);
+  const openAlerts = useGetOpenRetentionAlerts(
+    {
+      page: openAlertsPage,
+      size: openAlertsSize,
+      sort: OPEN_ALERTS_SORT,
+    },
+    isAdmin,
+  );
   const generateRetentionAlerts = useGenerateRetentionAlerts();
   const resolveAlert = useResolveRetentionAlert();
 
@@ -796,10 +823,17 @@ export const DashboardPage = () => {
 
         <OpenRetentionAlertsTable
           alerts={openAlerts.data?.content ?? []}
+          page={openAlerts.data}
+          currentPage={openAlertsPage}
           loading={openAlertsLoading}
           resolving={resolveAlert.isPending}
           resolvingAlertId={resolvingAlertId}
           onResolve={handleResolveAlert}
+          onPageChange={setOpenAlertsPage}
+          onSizeChange={(nextSize) => {
+            setOpenAlertsSize(nextSize);
+            setOpenAlertsPage(0);
+          }}
         />
       </DashboardSection>
 
