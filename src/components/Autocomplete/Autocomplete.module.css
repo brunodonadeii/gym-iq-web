@@ -40,6 +40,16 @@
   background: var(--background-elevated);
 }
 
+.inputError,
+.inputError:hover,
+.inputError:focus {
+  border-color: #dc2626;
+}
+
+.inputError:focus {
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.14);
+}
+
 .input::placeholder {
   color: var(--muted);
 }
@@ -116,10 +126,16 @@
 
 .optionDescription,
 .helperText,
+.errorText,
 .emptyState {
   color: var(--muted);
   font-size: 0.84rem;
   line-height: 1.45;
+}
+
+.errorText {
+  color: #dc2626;
+  font-weight: 600;
 }
 
 .emptyState,

@@ -33,6 +33,16 @@
   background-color: var(--background-elevated);
 }
 
+.inputError,
+.inputError:hover,
+.inputError:focus {
+  border-color: #ef4444;
+}
+
+.inputError:focus {
+  box-shadow: 0 0 0 4px color-mix(in srgb, #ef4444 18%, transparent);
+}
+
 .label {
   font-size: 0.95rem;
   font-weight: 600;
@@ -41,6 +51,12 @@
 
 .helperText {
   color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.errorText {
+  color: #fca5a5;
   font-size: 0.82rem;
   line-height: 1.4;
 }

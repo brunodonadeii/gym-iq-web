@@ -3,32 +3,25 @@ import { Form } from "@/components/Form/Form";
 import { SelectField } from "@/components/SelectField/SelectField";
 import { TextField } from "@/components/TextField/TextField";
 import { useFormInputs } from "@/hooks/useFormInputs";
-import { useCreateAdminUser } from "@/mutations/useCreateAdminUser";
+import { useUpdateAdminUser } from "@/mutations/useUpdateAdminUser";
 import type {
-  AdminUserCreateFormData,
   AdminUserRole,
+  AdminUserUpdateFormData,
 } from "@/pages/AdminUsers/types";
-import { useNavigate } from "@tanstack/react-router";
+import { useGetAdminUserById } from "@/queries/useGetAdminUserById";
+import { useNavigate, useParams } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
-import styles from "./AdminUsersCreate.module.css";
-
-const EMPTY_FORM: AdminUserCreateFormData = {
-  name: "",
-  email: "",
-  password: "",
-  role: "RECEPTION",
-  lgpdAccepted: true,
-};
+import styles from "../create/AdminUsersCreate.module.css";
 
 const roleOptions = [
   { label: "Recepção", value: "RECEPTION" },
   { label: "Administrador", value: "ADMIN" },
 ];
 
-type FormErrors = Partial<Record<keyof AdminUserCreateFormData, string>>;
+type FormErrors = Partial<Record<keyof AdminUserUpdateFormData, string>>;
 
-const validate = (data: AdminUserCreateFormData) => {
+const validate = (data: AdminUserUpdateFormData) => {
   const errors: FormErrors = {};
 
   if (!data.name.trim()) {
@@ -39,12 +32,6 @@ const validate = (data: AdminUserCreateFormData) => {
     errors.email = "Informe o e-mail.";
   } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
     errors.email = "Informe um e-mail válido.";
-  }
-
-  if (!data.password.trim()) {
-    errors.password = "Informe a senha inicial.";
-  } else if (data.password.length < 6) {
-    errors.password = "Use pelo menos 6 caracteres.";
   }
 
   if (!["ADMIN", "RECEPTION"].includes(data.role)) {
@@ -61,12 +48,20 @@ const focusFirstError = (errors: FormErrors) => {
   document.getElementById(firstField)?.focus();
 };
 
-export const AdminUsersCreate = () => {
+type AdminUsersEditFormProps = {
+  userId: string;
+  initialData: AdminUserUpdateFormData;
+};
+
+const AdminUsersEditForm = ({
+  userId,
+  initialData,
+}: AdminUsersEditFormProps) => {
   const navigate = useNavigate();
-  const [data, setData] = useState<AdminUserCreateFormData>(EMPTY_FORM);
+  const [data, setData] = useState<AdminUserUpdateFormData>(initialData);
   const [errors, setErrors] = useState<FormErrors>({});
   const { set } = useFormInputs(setData);
-  const { mutate, isPending } = useCreateAdminUser();
+  const { mutate, isPending } = useUpdateAdminUser();
 
   const handleSubmit = () => {
     const nextErrors = validate(data);
@@ -79,13 +74,16 @@ export const AdminUsersCreate = () => {
 
     mutate(
       {
-        ...data,
-        name: data.name.trim(),
-        email: data.email.trim(),
+        id: userId,
+        data: {
+          ...data,
+          name: data.name.trim(),
+          email: data.email.trim(),
+        },
       },
       {
         onSuccess: () => {
-          toast.success("Usuário administrativo criado com sucesso.");
+          toast.success("Usuário administrativo atualizado com sucesso.");
           navigate({ to: "/admin-users" });
         },
         onError: (e) => {
@@ -103,8 +101,9 @@ export const AdminUsersCreate = () => {
 
   return (
     <Form
-      title="Cadastro administrativo"
-      description="Crie acessos internos para administradores e recepção."
+      title="Editar usuário administrativo"
+      description="Atualize dados de acesso interno. A senha não é alterada nesta tela."
+      loading={false}
       actions={
         <>
           <Button
@@ -121,8 +120,8 @@ export const AdminUsersCreate = () => {
       }
     >
       <div className={styles.notice}>
-        Esta tela cria apenas usuários internos do sistema. Alunos e instrutores
-        continuam usando seus próprios cadastros.
+        Use apenas permissões administrativas internas. Esta rota não deve ser
+        usada para alunos ou instrutores.
       </div>
 
       <div className={styles.row}>
@@ -152,21 +151,6 @@ export const AdminUsersCreate = () => {
           error={errors.email}
           required
         />
-        <TextField
-          label="Senha inicial"
-          id="password"
-          type="password"
-          value={data.password}
-          onChange={(event) => {
-            set("password")(event);
-            setErrors((prev) => ({ ...prev, password: undefined }));
-          }}
-          error={errors.password}
-          required
-        />
-      </div>
-
-      <div className={styles.row}>
         <SelectField
           label="Permissão"
           id="role"
@@ -184,5 +168,65 @@ export const AdminUsersCreate = () => {
         />
       </div>
     </Form>
+  );
+};
+
+export const AdminUsersEdit = () => {
+  const navigate = useNavigate();
+  const { userId } = useParams({ from: "/_sidebar/admin-users/$userId" });
+  const { data: user, isLoading } = useGetAdminUserById(userId);
+
+  if (isLoading) {
+    return (
+      <Form
+        title="Editar usuário administrativo"
+        description="Atualize dados de acesso interno. A senha não é alterada nesta tela."
+        loading
+        actions={
+          <Button
+            variant="secondary"
+            onClick={() => navigate({ to: "/admin-users" })}
+          >
+            Voltar
+          </Button>
+        }
+      >
+        <div />
+      </Form>
+    );
+  }
+
+  if (!user) {
+    return (
+      <Form
+        title="Usuário não encontrado"
+        description="Não foi possível carregar este usuário administrativo."
+        actions={
+          <Button
+            variant="secondary"
+            onClick={() => navigate({ to: "/admin-users" })}
+          >
+            Voltar
+          </Button>
+        }
+      >
+        <div className={styles.notice}>
+          Verifique se o usuário ainda existe ou tente novamente pela listagem.
+        </div>
+      </Form>
+    );
+  }
+
+  return (
+    <AdminUsersEditForm
+      key={userId}
+      userId={userId}
+      initialData={{
+        name: user.name ?? "",
+        email: user.email ?? "",
+        role: user.role ?? "RECEPTION",
+        lgpdAccepted: user.lgpdAccepted ?? true,
+      }}
+    />
   );
 };

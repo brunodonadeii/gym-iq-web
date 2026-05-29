@@ -20,6 +20,7 @@ type AutocompleteProps = {
   loading?: boolean;
   placeholder?: string;
   helperText?: string;
+  error?: string;
   emptyMessage?: string;
   required?: boolean;
   containerClassName?: string;
@@ -36,12 +37,18 @@ export const Autocomplete = ({
   loading = false,
   placeholder,
   helperText,
+  error,
   emptyMessage = "Nenhum resultado encontrado.",
   required,
   containerClassName,
 }: AutocompleteProps) => {
   const [open, setOpen] = useState(false);
   const showList = open && (loading || options.length > 0 || search);
+  const describedBy = error
+    ? `${id}-error`
+    : helperText
+      ? `${id}-helper`
+      : undefined;
 
   return (
     <div
@@ -57,7 +64,7 @@ export const Autocomplete = ({
         <Search className={styles.searchIcon} size={16} />
         <input
           id={id}
-          className={styles.input}
+          className={`${styles.input} ${error ? styles.inputError : ""}`}
           value={search}
           onChange={(e) => {
             onSearchChange(e.target.value);
@@ -68,6 +75,8 @@ export const Autocomplete = ({
           placeholder={placeholder}
           autoComplete="off"
           required={required}
+          aria-invalid={!!error}
+          aria-describedby={describedBy}
         />
 
         {search && onClear && (
@@ -120,7 +129,15 @@ export const Autocomplete = ({
         )}
       </div>
 
-      {helperText && <span className={styles.helperText}>{helperText}</span>}
+      {error ? (
+        <span id={`${id}-error`} className={styles.errorText}>
+          {error}
+        </span>
+      ) : helperText ? (
+        <span id={`${id}-helper`} className={styles.helperText}>
+          {helperText}
+        </span>
+      ) : null}
     </div>
   );
 };

@@ -20,6 +20,7 @@ type SelectFieldProps = Omit<
   onChange: ChangeEventHandler<HTMLSelectElement>;
   options: SelectOption[];
   helperText?: string;
+  error?: string;
   containerProps?: HTMLAttributes<HTMLDivElement>;
 };
 
@@ -30,10 +31,12 @@ export const SelectField = ({
   id,
   options,
   helperText,
+  error,
   containerProps,
   ...rest
 }: SelectFieldProps) => {
   const { className, ...containerRest } = containerProps ?? {};
+  const describedBy = error || helperText ? `${id}-helper` : undefined;
 
   return (
     <div
@@ -46,10 +49,14 @@ export const SelectField = ({
 
       <div className={styles.selectWrapper}>
         <select
-          className={styles.select}
+          className={[styles.select, error && styles.selectError]
+            .filter(Boolean)
+            .join(" ")}
           id={id}
           value={value}
           onChange={onChange}
+          aria-invalid={Boolean(error)}
+          aria-describedby={describedBy}
           {...rest}
         >
           {options.map((option) => (
@@ -64,7 +71,14 @@ export const SelectField = ({
         </select>
       </div>
 
-      {helperText && <span className={styles.helperText}>{helperText}</span>}
+      {(error || helperText) && (
+        <span
+          className={error ? styles.errorText : styles.helperText}
+          id={describedBy}
+        >
+          {error || helperText}
+        </span>
+      )}
     </div>
   );
 };

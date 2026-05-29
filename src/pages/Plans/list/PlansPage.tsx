@@ -1,4 +1,5 @@
 import { Button } from "@/components/Button/Button";
+import { ConfirmDialog } from "@/components/ConfirmDialog/ConfirmDialog";
 import { Dropdown, type DropdownItem } from "@/components/Dropdown/Dropdown";
 import { Pagination } from "@/components/Pagination/Pagination";
 import { SelectField } from "@/components/SelectField/SelectField";
@@ -25,6 +26,8 @@ import { toast } from "sonner";
 import styles from "./Plans.module.css";
 
 type PlanStatusFilter = "active" | "inactive" | "all";
+
+type ConfirmAction = { type: "deactivate" | "delete"; plan: Plan };
 
 type ApiError = {
   erro?: string;
@@ -59,6 +62,9 @@ export const PlansPage = () => {
   const [statusFilter, setStatusFilter] = useState<PlanStatusFilter>("active");
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
+  const [confirmAction, setConfirmAction] = useState<ConfirmAction | null>(
+    null,
+  );
   const { data, isLoading, isFetching } = useGetPlans(statusFilter, {
     page,
     size,
@@ -88,7 +94,10 @@ export const PlansPage = () => {
     deactivatePlan(
       { id: String(plan.planId) },
       {
-        onSuccess: () => toast.success("Plano inativado com sucesso!"),
+        onSuccess: () => {
+          toast.success("Plano inativado com sucesso!");
+          setConfirmAction(null);
+        },
         onError: (error) => showMutationError(error),
       },
     );
@@ -98,7 +107,10 @@ export const PlansPage = () => {
     deletePlan(
       { id: String(plan.planId) },
       {
-        onSuccess: () => toast.success("Plano excluído definitivamente."),
+        onSuccess: () => {
+          toast.success("Plano excluído definitivamente.");
+          setConfirmAction(null);
+        },
         onError: (error) =>
           showMutationError(
             error,
@@ -106,6 +118,17 @@ export const PlansPage = () => {
           ),
       },
     );
+  };
+
+  const handleConfirmAction = () => {
+    if (!confirmAction) return;
+
+    if (confirmAction.type === "delete") {
+      handleDeletePlan(confirmAction.plan);
+      return;
+    }
+
+    handleDeactivatePlan(confirmAction.plan);
   };
 
   const getPlanActions = (plan: Plan): DropdownItem[] => {
@@ -127,7 +150,7 @@ export const PlansPage = () => {
         icon: <Ban size={15} />,
         danger: true,
         disabled: mutationPending,
-        onSelect: () => handleDeactivatePlan(plan),
+        onSelect: () => setConfirmAction({ type: "deactivate", plan }),
       });
 
       return actions;
@@ -145,7 +168,7 @@ export const PlansPage = () => {
         icon: <Trash2 size={15} />,
         danger: true,
         disabled: mutationPending,
-        onSelect: () => handleDeletePlan(plan),
+        onSelect: () => setConfirmAction({ type: "delete", plan }),
       },
     );
 
@@ -272,6 +295,28 @@ export const PlansPage = () => {
           }}
         />
       </section>
+
+      <ConfirmDialog
+        open={!!confirmAction}
+        title={
+          confirmAction?.type === "delete"
+            ? "Excluir plano definitivamente?"
+            : "Inativar plano?"
+        }
+        description={
+          confirmAction?.type === "delete"
+            ? `O plano ${confirmAction.plan.name} será removido definitivamente. Planos vinculados a matrículas podem ser bloqueados pelo servidor.`
+            : confirmAction
+              ? `O plano ${confirmAction.plan.name} deixará de estar disponível para novas matrículas.`
+              : ""
+        }
+        confirmLabel={
+          confirmAction?.type === "delete" ? "Excluir plano" : "Inativar plano"
+        }
+        loading={mutationPending}
+        onCancel={() => setConfirmAction(null)}
+        onConfirm={handleConfirmAction}
+      />
     </div>
   );
 };

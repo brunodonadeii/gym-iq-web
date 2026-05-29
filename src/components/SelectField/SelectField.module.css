@@ -54,6 +54,16 @@
   background-color: var(--background-elevated);
 }
 
+.selectError,
+.selectError:hover,
+.selectError:focus {
+  border-color: #ef4444;
+}
+
+.selectError:focus {
+  box-shadow: 0 0 0 4px color-mix(in srgb, #ef4444 18%, transparent);
+}
+
 .select:disabled {
   background-color: var(--surface);
   border-color: var(--border);
@@ -65,6 +75,12 @@
 
 .helperText {
   color: var(--muted);
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+.errorText {
+  color: #fca5a5;
   font-size: 0.84rem;
   line-height: 1.5;
 }

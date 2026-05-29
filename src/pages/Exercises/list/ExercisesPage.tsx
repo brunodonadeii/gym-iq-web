@@ -1,4 +1,5 @@
 import { Button } from "@/components/Button/Button";
+import { ConfirmDialog } from "@/components/ConfirmDialog/ConfirmDialog";
 import { Dropdown } from "@/components/Dropdown/Dropdown";
 import { Pagination } from "@/components/Pagination/Pagination";
 import { SearchBar } from "@/components/SearchBar/SearchBar";
@@ -44,6 +45,9 @@ export const ExercisesPage = () => {
     useState<ExerciseStatusFilter>("active");
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
+  const [exerciseToDelete, setExerciseToDelete] = useState<Exercise | null>(
+    null,
+  );
   const debouncedSearch = useDebouncedValue(search);
   const queryMode = statusFilter === "active" ? "active" : "all";
 
@@ -56,7 +60,7 @@ export const ExercisesPage = () => {
       sort: "name,asc",
     },
   );
-  const { mutate: deleteExercise } = useDeleteExercise();
+  const { mutate: deleteExercise, isPending: isDeleting } = useDeleteExercise();
   const tableLoading = isLoading;
 
   useEffect(() => {
@@ -87,11 +91,16 @@ export const ExercisesPage = () => {
     return content;
   }, [data, statusFilter]);
 
-  const handleDelete = (id: string) => {
+  const handleDelete = () => {
+    if (!exerciseToDelete) return;
+
     deleteExercise(
-      { id },
+      { id: getExerciseId(exerciseToDelete) },
       {
-        onSuccess: () => toast.success("Exercício inativado com sucesso!"),
+        onSuccess: () => {
+          toast.success("Exercício inativado com sucesso!");
+          setExerciseToDelete(null);
+        },
         onError: (e) => {
           toast.error(
             <div>
@@ -211,8 +220,8 @@ export const ExercisesPage = () => {
                               label: "Inativar",
                               icon: <Trash2 size={15} />,
                               danger: true,
-                              disabled: !exerciseId,
-                              onSelect: () => handleDelete(exerciseId),
+                              disabled: !exerciseId || isDeleting,
+                              onSelect: () => setExerciseToDelete(exercise),
                             },
                           ]}
                         />
@@ -242,6 +251,20 @@ export const ExercisesPage = () => {
           }}
         />
       </section>
+
+      <ConfirmDialog
+        open={!!exerciseToDelete}
+        title="Inativar exercício?"
+        description={
+          exerciseToDelete
+            ? `O exercício ${exerciseToDelete.name} deixará de estar disponível para novas fichas.`
+            : ""
+        }
+        confirmLabel="Inativar exercício"
+        loading={isDeleting}
+        onCancel={() => setExerciseToDelete(null)}
+        onConfirm={handleDelete}
+      />
     </div>
   );
 };

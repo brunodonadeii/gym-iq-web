@@ -1,4 +1,5 @@
 import { Button } from "@/components/Button/Button";
+import { ConfirmDialog } from "@/components/ConfirmDialog/ConfirmDialog";
 import { Dropdown } from "@/components/Dropdown/Dropdown";
 import { Pagination } from "@/components/Pagination/Pagination";
 import { SearchBar } from "@/components/SearchBar/SearchBar";
@@ -38,12 +39,19 @@ const studentColumns = [
   { width: "10%" },
 ];
 
+type ConfirmAction =
+  | { type: "deactivate"; studentId: string; studentName: string }
+  | { type: "anonymize"; studentId: string; studentName: string };
+
 export const StudentsPage = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
+  const [confirmAction, setConfirmAction] = useState<ConfirmAction | null>(
+    null,
+  );
   const debouncedSearch = useDebouncedValue(search);
   const pagination = {
     page,
@@ -63,17 +71,12 @@ export const StudentsPage = () => {
   const tableLoading = isLoading;
 
   const handleDeactivateStudent = (studentId: string) => {
-    const shouldContinue = window.confirm(
-      "Deseja inativar este aluno? O histórico será preservado e ele perderá o acesso ativo.",
-    );
-
-    if (!shouldContinue) return;
-
     deactivateStudent(
       { id: studentId },
       {
         onSuccess: () => {
           toast.success("Aluno inativado com sucesso!");
+          setConfirmAction(null);
         },
         onError: (e) => {
           toast.error(
@@ -93,17 +96,12 @@ export const StudentsPage = () => {
   };
 
   const handleAnonymizeStudent = (studentId: string) => {
-    const shouldContinue = window.confirm(
-      "Deseja anonimizar este aluno? A anonimização só pode ocorrer após a inativação, preserva o histórico e remove os dados pessoais.",
-    );
-
-    if (!shouldContinue) return;
-
     anonymizeStudent(
       { id: studentId },
       {
         onSuccess: () => {
           toast.success("Aluno anonimizado com sucesso!");
+          setConfirmAction(null);
         },
         onError: (e) => {
           const message =
@@ -143,6 +141,17 @@ export const StudentsPage = () => {
       gcTime: STUDENTS_QUERY_GC_TIME,
     });
   }, [data, data?.last, debouncedSearch, page, queryClient, size]);
+
+  const handleConfirmAction = () => {
+    if (!confirmAction) return;
+
+    if (confirmAction.type === "deactivate") {
+      handleDeactivateStudent(confirmAction.studentId);
+      return;
+    }
+
+    handleAnonymizeStudent(confirmAction.studentId);
+  };
 
   return (
     <div className={styles.page}>
@@ -239,7 +248,11 @@ export const StudentsPage = () => {
                             danger: true,
                             disabled: !student.active || isDeactivatingStudent,
                             onSelect: () =>
-                              handleDeactivateStudent(String(student.studentId)),
+                              setConfirmAction({
+                                type: "deactivate",
+                                studentId: String(student.studentId),
+                                studentName: student.name,
+                              }),
                           },
                           ...(!student.active
                             ? [
@@ -250,9 +263,11 @@ export const StudentsPage = () => {
                                     isAnonymizingStudent ||
                                     isAnonymizedStudent(student),
                                   onSelect: () =>
-                                    handleAnonymizeStudent(
-                                      String(student.studentId),
-                                    ),
+                                    setConfirmAction({
+                                      type: "anonymize",
+                                      studentId: String(student.studentId),
+                                      studentName: student.name,
+                                    }),
                                 },
                               ]
                             : []),
@@ -283,6 +298,30 @@ export const StudentsPage = () => {
           }}
         />
       </section>
+
+      <ConfirmDialog
+        open={!!confirmAction}
+        title={
+          confirmAction?.type === "anonymize"
+            ? "Anonimizar aluno?"
+            : "Inativar aluno?"
+        }
+        description={
+          confirmAction?.type === "anonymize"
+            ? `Os dados pessoais de ${confirmAction.studentName} serão removidos e o histórico será preservado. Esta ação exige que o aluno já esteja inativo.`
+            : confirmAction
+              ? `${confirmAction.studentName} perderá o acesso ativo, mas o histórico será preservado.`
+              : ""
+        }
+        confirmLabel={
+          confirmAction?.type === "anonymize"
+            ? "Anonimizar aluno"
+            : "Inativar aluno"
+        }
+        loading={isDeactivatingStudent || isAnonymizingStudent}
+        onCancel={() => setConfirmAction(null)}
+        onConfirm={handleConfirmAction}
+      />
     </div>
   );
 };

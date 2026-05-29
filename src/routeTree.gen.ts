@@ -31,6 +31,7 @@ import { Route as SidebarPaymentsIndexRouteImport } from './routes/_sidebar/paym
 import { Route as SidebarInstructorsIndexRouteImport } from './routes/_sidebar/instructors/index'
 import { Route as SidebarExercisesIndexRouteImport } from './routes/_sidebar/exercises/index'
 import { Route as SidebarEnrollmentsIndexRouteImport } from './routes/_sidebar/enrollments/index'
+import { Route as SidebarAdminUsersIndexRouteImport } from './routes/_sidebar/admin-users/index'
 import { Route as SidebarWorkoutSheetsCreateRouteImport } from './routes/_sidebar/workout-sheets/create'
 import { Route as SidebarWorkoutSheetsWorkoutSheetIdRouteImport } from './routes/_sidebar/workout-sheets/$workoutSheetId'
 import { Route as SidebarStudentsCreateRouteImport } from './routes/_sidebar/students/create'
@@ -44,6 +45,7 @@ import { Route as SidebarExercisesExerciseIdRouteImport } from './routes/_sideba
 import { Route as SidebarEnrollmentsCreateRouteImport } from './routes/_sidebar/enrollments/create'
 import { Route as SidebarEnrollmentsEnrollmentIdRouteImport } from './routes/_sidebar/enrollments/$enrollmentId'
 import { Route as SidebarAdminUsersCreateRouteImport } from './routes/_sidebar/admin-users/create'
+import { Route as SidebarAdminUsersUserIdRouteImport } from './routes/_sidebar/admin-users/$userId'
 
 const UnauthorizedRoute = UnauthorizedRouteImport.update({
   id: '/unauthorized',
@@ -155,6 +157,11 @@ const SidebarEnrollmentsIndexRoute = SidebarEnrollmentsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => SidebarEnrollmentsRoute,
 } as any)
+const SidebarAdminUsersIndexRoute = SidebarAdminUsersIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SidebarAdminUsersRoute,
+} as any)
 const SidebarWorkoutSheetsCreateRoute =
   SidebarWorkoutSheetsCreateRouteImport.update({
     id: '/create',
@@ -228,6 +235,11 @@ const SidebarAdminUsersCreateRoute = SidebarAdminUsersCreateRouteImport.update({
   path: '/create',
   getParentRoute: () => SidebarAdminUsersRoute,
 } as any)
+const SidebarAdminUsersUserIdRoute = SidebarAdminUsersUserIdRouteImport.update({
+  id: '/$userId',
+  path: '/$userId',
+  getParentRoute: () => SidebarAdminUsersRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -244,6 +256,7 @@ export interface FileRoutesByFullPath {
   '/plans': typeof SidebarPlansRouteWithChildren
   '/students': typeof SidebarStudentsRouteWithChildren
   '/workout-sheets': typeof SidebarWorkoutSheetsRouteWithChildren
+  '/admin-users/$userId': typeof SidebarAdminUsersUserIdRoute
   '/admin-users/create': typeof SidebarAdminUsersCreateRoute
   '/enrollments/$enrollmentId': typeof SidebarEnrollmentsEnrollmentIdRoute
   '/enrollments/create': typeof SidebarEnrollmentsCreateRoute
@@ -257,6 +270,7 @@ export interface FileRoutesByFullPath {
   '/students/create': typeof SidebarStudentsCreateRoute
   '/workout-sheets/$workoutSheetId': typeof SidebarWorkoutSheetsWorkoutSheetIdRoute
   '/workout-sheets/create': typeof SidebarWorkoutSheetsCreateRoute
+  '/admin-users/': typeof SidebarAdminUsersIndexRoute
   '/enrollments/': typeof SidebarEnrollmentsIndexRoute
   '/exercises/': typeof SidebarExercisesIndexRoute
   '/instructors/': typeof SidebarInstructorsIndexRoute
@@ -271,8 +285,8 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/student': typeof StudentRoute
   '/unauthorized': typeof UnauthorizedRoute
-  '/admin-users': typeof SidebarAdminUsersRouteWithChildren
   '/dashboard': typeof SidebarDashboardRoute
+  '/admin-users/$userId': typeof SidebarAdminUsersUserIdRoute
   '/admin-users/create': typeof SidebarAdminUsersCreateRoute
   '/enrollments/$enrollmentId': typeof SidebarEnrollmentsEnrollmentIdRoute
   '/enrollments/create': typeof SidebarEnrollmentsCreateRoute
@@ -286,6 +300,7 @@ export interface FileRoutesByTo {
   '/students/create': typeof SidebarStudentsCreateRoute
   '/workout-sheets/$workoutSheetId': typeof SidebarWorkoutSheetsWorkoutSheetIdRoute
   '/workout-sheets/create': typeof SidebarWorkoutSheetsCreateRoute
+  '/admin-users': typeof SidebarAdminUsersIndexRoute
   '/enrollments': typeof SidebarEnrollmentsIndexRoute
   '/exercises': typeof SidebarExercisesIndexRoute
   '/instructors': typeof SidebarInstructorsIndexRoute
@@ -311,6 +326,7 @@ export interface FileRoutesById {
   '/_sidebar/plans': typeof SidebarPlansRouteWithChildren
   '/_sidebar/students': typeof SidebarStudentsRouteWithChildren
   '/_sidebar/workout-sheets': typeof SidebarWorkoutSheetsRouteWithChildren
+  '/_sidebar/admin-users/$userId': typeof SidebarAdminUsersUserIdRoute
   '/_sidebar/admin-users/create': typeof SidebarAdminUsersCreateRoute
   '/_sidebar/enrollments/$enrollmentId': typeof SidebarEnrollmentsEnrollmentIdRoute
   '/_sidebar/enrollments/create': typeof SidebarEnrollmentsCreateRoute
@@ -324,6 +340,7 @@ export interface FileRoutesById {
   '/_sidebar/students/create': typeof SidebarStudentsCreateRoute
   '/_sidebar/workout-sheets/$workoutSheetId': typeof SidebarWorkoutSheetsWorkoutSheetIdRoute
   '/_sidebar/workout-sheets/create': typeof SidebarWorkoutSheetsCreateRoute
+  '/_sidebar/admin-users/': typeof SidebarAdminUsersIndexRoute
   '/_sidebar/enrollments/': typeof SidebarEnrollmentsIndexRoute
   '/_sidebar/exercises/': typeof SidebarExercisesIndexRoute
   '/_sidebar/instructors/': typeof SidebarInstructorsIndexRoute
@@ -349,6 +366,7 @@ export interface FileRouteTypes {
     | '/plans'
     | '/students'
     | '/workout-sheets'
+    | '/admin-users/$userId'
     | '/admin-users/create'
     | '/enrollments/$enrollmentId'
     | '/enrollments/create'
@@ -362,6 +380,7 @@ export interface FileRouteTypes {
     | '/students/create'
     | '/workout-sheets/$workoutSheetId'
     | '/workout-sheets/create'
+    | '/admin-users/'
     | '/enrollments/'
     | '/exercises/'
     | '/instructors/'
@@ -376,8 +395,8 @@ export interface FileRouteTypes {
     | '/login'
     | '/student'
     | '/unauthorized'
-    | '/admin-users'
     | '/dashboard'
+    | '/admin-users/$userId'
     | '/admin-users/create'
     | '/enrollments/$enrollmentId'
     | '/enrollments/create'
@@ -391,6 +410,7 @@ export interface FileRouteTypes {
     | '/students/create'
     | '/workout-sheets/$workoutSheetId'
     | '/workout-sheets/create'
+    | '/admin-users'
     | '/enrollments'
     | '/exercises'
     | '/instructors'
@@ -415,6 +435,7 @@ export interface FileRouteTypes {
     | '/_sidebar/plans'
     | '/_sidebar/students'
     | '/_sidebar/workout-sheets'
+    | '/_sidebar/admin-users/$userId'
     | '/_sidebar/admin-users/create'
     | '/_sidebar/enrollments/$enrollmentId'
     | '/_sidebar/enrollments/create'
@@ -428,6 +449,7 @@ export interface FileRouteTypes {
     | '/_sidebar/students/create'
     | '/_sidebar/workout-sheets/$workoutSheetId'
     | '/_sidebar/workout-sheets/create'
+    | '/_sidebar/admin-users/'
     | '/_sidebar/enrollments/'
     | '/_sidebar/exercises/'
     | '/_sidebar/instructors/'
@@ -602,6 +624,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SidebarEnrollmentsIndexRouteImport
       parentRoute: typeof SidebarEnrollmentsRoute
     }
+    '/_sidebar/admin-users/': {
+      id: '/_sidebar/admin-users/'
+      path: '/'
+      fullPath: '/admin-users/'
+      preLoaderRoute: typeof SidebarAdminUsersIndexRouteImport
+      parentRoute: typeof SidebarAdminUsersRoute
+    }
     '/_sidebar/workout-sheets/create': {
       id: '/_sidebar/workout-sheets/create'
       path: '/create'
@@ -693,15 +722,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SidebarAdminUsersCreateRouteImport
       parentRoute: typeof SidebarAdminUsersRoute
     }
+    '/_sidebar/admin-users/$userId': {
+      id: '/_sidebar/admin-users/$userId'
+      path: '/$userId'
+      fullPath: '/admin-users/$userId'
+      preLoaderRoute: typeof SidebarAdminUsersUserIdRouteImport
+      parentRoute: typeof SidebarAdminUsersRoute
+    }
   }
 }
 
 interface SidebarAdminUsersRouteChildren {
+  SidebarAdminUsersUserIdRoute: typeof SidebarAdminUsersUserIdRoute
   SidebarAdminUsersCreateRoute: typeof SidebarAdminUsersCreateRoute
+  SidebarAdminUsersIndexRoute: typeof SidebarAdminUsersIndexRoute
 }
 
 const SidebarAdminUsersRouteChildren: SidebarAdminUsersRouteChildren = {
+  SidebarAdminUsersUserIdRoute: SidebarAdminUsersUserIdRoute,
   SidebarAdminUsersCreateRoute: SidebarAdminUsersCreateRoute,
+  SidebarAdminUsersIndexRoute: SidebarAdminUsersIndexRoute,
 }
 
 const SidebarAdminUsersRouteWithChildren =

@@ -9,6 +9,7 @@ type TextFieldProps = Omit<
   value: string | number | readonly string[] | undefined;
   onChange: ChangeEventHandler<HTMLInputElement>;
   helperText?: string;
+  error?: string;
 };
 
 export const TextField = ({
@@ -17,8 +18,11 @@ export const TextField = ({
   onChange,
   id,
   helperText,
+  error,
   ...rest
 }: TextFieldProps) => {
+  const describedBy = error || helperText ? `${id}-helper` : undefined;
+
   return (
     <div className={styles.formGroup}>
       <label className={styles.label} htmlFor={id}>
@@ -26,14 +30,25 @@ export const TextField = ({
       </label>
 
       <input
-        className={styles.input}
+        className={[styles.input, error && styles.inputError]
+          .filter(Boolean)
+          .join(" ")}
         id={id}
         value={value}
         onChange={onChange}
+        aria-invalid={Boolean(error)}
+        aria-describedby={describedBy}
         {...rest}
       />
 
-      {helperText && <span className={styles.helperText}>{helperText}</span>}
+      {(error || helperText) && (
+        <span
+          className={error ? styles.errorText : styles.helperText}
+          id={describedBy}
+        >
+          {error || helperText}
+        </span>
+      )}
     </div>
   );
 };

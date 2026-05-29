@@ -8,6 +8,7 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   leftIcon?: ReactNode;
   rightIcon?: ReactNode;
   loading?: boolean;
+  variant?: "primary" | "secondary" | "ghost" | "danger" | "icon";
 };
 
 export const Button = ({
@@ -15,24 +16,32 @@ export const Button = ({
   leftIcon,
   rightIcon,
   loading = false,
+  variant = "primary",
+  className,
   disabled,
   type = "button",
   ...rest
 }: ButtonProps) => {
+  const classNames = [styles.button, styles[variant], className]
+    .filter(Boolean)
+    .join(" ");
+
   return (
     <button
-      className={styles.button}
+      className={classNames}
       type={type}
       disabled={disabled || loading}
       {...rest}
     >
-      <span className={styles.icon}>
-        {loading ? (
-          <LoaderCircle size={18} className={styles.spinner} />
-        ) : (
-          leftIcon
-        )}
-      </span>
+      {(loading || leftIcon) && (
+        <span className={styles.icon}>
+          {loading ? (
+            <LoaderCircle size={18} className={styles.spinner} />
+          ) : (
+            leftIcon
+          )}
+        </span>
+      )}
 
       <span className={styles.content}>{children}</span>
 

@@ -68,7 +68,7 @@ const sidebarItems: SidebarItem[] = [
   {
     label: "Usuários",
     icon: <ShieldPlus size={20} />,
-    to: "/admin-users/create",
+    to: "/admin-users",
     roles: ["ADMIN"],
   },
 ];

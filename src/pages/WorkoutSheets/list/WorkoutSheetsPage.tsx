@@ -1,5 +1,6 @@
 import { Autocomplete } from "@/components/Autocomplete/Autocomplete";
 import { Button } from "@/components/Button/Button";
+import { ConfirmDialog } from "@/components/ConfirmDialog/ConfirmDialog";
 import { Dropdown } from "@/components/Dropdown/Dropdown";
 import { Pagination } from "@/components/Pagination/Pagination";
 import { SelectField } from "@/components/SelectField/SelectField";
@@ -76,6 +77,7 @@ export const WorkoutSheetsPage = () => {
   const [onlyActive, setOnlyActive] = useState("false");
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
+  const [sheetToDelete, setSheetToDelete] = useState<WorkoutSheet | null>(null);
   const debouncedStudentSearch = useDebouncedValue(studentSearch);
   const debouncedInstructorSearch = useDebouncedValue(instructorSearch);
 
@@ -113,7 +115,8 @@ export const WorkoutSheetsPage = () => {
     size,
     sort: "createdAt,desc",
   });
-  const { mutate: deleteWorkoutSheet } = useDeleteWorkoutSheet();
+  const { mutate: deleteWorkoutSheet, isPending: isDeleting } =
+    useDeleteWorkoutSheet();
   const tableLoading = isLoading;
   const sheets = enabled ? (data?.content ?? []) : [];
 
@@ -148,11 +151,16 @@ export const WorkoutSheetsPage = () => {
       description: instructor.email,
     })) ?? [];
 
-  const handleDelete = (id: string) => {
+  const handleDelete = () => {
+    if (!sheetToDelete) return;
+
     deleteWorkoutSheet(
-      { id },
+      { id: getWorkoutSheetId(sheetToDelete) },
       {
-        onSuccess: () => toast.success("Ficha inativada com sucesso!"),
+        onSuccess: () => {
+          toast.success("Ficha inativada com sucesso!");
+          setSheetToDelete(null);
+        },
         onError: (e) => {
           toast.error(
             <div>
@@ -346,8 +354,8 @@ export const WorkoutSheetsPage = () => {
                               label: "Inativar",
                               icon: <Trash2 size={15} />,
                               danger: true,
-                              disabled: !sheetId,
-                              onSelect: () => handleDelete(sheetId),
+                              disabled: !sheetId || isDeleting,
+                              onSelect: () => setSheetToDelete(sheet),
                             },
                           ]}
                         />
@@ -377,6 +385,20 @@ export const WorkoutSheetsPage = () => {
           }}
         />
       </section>
+
+      <ConfirmDialog
+        open={!!sheetToDelete}
+        title="Inativar ficha?"
+        description={
+          sheetToDelete
+            ? `A ficha ${sheetToDelete.name} de ${resolveStudentName(sheetToDelete)} deixará de ficar ativa.`
+            : ""
+        }
+        confirmLabel="Inativar ficha"
+        loading={isDeleting}
+        onCancel={() => setSheetToDelete(null)}
+        onConfirm={handleDelete}
+      />
     </div>
   );
 };

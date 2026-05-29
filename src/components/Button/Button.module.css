@@ -3,14 +3,13 @@
   justify-content: center;
   align-items: center;
 
-  gap: 4px;
+  gap: 8px;
 
-  background: var(--primary);
-  border: none;
-  border-radius: 16px;
-  padding: 10px;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  padding: 0 18px;
 
-  color: var(--primary-contrast);
+  color: var(--text-primary);
 
   height: 56px;
 
@@ -23,14 +22,70 @@
     box-shadow 0.2s ease;
 }
 
-.button:hover {
+.primary {
+  background: var(--primary);
+  color: var(--primary-contrast);
+}
+
+.primary:hover {
   background: var(--button-hover);
   transform: translateY(-1px);
 }
 
-.button:active {
+.primary:active {
   background: var(--button-active);
   transform: translateY(0);
+}
+
+.secondary {
+  background: var(--surface-alt);
+  border-color: var(--border);
+  color: var(--text-primary);
+}
+
+.secondary:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-strong);
+}
+
+.ghost {
+  background: transparent;
+  border-color: transparent;
+  color: var(--text-secondary);
+}
+
+.ghost:hover {
+  background: var(--surface-alt);
+  color: var(--text-primary);
+}
+
+.danger {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+.danger:hover {
+  background: #b91c1c;
+  transform: translateY(-1px);
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button.icon {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 12px;
+  background: var(--surface-alt);
+  border-color: var(--border);
+}
+
+.button.icon .content {
+  display: none;
 }
 
 .button:focus-visible {
