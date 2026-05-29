@@ -29,7 +29,7 @@ import { useGetEnrollments } from "@/queries/useGetEnrollments";
 import { useGetPayments } from "@/queries/useGetPayments";
 import { useGetStudentOptions } from "@/queries/useGetStudentOptions";
 import { CheckCircle2, ClockAlert, RefreshCcw, X } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import styles from "./PaymentsPage.module.css";
 
@@ -154,18 +154,19 @@ export const PaymentsPage = () => {
     data: payments,
     isLoading,
     isFetching,
-  } = useGetPayments(paymentsQuery, filterEnabled, {
-    page,
-    size,
-  });
+  } = useGetPayments(
+    {
+      ...paymentsQuery,
+      ...(statusFilter === "all" ? {} : { status: statusFilter }),
+    },
+    filterEnabled,
+    {
+      page,
+      size,
+    },
+  );
 
-  const visiblePayments = useMemo(() => {
-    const source = filterEnabled ? (payments?.content ?? []) : [];
-
-    if (statusFilter === "all") return source;
-
-    return source.filter((payment) => payment.status === statusFilter);
-  }, [filterEnabled, payments, statusFilter]);
+  const visiblePayments = filterEnabled ? (payments?.content ?? []) : [];
   const tableLoading = isLoading || isFetching;
 
   const studentOptions =

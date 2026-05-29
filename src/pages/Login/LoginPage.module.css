@@ -121,6 +121,16 @@
   box-shadow: var(--shadow-sm);
 }
 
+.errorMessage {
+  padding: 12px 14px;
+  border: 1px solid color-mix(in srgb, #ef4444 45%, var(--border));
+  border-radius: 14px;
+  background: color-mix(in srgb, #ef4444 13%, var(--surface));
+  color: var(--text-primary);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
 @media (max-width: 900px) {
   .container {
     flex-direction: column;

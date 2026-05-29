@@ -20,7 +20,7 @@ import type { Plan } from "@/pages/Plans/types";
 import { useGetPlans } from "@/queries/useGetPlans";
 import { useNavigate } from "@tanstack/react-router";
 import { Ban, Pencil, RotateCcw, Trash2, UserPlus } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import styles from "./Plans.module.css";
 
@@ -59,8 +59,7 @@ export const PlansPage = () => {
   const [statusFilter, setStatusFilter] = useState<PlanStatusFilter>("active");
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
-  const queryMode = statusFilter === "active" ? "active" : "all";
-  const { data, isLoading, isFetching } = useGetPlans(queryMode, {
+  const { data, isLoading, isFetching } = useGetPlans(statusFilter, {
     page,
     size,
     sort: "name,asc",
@@ -71,16 +70,7 @@ export const PlansPage = () => {
   const { mutate: deletePlan, isPending: isDeleting } = useDeletePlan();
   const mutationPending = isActivating || isDeactivating || isDeleting;
   const tableLoading = isLoading || isFetching;
-  const plans = useMemo(() => {
-    const pageContent = data?.content ?? [];
-
-    if (statusFilter === "inactive") {
-      return pageContent.filter((plan) => !plan.active);
-    }
-
-    return pageContent;
-  }, [data, statusFilter]);
-
+  const plans = data?.content ?? [];
   const activeCount = plans.filter((plan) => plan.active).length;
   const inactiveCount = plans.length - activeCount;
 
@@ -212,7 +202,7 @@ export const PlansPage = () => {
           <div>
             <h3 className={styles.sectionTitle}>Lista principal</h3>
             <p className={styles.sectionDescription}>
-              {data?.totalElements ?? 0} plano(s) retornado(s) pelo endpoint.
+              {data?.totalElements ?? 0} plano(s) encontrado(s) para o filtro.
             </p>
           </div>
         </div>

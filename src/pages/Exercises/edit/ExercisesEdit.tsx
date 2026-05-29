@@ -3,10 +3,10 @@ import { Form } from "@/components/Form/Form";
 import { TextField } from "@/components/TextField/TextField";
 import { useFormInputs } from "@/hooks/useFormInputs";
 import { useUpdateExercise } from "@/mutations/useUpdateExercise";
-import type { ExerciseFormData } from "@/pages/Exercises/types";
+import type { Exercise, ExerciseFormData } from "@/pages/Exercises/types";
 import { useGetExerciseById } from "@/queries/useGetExerciseById";
 import { useNavigate, useParams } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import styles from "./ExercisesEdit.module.css";
 
@@ -16,24 +16,27 @@ const EMPTY_FORM: ExerciseFormData = {
   description: "",
 };
 
-export const ExercisesEdit = () => {
-  const params = useParams({ strict: false });
-  const exerciseId = params.exerciseId;
-  const [data, setData] = useState<ExerciseFormData>(EMPTY_FORM);
+const mapExerciseToForm = (details?: Exercise): ExerciseFormData => ({
+  name: details?.name ?? "",
+  muscleGroup: details?.muscleGroup ?? "",
+  description: details?.description ?? "",
+});
+
+type ExercisesEditFormProps = {
+  exerciseId?: string;
+  initialData: ExerciseFormData;
+  loading: boolean;
+};
+
+const ExercisesEditForm = ({
+  exerciseId,
+  initialData,
+  loading,
+}: ExercisesEditFormProps) => {
+  const [data, setData] = useState<ExerciseFormData>(initialData);
   const { set } = useFormInputs(setData);
   const navigate = useNavigate();
-  const { data: details, isLoading } = useGetExerciseById(exerciseId);
   const { mutate, isPending } = useUpdateExercise();
-
-  useEffect(() => {
-    if (!details) return;
-
-    setData({
-      name: details.name ?? "",
-      muscleGroup: details.muscleGroup ?? "",
-      description: details.description ?? "",
-    });
-  }, [details]);
 
   const handleSubmit = () => {
     mutate(
@@ -60,7 +63,7 @@ export const ExercisesEdit = () => {
     <Form
       title="Dados do exercício"
       description="Atualize as informações usadas nas fichas de treino."
-      loading={isLoading}
+      loading={loading}
       actions={
         <>
           <Button
@@ -104,5 +107,21 @@ export const ExercisesEdit = () => {
         />
       </div>
     </Form>
+  );
+};
+
+export const ExercisesEdit = () => {
+  const params = useParams({ strict: false });
+  const exerciseId = params.exerciseId;
+  const { data: details, isLoading } = useGetExerciseById(exerciseId);
+  const initialData = isLoading ? EMPTY_FORM : mapExerciseToForm(details);
+
+  return (
+    <ExercisesEditForm
+      key={`${exerciseId ?? "new"}-${isLoading}`}
+      exerciseId={exerciseId}
+      initialData={initialData}
+      loading={isLoading}
+    />
   );
 };

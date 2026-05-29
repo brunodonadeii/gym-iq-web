@@ -21,6 +21,7 @@ import { useDeleteWorkoutSheetExercise } from "@/mutations/useDeleteWorkoutSheet
 import { useUpdateWorkoutSheet } from "@/mutations/useUpdateWorkoutSheet";
 import { useUpdateWorkoutSheetExercise } from "@/mutations/useUpdateWorkoutSheetExercise";
 import type {
+  WorkoutSheet,
   WorkoutSheetExercise,
   WorkoutSheetExerciseFormData,
   WorkoutSheetFormData,
@@ -32,7 +33,7 @@ import { useGetWorkoutSheetById } from "@/queries/useGetWorkoutSheetById";
 import { useGetWorkoutSheetExercises } from "@/queries/useGetWorkoutSheetExercises";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { Pencil, Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import styles from "./WorkoutSheetsDetails.module.css";
 
@@ -77,16 +78,51 @@ const resolveExerciseName = (exercise: WorkoutSheetExercise) =>
 const resolveExerciseId = (exercise: WorkoutSheetExercise) =>
   String(exercise.exerciseId);
 
-export const WorkoutSheetsDetails = () => {
-  const params = useParams({ strict: false });
-  const workoutSheetId = params.workoutSheetId;
+const mapWorkoutSheetToForm = (details?: WorkoutSheet): WorkoutSheetFormData => ({
+  studentId: String(details?.studentId ?? details?.student?.studentId ?? ""),
+  instructorId: String(
+    details?.instructorId ?? details?.instructor?.instructorId ?? "",
+  ),
+  name: details?.name ?? "",
+  goal: details?.goal ?? "",
+  startDate: details?.startDate ?? "",
+  endDate: details?.endDate ?? "",
+  notes: details?.notes ?? "",
+  exercises:
+    details?.exercises?.map((exercise) => ({
+      exerciseId: String(exercise.exerciseId),
+      sets: String(exercise.sets ?? ""),
+      repetitions: exercise.repetitions ?? "",
+      loadKg: String(exercise.loadKg ?? ""),
+      restSeconds: String(exercise.restSeconds ?? ""),
+      executionOrder: String(exercise.executionOrder ?? ""),
+      notes: exercise.notes ?? "",
+    })) ?? [],
+});
+
+type WorkoutSheetsDetailsContentProps = {
+  details?: WorkoutSheet;
+  isLoadingDetails: boolean;
+  workoutSheetId?: string;
+};
+
+const WorkoutSheetsDetailsContent = ({
+  details,
+  isLoadingDetails,
+  workoutSheetId,
+}: WorkoutSheetsDetailsContentProps) => {
   const navigate = useNavigate();
-  const [sheetForm, setSheetForm] =
-    useState<WorkoutSheetFormData>(EMPTY_SHEET_FORM);
+  const [sheetForm, setSheetForm] = useState<WorkoutSheetFormData>(() =>
+    details ? mapWorkoutSheetToForm(details) : EMPTY_SHEET_FORM,
+  );
   const [exerciseForm, setExerciseForm] =
     useState<WorkoutSheetExerciseFormData>(EMPTY_EXERCISE_FORM);
-  const [studentSearch, setStudentSearch] = useState("");
-  const [instructorSearch, setInstructorSearch] = useState("");
+  const [studentSearch, setStudentSearch] = useState(
+    details?.student?.name ?? details?.studentName ?? "",
+  );
+  const [instructorSearch, setInstructorSearch] = useState(
+    details?.instructor?.name ?? details?.instructorName ?? "",
+  );
   const [exerciseSearch, setExerciseSearch] = useState("");
   const [editingExerciseId, setEditingExerciseId] = useState("");
   const [exercisePage, setExercisePage] = useState(0);
@@ -96,9 +132,6 @@ export const WorkoutSheetsDetails = () => {
   const debouncedExerciseSearch = useDebouncedValue(exerciseSearch);
   const { set: setSheetField } = useFormInputs(setSheetForm);
   const { set: setExerciseField } = useFormInputs(setExerciseForm);
-
-  const { data: details, isLoading: isLoadingDetails } =
-    useGetWorkoutSheetById(workoutSheetId);
   const { data: studentOptions, isFetching: isFetchingStudents } =
     useGetStudentOptions(debouncedStudentSearch);
   const { data: instructors, isFetching: isFetchingInstructors } =
@@ -135,36 +168,6 @@ export const WorkoutSheetsDetails = () => {
   const exerciseRows = sheetExercises?.content ?? [];
   const isExerciseSubmitting = isCreatingExercise || isUpdatingExercise;
   const tableLoading = isLoadingSheetExercises || isFetchingSheetExercises;
-
-  useEffect(() => {
-    if (!details) return;
-
-    setSheetForm({
-      studentId: String(details.studentId ?? details.student?.studentId ?? ""),
-      instructorId: String(
-        details.instructorId ?? details.instructor?.instructorId ?? "",
-      ),
-      name: details.name ?? "",
-      goal: details.goal ?? "",
-      startDate: details.startDate ?? "",
-      endDate: details.endDate ?? "",
-      notes: details.notes ?? "",
-      exercises:
-        details.exercises?.map((exercise) => ({
-          exerciseId: String(exercise.exerciseId),
-          sets: String(exercise.sets ?? ""),
-          repetitions: exercise.repetitions ?? "",
-          loadKg: String(exercise.loadKg ?? ""),
-          restSeconds: String(exercise.restSeconds ?? ""),
-          executionOrder: String(exercise.executionOrder ?? ""),
-          notes: exercise.notes ?? "",
-        })) ?? [],
-    });
-    setStudentSearch(details.student?.name ?? details.studentName ?? "");
-    setInstructorSearch(
-      details.instructor?.name ?? details.instructorName ?? "",
-    );
-  }, [details]);
 
   const autocompleteStudentOptions =
     studentOptions?.map((student) => ({
@@ -627,5 +630,21 @@ export const WorkoutSheetsDetails = () => {
         />
       </section>
     </div>
+  );
+};
+
+export const WorkoutSheetsDetails = () => {
+  const params = useParams({ strict: false });
+  const workoutSheetId = params.workoutSheetId;
+  const { data: details, isLoading: isLoadingDetails } =
+    useGetWorkoutSheetById(workoutSheetId);
+
+  return (
+    <WorkoutSheetsDetailsContent
+      key={`${workoutSheetId ?? "new"}-${details?.updatedAt ?? isLoadingDetails}`}
+      details={details}
+      isLoadingDetails={isLoadingDetails}
+      workoutSheetId={workoutSheetId}
+    />
   );
 };

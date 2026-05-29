@@ -13,8 +13,8 @@ import {
 import {
   ChartLegend,
   ChartPanel,
-  chartTooltipSlotProps,
 } from "./ChartPanel";
+import { chartTooltipSlotProps } from "./chartConfig";
 
 type DashboardChartProps<TData> = {
   data?: TData;

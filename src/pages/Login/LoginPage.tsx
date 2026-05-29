@@ -6,18 +6,26 @@ import { login } from "@/services/auth";
 import { auth, getDefaultPathByRole } from "@/utils/auth";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useState } from "react";
+import { toast } from "sonner";
 import { FormHeader } from "./components/FormHeader/FormHeader";
 import styles from "./LoginPage.module.css";
 
 export const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const search = useSearch({ strict: false }) as { redirect?: string };
   const redirect = search.redirect ?? "/dashboard";
   const navigate = useNavigate();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (isSubmitting) return;
+
+    setErrorMessage("");
+    setIsSubmitting(true);
+
     try {
       await login({ email, password });
       await router.invalidate();
@@ -25,8 +33,14 @@ export const LoginPage = () => {
         to:
           redirect === "/dashboard" ? getDefaultPathByRole(auth.role) : redirect,
       });
-    } catch (err) {
-      console.log("Credenciais inválidas", err);
+    } catch {
+      const message =
+        "Não foi possível entrar. Confira seu e-mail e senha e tente novamente.";
+
+      setErrorMessage(message);
+      toast.error(message);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -57,7 +71,11 @@ export const LoginPage = () => {
               type="email"
               id="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setErrorMessage("");
+              }}
+              disabled={isSubmitting}
             />
 
             <TextField
@@ -65,10 +83,22 @@ export const LoginPage = () => {
               type="password"
               id="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setErrorMessage("");
+              }}
+              disabled={isSubmitting}
             />
 
-            <Button type="submit">Entrar</Button>
+            {errorMessage && (
+              <div className={styles.errorMessage} role="alert">
+                {errorMessage}
+              </div>
+            )}
+
+            <Button type="submit" loading={isSubmitting}>
+              Entrar
+            </Button>
 
             <div className={styles.demoCard}>
               <p className={styles.demoTitle}>
