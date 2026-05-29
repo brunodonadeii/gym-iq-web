@@ -13,7 +13,6 @@ import type {
   FinancialDashboard,
   OperationsDashboard,
   RetentionAlert,
-  RetentionAlertStatus,
   RetentionDashboard,
   RetentionRiskLevel,
 } from "@/pages/Dashboard/types";
@@ -75,45 +74,24 @@ const riskDescriptions: Record<RetentionRiskLevel, string> = {
   CRITICAL: "Risco crítico, exige ação imediata",
 };
 
-const alertStatusLabels: Record<RetentionAlertStatus, string> = {
-  OPEN: "Aberto",
-  RESOLVED: "Resolvido",
-};
-
-const alertStatusDescriptions: Record<RetentionAlertStatus, string> = {
-  OPEN: "Alerta pendente de resolução",
-  RESOLVED: "Alerta já resolvido",
-};
-
-const riskRankingColumns = [
-  { width: "28%" },
-  { width: "12%" },
+const openAlertsColumns = [
+  { width: "34%" },
+  { width: "10%" },
   { width: "14%" },
   { width: "16%" },
-  { width: "18%" },
-  { width: "12%" },
-];
-
-const openAlertsColumns = [
-  { width: "22%" },
-  { width: "8%" },
-  { width: "11%" },
-  { width: "12%" },
-  { width: "13%" },
-  { width: "22%" },
-  { width: "12%" },
-  { width: "12%" },
+  { width: "16%" },
+  { width: "10%" },
 ];
 
 const chartColors = {
-  low: "#15803d",
+  low: "#64748b",
   medium: "#b45309",
   high: "#c2410c",
   critical: "#b91c1c",
-  paid: "#15803d",
+  paid: "#ff8a3d",
   pending: "#b45309",
   overdue: "#b91c1c",
-  active: "#15803d",
+  active: "#ff8a3d",
   suspended: "#b45309",
   canceled: "#b91c1c",
 };
@@ -204,15 +182,6 @@ const RiskBadge = ({ level }: { level: RetentionRiskLevel }) => (
     title={riskDescriptions[level] ?? level}
   >
     {riskLabels[level] ?? level}
-  </span>
-);
-
-const StatusBadge = ({ status }: { status: RetentionAlertStatus }) => (
-  <span
-    className={`${styles.badge} ${styles[`status${status}`]}`}
-    title={alertStatusDescriptions[status] ?? status}
-  >
-    {alertStatusLabels[status] ?? status}
   </span>
 );
 
@@ -557,74 +526,6 @@ const EnrollmentStatusChart = ({
   );
 };
 
-const RiskRankingTable = ({
-  alerts,
-  loading,
-}: {
-  alerts: RetentionAlert[];
-  loading?: boolean;
-}) => (
-  <div className={styles.rankingBlock}>
-    <div>
-      <h4 className={styles.subsectionTitle}>Ranking de risco</h4>
-      <p className={styles.subsectionDescription}>
-        Alunos com maior probabilidade de abandono segundo a análise atual.
-      </p>
-    </div>
-
-    <Table columns={riskRankingColumns} minWidth="920px">
-      <TableHead>
-        <TableRow>
-          <TableHeaderCell>Aluno</TableHeaderCell>
-          <TableHeaderCell center>Score</TableHeaderCell>
-          <TableHeaderCell center>Nível</TableHeaderCell>
-          <TableHeaderCell center>Dias sem check-in</TableHeaderCell>
-          <TableHeaderCell center>Pagamentos atrasados</TableHeaderCell>
-          <TableHeaderCell center>Status</TableHeaderCell>
-        </TableRow>
-      </TableHead>
-
-      <TableBody>
-        {loading && <TableSkeletonRows columns={6} rows={4} />}
-
-        {!loading &&
-          alerts.map((alert) => (
-            <TableRow key={alert.retentionAlertId}>
-              <TableCell>
-                <div className={styles.nameCell}>
-                  <span className={styles.namePrimary}>
-                    {alert.studentName}
-                  </span>
-                  <span className={styles.nameSecondary}>
-                    {alert.studentEmail}
-                  </span>
-                </div>
-              </TableCell>
-              <TableCell center>{formatNumber(alert.riskScore)}</TableCell>
-              <TableCell center>
-                <RiskBadge level={alert.riskLevel} />
-              </TableCell>
-              <TableCell center>{formatNumber(alert.inactiveDays)}</TableCell>
-              <TableCell center>
-                {formatNumber(alert.overduePayments)}
-              </TableCell>
-              <TableCell center>
-                <StatusBadge status={alert.status} />
-              </TableCell>
-            </TableRow>
-          ))}
-
-        {!loading && alerts.length === 0 && (
-          <TableEmptyState
-            colSpan={6}
-            message="Nenhum aluno em risco retornado pela análise atual."
-          />
-        )}
-      </TableBody>
-    </Table>
-  </div>
-);
-
 const OpenRetentionAlertsTable = ({
   alerts,
   loading,
@@ -640,13 +541,14 @@ const OpenRetentionAlertsTable = ({
 }) => (
   <div className={styles.rankingBlock}>
     <div>
-      <h4 className={styles.subsectionTitle}>Alertas abertos</h4>
+      <h4 className={styles.subsectionTitle}>Alunos que precisam de atenção</h4>
       <p className={styles.subsectionDescription}>
-        Alertas de retenção pendentes de tratamento pela equipe.
+        Prioridade de contato baseada em risco, ausência de check-in e
+        pagamentos atrasados.
       </p>
     </div>
 
-    <Table columns={openAlertsColumns} minWidth="1180px">
+    <Table columns={openAlertsColumns} minWidth="920px">
       <TableHead>
         <TableRow>
           <TableHeaderCell>Aluno</TableHeaderCell>
@@ -654,14 +556,12 @@ const OpenRetentionAlertsTable = ({
           <TableHeaderCell center>Nível</TableHeaderCell>
           <TableHeaderCell center>Dias sem check-in</TableHeaderCell>
           <TableHeaderCell center>Pagamentos atrasados</TableHeaderCell>
-          <TableHeaderCell>Mensagem</TableHeaderCell>
-          <TableHeaderCell>Atualizado em</TableHeaderCell>
-          <TableHeaderCell center>Ação</TableHeaderCell>
+          <TableHeaderCell center>Resolver</TableHeaderCell>
         </TableRow>
       </TableHead>
 
       <TableBody>
-        {loading && <TableSkeletonRows columns={8} rows={5} />}
+        {loading && <TableSkeletonRows columns={6} rows={5} />}
 
         {!loading &&
           alerts.map((alert) => {
@@ -689,10 +589,6 @@ const OpenRetentionAlertsTable = ({
                 <TableCell center>
                   {formatNumber(alert.overduePayments)}
                 </TableCell>
-                <TableCell>
-                  <span className={styles.messageCell}>{alert.message}</span>
-                </TableCell>
-                <TableCell>{formatDateTime(alert.updatedAt)}</TableCell>
                 <TableCell center>
                   <button
                     className={styles.resolveButton}
@@ -710,7 +606,7 @@ const OpenRetentionAlertsTable = ({
 
         {!loading && alerts.length === 0 && (
           <TableEmptyState
-            colSpan={8}
+            colSpan={6}
             message="Nenhum alerta aberto no momento. A equipe está em dia com a retenção."
           />
         )}
@@ -789,12 +685,20 @@ export const DashboardPage = () => {
   return (
     <div className={styles.page}>
       <div className={styles.pageHeader}>
-        <div>
+        <div className={styles.headerContent}>
           <span className={styles.eyebrow}>Dashboard ADMIN</span>
           <h2 className={styles.title}>Visão geral da academia</h2>
           <p className={styles.subtitle}>
-            Indicadores de retenção, finanças e operação carregados em paralelo.
+            Acompanhe retenção, finanças e operação em uma leitura única para
+            tomada de decisão.
           </p>
+        </div>
+
+        <div className={styles.headerAside}>
+          <span className={styles.statusPill}>Dados administrativos</span>
+          <span className={styles.headerNote}>
+            Dashboards carregados em paralelo
+          </span>
         </div>
       </div>
 
@@ -890,11 +794,6 @@ export const DashboardPage = () => {
           loading={retentionLoading}
         />
 
-        <RiskRankingTable
-          alerts={retention.data?.topRiskStudents ?? []}
-          loading={retentionLoading}
-        />
-
         <OpenRetentionAlertsTable
           alerts={openAlerts.data?.content ?? []}
           loading={openAlertsLoading}
@@ -964,12 +863,6 @@ export const DashboardPage = () => {
           <MetricCard
             label="Check-ins hoje"
             value={formatNumber(operations.data?.checkInsToday)}
-            icon={<UserCheck size={18} />}
-            loading={operationsLoading}
-          />
-          <MetricCard
-            label="Check-ins abertos"
-            value={formatNumber(operations.data?.openCheckIns)}
             icon={<UserCheck size={18} />}
             loading={operationsLoading}
           />
