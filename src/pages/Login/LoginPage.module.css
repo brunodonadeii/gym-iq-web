@@ -131,6 +131,32 @@
   line-height: 1.45;
 }
 
+.successMessage {
+  padding: 12px 14px;
+  border: 1px solid color-mix(in srgb, #22c55e 45%, var(--border));
+  border-radius: 14px;
+  background: color-mix(in srgb, #22c55e 13%, var(--surface));
+  color: var(--text-primary);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.footerAction {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.inlineLink {
+  color: var(--primary);
+  font-size: 0.92rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.inlineLink:hover {
+  text-decoration: underline;
+}
+
 @media (max-width: 900px) {
   .container {
     flex-direction: column;

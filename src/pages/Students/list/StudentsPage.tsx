@@ -44,6 +44,18 @@ type ConfirmAction =
   | { type: "deactivate"; studentId: string; studentName: string }
   | { type: "anonymize"; studentId: string; studentName: string };
 
+const getSensitiveValue = (
+  value: string | undefined,
+  maskedValue: string,
+  anonymized: boolean,
+) => {
+  if (anonymized) {
+    return value || "-";
+  }
+
+  return maskedValue;
+};
+
 export const StudentsPage = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -200,83 +212,104 @@ export const StudentsPage = () => {
               {tableLoading && <TableSkeletonRows columns={6} />}
 
               {!tableLoading &&
-                students.map((student) => (
-                  <TableRow key={student.studentId}>
-                    <TableCell>
-                      <div className={styles.nameCell}>
-                        <span className={styles.namePrimary}>
-                          {student.name}
-                        </span>
-                        {isAnonymizedStudent(student) && (
-                          <span className={styles.anonymizedBadge}>
-                            Anonimizado
+                students.map((student) => {
+                  const anonymized = isAnonymizedStudent(student);
+
+                  return (
+                    <TableRow key={student.studentId}>
+                      <TableCell>
+                        <div className={styles.nameCell}>
+                          <span className={styles.namePrimary}>
+                            {student.name}
                           </span>
+                          {anonymized && (
+                            <span className={styles.anonymizedBadge}>
+                              Cadastro removido
+                            </span>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        {getSensitiveValue(
+                          student.cpf,
+                          maskCpf(student.cpf),
+                          anonymized,
                         )}
-                      </div>
-                    </TableCell>
-                    <TableCell>{maskCpf(student.cpf)}</TableCell>
-                    <TableCell>{maskPhone(student.phone)}</TableCell>
-                    <TableCell>{maskEmail(student.email)}</TableCell>
-                    <TableCell center>
-                      <span
-                        className={`${styles.statusBadge} ${
-                          student.active
-                            ? styles.statusActive
-                            : styles.statusInactive
-                        }`}
-                      >
-                        {student.active ? "Ativo" : "Inativo"}
-                      </span>
-                    </TableCell>
-                    <TableCell center>
-                      <Dropdown
-                        items={[
-                          {
-                            label: "Editar",
-                            icon: <Pencil size={15} />,
-                            disabled: isAnonymizedStudent(student),
-                            onSelect: () =>
-                              navigate({
-                                to: "/students/$studentId",
-                                params: {
+                      </TableCell>
+                      <TableCell>
+                        {getSensitiveValue(
+                          student.phone,
+                          maskPhone(student.phone),
+                          anonymized,
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {getSensitiveValue(
+                          student.email,
+                          maskEmail(student.email),
+                          anonymized,
+                        )}
+                      </TableCell>
+                      <TableCell center>
+                        <span
+                          className={`${styles.statusBadge} ${
+                            student.active
+                              ? styles.statusActive
+                              : styles.statusInactive
+                          }`}
+                        >
+                          {student.active ? "Ativo" : "Inativo"}
+                        </span>
+                      </TableCell>
+                      <TableCell center>
+                        <Dropdown
+                          items={[
+                            {
+                              label: "Editar",
+                              icon: <Pencil size={15} />,
+                              disabled: anonymized,
+                              onSelect: () =>
+                                navigate({
+                                  to: "/students/$studentId",
+                                  params: {
+                                    studentId: String(student.studentId),
+                                  },
+                                }),
+                            },
+                            {
+                              label: "Inativar aluno",
+                              icon: <UserMinus size={15} />,
+                              danger: true,
+                              disabled: !student.active || isDeactivatingStudent,
+                              onSelect: () =>
+                                setConfirmAction({
+                                  type: "deactivate",
                                   studentId: String(student.studentId),
-                                },
-                              }),
-                          },
-                          {
-                            label: "Inativar aluno",
-                            icon: <UserMinus size={15} />,
-                            danger: true,
-                            disabled: !student.active || isDeactivatingStudent,
-                            onSelect: () =>
-                              setConfirmAction({
-                                type: "deactivate",
-                                studentId: String(student.studentId),
-                                studentName: student.name,
-                              }),
-                          },
-                          ...(!student.active
-                            ? [
-                                {
-                                  label: "Anonimizar aluno",
-                                  icon: <EyeOff size={15} />,
-                                  disabled:
-                                    isAnonymizingStudent ||
-                                    isAnonymizedStudent(student),
-                                  onSelect: () =>
-                                    setConfirmAction({
-                                      type: "anonymize",
-                                      studentId: String(student.studentId),
-                                      studentName: student.name,
-                                    }),
-                                },
-                              ]
-                            : []),
-                        ]}
-                      />
-                    </TableCell>
-                  </TableRow>
-                ))}
+                                  studentName: student.name,
+                                }),
+                            },
+                            ...(!student.active
+                              ? [
+                                  {
+                                    label: "Anonimizar aluno",
+                                    icon: <EyeOff size={15} />,
+                                    disabled:
+                                      isAnonymizingStudent || anonymized,
+                                    onSelect: () =>
+                                      setConfirmAction({
+                                        type: "anonymize",
+                                        studentId: String(student.studentId),
+                                        studentName: student.name,
+                                      }),
+                                  },
+                                ]
+                              : []),
+                          ]}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
 
               {!tableLoading && students.length === 0 && (
                 <TableEmptyState

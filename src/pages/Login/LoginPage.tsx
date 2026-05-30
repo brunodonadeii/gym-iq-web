@@ -5,7 +5,7 @@ import { router } from "@/router";
 import { login } from "@/services/auth";
 import { normalizeApiError, showApiError } from "@/utils/apiError";
 import { auth, getDefaultPathByRole } from "@/utils/auth";
-import { useNavigate, useSearch } from "@tanstack/react-router";
+import { Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useState } from "react";
 import { FormHeader } from "./components/FormHeader/FormHeader";
 import styles from "./LoginPage.module.css";
@@ -104,6 +104,12 @@ export const LoginPage = () => {
             <Button type="submit" loading={isSubmitting}>
               Entrar
             </Button>
+
+            <div className={styles.footerAction}>
+              <Link className={styles.inlineLink} to="/forgot-password">
+                Esqueci minha senha
+              </Link>
+            </div>
 
             <div className={styles.demoCard}>
               <p className={styles.demoTitle}>

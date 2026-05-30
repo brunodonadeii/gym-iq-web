@@ -11,7 +11,9 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UnauthorizedRouteImport } from './routes/unauthorized'
 import { Route as StudentRouteImport } from './routes/student'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as CheckInRouteImport } from './routes/check-in'
 import { Route as SidebarRouteRouteImport } from './routes/_sidebar/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -57,9 +59,19 @@ const StudentRoute = StudentRouteImport.update({
   path: '/student',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CheckInRoute = CheckInRouteImport.update({
@@ -244,7 +256,9 @@ const SidebarAdminUsersUserIdRoute = SidebarAdminUsersUserIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/check-in': typeof CheckInRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/student': typeof StudentRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/admin-users': typeof SidebarAdminUsersRouteWithChildren
@@ -282,7 +296,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/check-in': typeof CheckInRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/student': typeof StudentRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/dashboard': typeof SidebarDashboardRoute
@@ -314,7 +330,9 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_sidebar': typeof SidebarRouteRouteWithChildren
   '/check-in': typeof CheckInRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/student': typeof StudentRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/_sidebar/admin-users': typeof SidebarAdminUsersRouteWithChildren
@@ -354,7 +372,9 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/check-in'
+    | '/forgot-password'
     | '/login'
+    | '/reset-password'
     | '/student'
     | '/unauthorized'
     | '/admin-users'
@@ -392,7 +412,9 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/check-in'
+    | '/forgot-password'
     | '/login'
+    | '/reset-password'
     | '/student'
     | '/unauthorized'
     | '/dashboard'
@@ -423,7 +445,9 @@ export interface FileRouteTypes {
     | '/'
     | '/_sidebar'
     | '/check-in'
+    | '/forgot-password'
     | '/login'
+    | '/reset-password'
     | '/student'
     | '/unauthorized'
     | '/_sidebar/admin-users'
@@ -463,7 +487,9 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   SidebarRouteRoute: typeof SidebarRouteRouteWithChildren
   CheckInRoute: typeof CheckInRoute
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
   LoginRoute: typeof LoginRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   StudentRoute: typeof StudentRoute
   UnauthorizedRoute: typeof UnauthorizedRoute
 }
@@ -484,11 +510,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudentRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/check-in': {
@@ -884,7 +924,9 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   SidebarRouteRoute: SidebarRouteRouteWithChildren,
   CheckInRoute: CheckInRoute,
+  ForgotPasswordRoute: ForgotPasswordRoute,
   LoginRoute: LoginRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   StudentRoute: StudentRoute,
   UnauthorizedRoute: UnauthorizedRoute,
 }
