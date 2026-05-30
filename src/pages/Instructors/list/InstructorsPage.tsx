@@ -91,7 +91,7 @@ export const InstructorsPage = () => {
         onError: (e) => {
           toast.error(
             <div>
-              <strong>{e?.erro ?? "Erro"}</strong>
+              <strong>{e?.erro ?? e?.error ?? "Erro"}</strong>
               <br />
               <span>
                 {e?.mensagem ??
@@ -254,3 +254,4 @@ export const InstructorsPage = () => {
     </div>
   );
 };
+

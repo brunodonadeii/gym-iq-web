@@ -42,9 +42,9 @@ export const InstructorsCreate = () => {
       onError: (e) => {
         toast.error(
           <div>
-            <strong>{e?.erro ?? "Erro"}</strong>
+            <strong>{e?.erro ?? e?.error ?? "Erro"}</strong>
             <br />
-            <span>{e?.mensagem ?? "Erro inesperado"}</span>
+            <span>{e?.mensagem ?? e?.message ?? "Erro inesperado"}</span>
           </div>,
         );
       },
@@ -147,3 +147,5 @@ export const InstructorsCreate = () => {
     </Form>
   );
 };
+
+

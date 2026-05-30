@@ -64,6 +64,12 @@ const getEnrollmentStatusClassName = (status?: EnrollmentStatus) => {
   return `${styles.badge} ${styles.warningBadge}`;
 };
 
+const isRecurringEnrollment = (endDate?: string | null) =>
+  endDate === null || endDate === undefined || endDate === "";
+
+const formatEnrollmentEndDate = (endDate?: string | null) =>
+  isRecurringEnrollment(endDate) ? "Matricula recorrente" : formatDate(endDate);
+
 export const StudentPortalPage = () => {
   const navigate = useNavigate();
   const { data: student, isLoading: isLoadingStudent } = useGetStudentMe();
@@ -163,7 +169,7 @@ export const StudentPortalPage = () => {
                 </div>
                 <div className={styles.detail}>
                   <span>Fim</span>
-                  <strong>{formatDate(activeEnrollment.endDate)}</strong>
+                  <strong>{formatEnrollmentEndDate(activeEnrollment.endDate)}</strong>
                 </div>
                 <div className={styles.detail}>
                   <span>Criada em</span>
@@ -286,7 +292,7 @@ export const StudentPortalPage = () => {
                       </p>
                       <p className={styles.itemDescription}>
                         {formatDate(enrollment.startDate)} até{" "}
-                        {formatDate(enrollment.endDate)}
+                        {formatEnrollmentEndDate(enrollment.endDate)}
                       </p>
                     </div>
                     <span className={getEnrollmentStatusClassName(enrollment.status)}>

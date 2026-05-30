@@ -77,10 +77,10 @@ export const AdminUsersPage = () => {
         onError: (e) => {
           toast.error(
             <div>
-              <strong>{e?.erro ?? "Erro"}</strong>
+              <strong>{e?.erro ?? e?.error ?? "Erro"}</strong>
               <br />
               <span>
-                {e?.mensagem ?? "Não foi possível remover este usuário."}
+                {e?.mensagem ?? e?.message ?? "Não foi possível remover este usuário."}
               </span>
             </div>,
           );
@@ -231,3 +231,5 @@ export const AdminUsersPage = () => {
     </div>
   );
 };
+
+

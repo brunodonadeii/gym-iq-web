@@ -2,37 +2,26 @@ import { toast } from "sonner";
 
 export type ApiError = Error & {
   status?: number;
+  statusCode?: number;
   erro?: string;
+  error?: string;
   mensagem?: string;
+  message: string;
+  path?: string;
+  timestamp?: string;
   details?: unknown;
 };
 
 const DEFAULT_ERROR_TITLE = "Erro";
 const DEFAULT_ERROR_MESSAGE = "Nao foi possivel concluir a operacao.";
 
-const createApiError = ({
-  status,
-  erro,
-  mensagem,
-  message,
-  details,
-}: {
+type ApiErrorInput = {
   status?: number;
-  erro?: string;
-  mensagem?: string;
+  title?: string;
   message?: string;
+  path?: string;
+  timestamp?: string;
   details?: unknown;
-}) => {
-  const normalizedMessage = mensagem ?? message ?? erro ?? DEFAULT_ERROR_MESSAGE;
-  const error = new Error(normalizedMessage) as ApiError;
-
-  error.name = "ApiError";
-  error.status = status;
-  error.erro = erro ?? DEFAULT_ERROR_TITLE;
-  error.mensagem = mensagem ?? normalizedMessage;
-  error.details = details;
-
-  return error;
 };
 
 const getObjectValue = (value: unknown, key: string) => {
@@ -42,6 +31,41 @@ const getObjectValue = (value: unknown, key: string) => {
 
   const result = (value as Record<string, unknown>)[key];
   return typeof result === "string" && result.trim() ? result : undefined;
+};
+
+const getObjectNumber = (value: unknown, key: string) => {
+  if (!value || typeof value !== "object" || !(key in value)) {
+    return undefined;
+  }
+
+  const result = (value as Record<string, unknown>)[key];
+  return typeof result === "number" ? result : undefined;
+};
+
+const createApiError = ({
+  status,
+  title,
+  message,
+  path,
+  timestamp,
+  details,
+}: ApiErrorInput) => {
+  const normalizedTitle = title ?? DEFAULT_ERROR_TITLE;
+  const normalizedMessage = message ?? DEFAULT_ERROR_MESSAGE;
+  const apiError = new Error(normalizedMessage) as ApiError;
+
+  apiError.name = "ApiError";
+  apiError.status = status;
+  apiError.statusCode = status;
+  apiError.erro = normalizedTitle;
+  apiError.error = normalizedTitle;
+  apiError.mensagem = normalizedMessage;
+  apiError.message = normalizedMessage;
+  apiError.path = path;
+  apiError.timestamp = timestamp;
+  apiError.details = details;
+
+  return apiError;
 };
 
 async function readResponseData(response: Response) {
@@ -67,9 +91,16 @@ export function normalizeApiError(
   fallbackMessage = DEFAULT_ERROR_MESSAGE,
 ) {
   if (error instanceof Error) {
+    const apiError = error as ApiError;
+
     return createApiError({
-      message: error.message || fallbackMessage,
-      details: error,
+      status: apiError.status ?? apiError.statusCode,
+      title:
+        apiError.erro ?? apiError.error ?? error.name ?? DEFAULT_ERROR_TITLE,
+      message: apiError.mensagem ?? error.message ?? fallbackMessage,
+      path: apiError.path,
+      timestamp: apiError.timestamp,
+      details: apiError.details ?? error,
     });
   }
 
@@ -81,17 +112,23 @@ export function normalizeApiError(
   }
 
   if (error && typeof error === "object") {
-    const erro = getObjectValue(error, "erro");
-    const mensagem = getObjectValue(error, "mensagem");
-    const message = getObjectValue(error, "message");
-    const statusValue = (error as { status?: unknown }).status;
-    const status = typeof statusValue === "number" ? statusValue : undefined;
+    const title =
+      getObjectValue(error, "erro") ??
+      getObjectValue(error, "error") ??
+      DEFAULT_ERROR_TITLE;
+    const message =
+      getObjectValue(error, "mensagem") ??
+      getObjectValue(error, "message") ??
+      fallbackMessage;
+    const status =
+      getObjectNumber(error, "status") ?? getObjectNumber(error, "statusCode");
 
     return createApiError({
       status,
-      erro,
-      mensagem,
-      message: message ?? fallbackMessage,
+      title,
+      message,
+      path: getObjectValue(error, "path"),
+      timestamp: getObjectValue(error, "timestamp"),
       details: error,
     });
   }

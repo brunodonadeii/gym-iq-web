@@ -50,7 +50,7 @@ const showMutationError = (
 ) => {
   toast.error(
     <div>
-      <strong>{error?.erro ?? "Erro"}</strong>
+      <strong>{error?.erro ?? error?.error ?? "Erro"}</strong>
       <br />
       <span>{error?.mensagem ?? error?.message ?? fallback}</span>
     </div>,
@@ -320,3 +320,4 @@ export const PlansPage = () => {
     </div>
   );
 };
+

@@ -94,7 +94,7 @@ export const StudentsPage = () => {
         onError: (e) => {
           toast.error(
             <div>
-              <strong>{e?.erro ?? "Erro"}</strong>
+              <strong>{e?.erro ?? e?.error ?? "Erro"}</strong>
               <br />
               <span>
                 {e?.mensagem ??
@@ -124,7 +124,7 @@ export const StudentsPage = () => {
 
           toast.error(
             <div>
-              <strong>{e?.erro ?? "Erro"}</strong>
+              <strong>{e?.erro ?? e?.error ?? "Erro"}</strong>
               <br />
               <span>
                 {/ativo/i.test(message)
@@ -359,3 +359,4 @@ export const StudentsPage = () => {
     </div>
   );
 };
+
