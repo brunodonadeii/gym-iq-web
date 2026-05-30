@@ -1,15 +1,12 @@
 import type { AdminUser } from "@/pages/AdminUsers/types";
 import { authFetch } from "@/services/api";
+import { parseApiResponse } from "@/utils/apiError";
 import { useQuery } from "@tanstack/react-query";
 
 async function fetchAdminUserById(id?: string): Promise<AdminUser> {
   const response = await authFetch(`users/${id}`);
 
-  if (!response.ok) {
-    throw new Error("Erro ao buscar usuário administrativo");
-  }
-
-  return response.json();
+  return parseApiResponse(response, "Erro ao buscar usuario administrativo");
 }
 
 export function useGetAdminUserById(id?: string) {

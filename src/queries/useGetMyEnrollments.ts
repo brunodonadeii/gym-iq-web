@@ -1,6 +1,7 @@
 import type { Enrollment } from "@/pages/Enrollments/types";
 import { authFetch } from "@/services/api";
 import type { PageRequest, PageResponse } from "@/types/pagination";
+import { parseApiResponse } from "@/utils/apiError";
 import { buildPaginationParams } from "@/utils/pagination";
 import { useQuery } from "@tanstack/react-query";
 
@@ -17,11 +18,7 @@ async function fetchMyEnrollments(
     `enrollments/me?${buildPaginationParams(pagination)}`,
   );
 
-  if (!response.ok) {
-    throw await response.json();
-  }
-
-  return response.json();
+  return parseApiResponse(response, "Erro ao buscar minhas matriculas");
 }
 
 export function useGetMyEnrollments(

@@ -3,10 +3,10 @@ import { Card } from "@/components/Card/Card";
 import { TextField } from "@/components/TextField/TextField";
 import { router } from "@/router";
 import { login } from "@/services/auth";
+import { normalizeApiError, showApiError } from "@/utils/apiError";
 import { auth, getDefaultPathByRole } from "@/utils/auth";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useState } from "react";
-import { toast } from "sonner";
 import { FormHeader } from "./components/FormHeader/FormHeader";
 import styles from "./LoginPage.module.css";
 
@@ -33,12 +33,17 @@ export const LoginPage = () => {
         to:
           redirect === "/dashboard" ? getDefaultPathByRole(auth.role) : redirect,
       });
-    } catch {
-      const message =
-        "Não foi possível entrar. Confira seu e-mail e senha e tente novamente.";
+    } catch (error) {
+      const apiError = normalizeApiError(
+        error,
+        "Nao foi possivel entrar. Confira seu e-mail e senha e tente novamente.",
+      );
 
-      setErrorMessage(message);
-      toast.error(message);
+      setErrorMessage(apiError.mensagem ?? apiError.message);
+      showApiError(
+        apiError,
+        "Nao foi possivel entrar. Confira seu e-mail e senha e tente novamente.",
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -52,12 +57,12 @@ export const LoginPage = () => {
             <img className={styles.logo} src="/logo.svg" alt="Gym IQ" />
           </div>
           <h2>
-            Dados, <span className={styles.accent}>previsões</span> e gestão em
-            um só sistema.
+            Dados, <span className={styles.accent}>previsoes</span> e gestao em
+            um so sistema.
           </h2>
           <p className={styles.muted}>
-            Centralize alunos, pagamentos, métricas e análises preditivas em uma
-            única plataforma.
+            Centralize alunos, pagamentos, metricas e analises preditivas em uma
+            unica plataforma.
           </p>
         </div>
       </div>

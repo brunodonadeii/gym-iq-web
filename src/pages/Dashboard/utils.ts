@@ -1,4 +1,4 @@
-import { DashboardRequestError } from "@/queries/dashboardError";
+import { normalizeApiError } from "@/utils/apiError";
 
 const numberFormatter = new Intl.NumberFormat("pt-BR");
 
@@ -28,13 +28,13 @@ export const formatPercent = (value?: number) =>
 
 export const formatDateTime = (value?: string) => {
   if (!value) {
-    return "Não informado";
+    return "Nao informado";
   }
 
   const date = new Date(value);
 
   if (Number.isNaN(date.getTime())) {
-    return "Data inválida";
+    return "Data invalida";
   }
 
   return date.toLocaleString("pt-BR", {
@@ -46,30 +46,11 @@ export const formatDateTime = (value?: string) => {
   });
 };
 
-export const getErrorMessage = (error: unknown, fallback: string) => {
-  if (error instanceof DashboardRequestError) {
-    return error.mensagem ?? error.message;
-  }
-
-  if (error instanceof Error) {
-    return error.message;
-  }
-
-  if (error && typeof error === "object") {
-    const apiError = error as {
-      mensagem?: string;
-      message?: string;
-      erro?: string;
-    };
-
-    return apiError.mensagem ?? apiError.message ?? apiError.erro ?? fallback;
-  }
-
-  return fallback;
-};
+export const getErrorMessage = (error: unknown, fallback: string) =>
+  normalizeApiError(error, fallback).mensagem ?? fallback;
 
 export const isForbiddenError = (error: unknown) =>
-  error instanceof DashboardRequestError && error.status === 403;
+  normalizeApiError(error).status === 403;
 
 export const hasPositiveValues = (values: number[]) =>
   values.some((value) => value > 0);

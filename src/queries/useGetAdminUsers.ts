@@ -1,6 +1,7 @@
 import type { AdminUser } from "@/pages/AdminUsers/types";
 import { authFetch } from "@/services/api";
 import type { PageRequest, PageResponse } from "@/types/pagination";
+import { parseApiResponse } from "@/utils/apiError";
 import { buildPaginationParams } from "@/utils/pagination";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
@@ -9,11 +10,7 @@ async function fetchAdminUsers(
 ): Promise<PageResponse<AdminUser>> {
   const response = await authFetch(`users?${buildPaginationParams(pagination)}`);
 
-  if (!response.ok) {
-    throw new Error("Erro ao buscar usuários administrativos");
-  }
-
-  return response.json();
+  return parseApiResponse(response, "Erro ao buscar usuarios administrativos");
 }
 
 const paginateUsers = (

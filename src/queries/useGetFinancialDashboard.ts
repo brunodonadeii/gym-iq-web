@@ -1,20 +1,13 @@
 import type { FinancialDashboard } from "@/pages/Dashboard/types";
 import { authFetch } from "@/services/api";
+import { parseApiResponse } from "@/utils/apiError";
 import { useQuery } from "@tanstack/react-query";
-import { throwDashboardRequestError } from "./dashboardError";
 import { dashboardKeys } from "./dashboardKeys";
 
 async function fetchFinancialDashboard(): Promise<FinancialDashboard> {
   const response = await authFetch("dashboard/financial");
 
-  if (!response.ok) {
-    await throwDashboardRequestError(
-      response,
-      "Erro ao buscar dashboard financeiro",
-    );
-  }
-
-  return response.json();
+  return parseApiResponse(response, "Erro ao buscar dashboard financeiro");
 }
 
 export function useGetFinancialDashboard(enabled = true) {

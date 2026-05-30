@@ -1,6 +1,7 @@
 import type { WorkoutSheet } from "@/pages/WorkoutSheets/types";
 import { authFetch } from "@/services/api";
 import type { PageRequest, PageResponse } from "@/types/pagination";
+import { parseApiResponse } from "@/utils/apiError";
 import { buildPaginationParams } from "@/utils/pagination";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
@@ -31,11 +32,7 @@ export async function fetchWorkoutSheets(
   );
   const response = await authFetch(`${getWorkoutSheetsUrl(query)}?${params}`);
 
-  if (!response.ok) {
-    throw new Error("Erro ao buscar fichas de treino");
-  }
-
-  return response.json();
+  return parseApiResponse(response, "Erro ao buscar fichas de treino");
 }
 
 export function useGetWorkoutSheets(

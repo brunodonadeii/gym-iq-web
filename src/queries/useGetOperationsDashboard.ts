@@ -1,20 +1,13 @@
 import type { OperationsDashboard } from "@/pages/Dashboard/types";
 import { authFetch } from "@/services/api";
+import { parseApiResponse } from "@/utils/apiError";
 import { useQuery } from "@tanstack/react-query";
-import { throwDashboardRequestError } from "./dashboardError";
 import { dashboardKeys } from "./dashboardKeys";
 
 async function fetchOperationsDashboard(): Promise<OperationsDashboard> {
   const response = await authFetch("dashboard/operations");
 
-  if (!response.ok) {
-    await throwDashboardRequestError(
-      response,
-      "Erro ao buscar dashboard operacional",
-    );
-  }
-
-  return response.json();
+  return parseApiResponse(response, "Erro ao buscar dashboard operacional");
 }
 
 export function useGetOperationsDashboard(enabled = true) {

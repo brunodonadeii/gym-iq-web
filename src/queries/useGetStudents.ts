@@ -1,5 +1,6 @@
 import type { Student } from "@/pages/Students/types";
 import { authFetch } from "@/services/api";
+import { parseApiResponse } from "@/utils/apiError";
 import type { PageRequest, PageResponse } from "@/types/pagination";
 import { buildPaginationParams } from "@/utils/pagination";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
@@ -21,11 +22,7 @@ export async function fetchStudents(
   const url = search ? `students/search?${query}` : `students?${query}`;
   const response = await authFetch(url);
 
-  if (!response.ok) {
-    throw new Error("Erro ao buscar alunos");
-  }
-
-  return response.json();
+  return parseApiResponse(response, "Erro ao buscar alunos");
 }
 
 export function useGetStudents(
@@ -41,3 +38,5 @@ export function useGetStudents(
     refetchOnWindowFocus: false,
   });
 }
+
+

@@ -1,4 +1,5 @@
 import { clearAuthStorage } from "@/utils/auth";
+import { parseApiResponse } from "@/utils/apiError";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -14,15 +15,17 @@ export type AuthResponse = {
 };
 
 export async function login(data: LoginRequest): Promise<AuthResponse> {
-  const res = await fetch(`${API_URL}/auth/login`, {
+  const response = await fetch(`${API_URL}/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
 
-  if (!res.ok) throw new Error("Credenciais inválidas");
+  const jsonData = await parseApiResponse<AuthResponse>(
+    response,
+    "Nao foi possivel entrar. Confira seu e-mail e senha e tente novamente.",
+  );
 
-  const jsonData = await res.json();
   clearAuthStorage();
   localStorage.setItem("token", jsonData.token);
 

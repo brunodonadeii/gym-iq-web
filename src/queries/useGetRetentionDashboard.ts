@@ -1,20 +1,13 @@
 import type { RetentionDashboard } from "@/pages/Dashboard/types";
 import { authFetch } from "@/services/api";
+import { parseApiResponse } from "@/utils/apiError";
 import { useQuery } from "@tanstack/react-query";
-import { throwDashboardRequestError } from "./dashboardError";
 import { dashboardKeys } from "./dashboardKeys";
 
 async function fetchRetentionDashboard(): Promise<RetentionDashboard> {
   const response = await authFetch("dashboard/retention");
 
-  if (!response.ok) {
-    await throwDashboardRequestError(
-      response,
-      "Erro ao buscar dashboard de retenção",
-    );
-  }
-
-  return response.json();
+  return parseApiResponse(response, "Erro ao buscar dashboard de retencao");
 }
 
 export function useGetRetentionDashboard(enabled = true) {

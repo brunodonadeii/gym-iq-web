@@ -1,6 +1,7 @@
 import type { Exercise } from "@/pages/Exercises/types";
 import { authFetch } from "@/services/api";
 import type { PageRequest, PageResponse } from "@/types/pagination";
+import { parseApiResponse } from "@/utils/apiError";
 import { buildPaginationParams } from "@/utils/pagination";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
@@ -25,11 +26,7 @@ export async function fetchExercises(
       : "exercises";
   const response = await authFetch(`${baseUrl}?${query}`);
 
-  if (!response.ok) {
-    throw new Error("Erro ao buscar exercícios");
-  }
-
-  return response.json();
+  return parseApiResponse(response, "Erro ao buscar exercicios");
 }
 
 export function useGetExercises(

@@ -1,6 +1,7 @@
 import type { Plan } from "@/pages/Plans/types";
 import { authFetch } from "@/services/api";
 import type { PageRequest, PageResponse } from "@/types/pagination";
+import { parseApiResponse } from "@/utils/apiError";
 import { buildPaginationParams } from "@/utils/pagination";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
@@ -22,11 +23,7 @@ async function fetchPlans(
     `${mode === "active" ? "plans" : "plans/all"}?${query}`,
   );
 
-  if (!response.ok) {
-    throw new Error("Erro ao buscar planos");
-  }
-
-  return response.json();
+  return parseApiResponse(response, "Erro ao buscar planos");
 }
 
 const paginatePlans = (

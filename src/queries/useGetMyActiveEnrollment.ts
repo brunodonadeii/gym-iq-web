@@ -1,5 +1,6 @@
 import type { Enrollment } from "@/pages/Enrollments/types";
 import { authFetch } from "@/services/api";
+import { parseApiError, parseApiResponse } from "@/utils/apiError";
 import { useQuery } from "@tanstack/react-query";
 
 async function fetchMyActiveEnrollment(): Promise<Enrollment | null> {
@@ -10,10 +11,10 @@ async function fetchMyActiveEnrollment(): Promise<Enrollment | null> {
   }
 
   if (!response.ok) {
-    throw await response.json();
+    throw await parseApiError(response, "Erro ao buscar matricula ativa");
   }
 
-  return response.json();
+  return parseApiResponse(response, "Erro ao buscar matricula ativa");
 }
 
 export function useGetMyActiveEnrollment() {

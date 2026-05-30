@@ -5,12 +5,8 @@ import type {
   PresenceCheckInResponse,
   SelfCheckInFormData,
 } from "@/pages/PresenceCheckIn/types";
-import {
-  AlertCircle,
-  CheckCircle2,
-  LogIn,
-  RotateCcw,
-} from "lucide-react";
+import { normalizeApiError } from "@/utils/apiError";
+import { AlertCircle, CheckCircle2, LogIn, RotateCcw } from "lucide-react";
 import type { FormEvent } from "react";
 import { useState } from "react";
 import styles from "./PresenceCheckInPage.module.css";
@@ -30,20 +26,6 @@ const formatDateTime = (value?: string) =>
         minute: "2-digit",
       })
     : "";
-
-const resolveErrorMessage = (error: unknown) => {
-  if (error && typeof error === "object") {
-    const apiError = error as {
-      erro?: string;
-      mensagem?: string;
-      message?: string;
-    };
-
-    return apiError.mensagem ?? apiError.message ?? apiError.erro;
-  }
-
-  return undefined;
-};
 
 export const PresenceCheckInPage = () => {
   const [data, setData] = useState<SelfCheckInFormData>(EMPTY_FORM);
@@ -71,10 +53,11 @@ export const PresenceCheckInPage = () => {
           setData(EMPTY_FORM);
         },
         onError: (error) => {
-          setErrorMessage(
-            resolveErrorMessage(error) ??
-              "Não foi possível registrar o check-in.",
+          const apiError = normalizeApiError(
+            error,
+            "Nao foi possivel registrar o check-in.",
           );
+          setErrorMessage(apiError.mensagem ?? apiError.message);
         },
       },
     );
@@ -131,8 +114,8 @@ export const PresenceCheckInPage = () => {
                 type="submit"
                 leftIcon={<LogIn size={18} />}
                 loading={isPending}
-              disabled={!canSubmit}
-            >
+                disabled={!canSubmit}
+              >
                 Entrar na academia
               </Button>
             </div>
@@ -145,8 +128,7 @@ export const PresenceCheckInPage = () => {
                 Entrada registrada
               </strong>
               <p className={styles.statusText}>
-                {presence.studentName} entrou às{" "}
-                {formatDateTime(presence.checkInAt)}.
+                {presence.studentName} entrou as {formatDateTime(presence.checkInAt)}.
               </p>
               <button
                 type="button"
@@ -163,7 +145,7 @@ export const PresenceCheckInPage = () => {
             <div className={`${styles.status} ${styles.statusError}`}>
               <strong className={styles.statusTitle}>
                 <AlertCircle size={28} />
-                Check-in não registrado
+                Check-in nao registrado
               </strong>
               <p className={styles.statusText}>{errorMessage}</p>
             </div>
