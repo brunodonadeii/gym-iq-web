@@ -13,17 +13,39 @@ import styles from "./LoginPage.module.css";
 export const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const search = useSearch({ strict: false }) as { redirect?: string };
   const redirect = search.redirect ?? "/dashboard";
   const navigate = useNavigate();
+  const canSubmit = Boolean(email.trim() && password);
+
+  const validate = () => {
+    let hasError = false;
+
+    if (!email.trim()) {
+      setEmailError("Informe seu e-mail.");
+      hasError = true;
+    } else {
+      setEmailError("");
+    }
+
+    if (!password) {
+      setPasswordError("Informe sua senha.");
+      hasError = true;
+    } else {
+      setPasswordError("");
+    }
+
+    return hasError;
+  };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (isSubmitting) return;
+    if (validate()) return;
 
-    setErrorMessage("");
     setIsSubmitting(true);
 
     try {
@@ -39,7 +61,6 @@ export const LoginPage = () => {
         "Nao foi possivel entrar. Confira seu e-mail e senha e tente novamente.",
       );
 
-      setErrorMessage(apiError.mensagem ?? apiError.message);
       showApiError(
         apiError,
         "Nao foi possivel entrar. Confira seu e-mail e senha e tente novamente.",
@@ -78,8 +99,9 @@ export const LoginPage = () => {
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value);
-                setErrorMessage("");
+                setEmailError("");
               }}
+              error={emailError || undefined}
               disabled={isSubmitting}
             />
 
@@ -90,18 +112,13 @@ export const LoginPage = () => {
               value={password}
               onChange={(e) => {
                 setPassword(e.target.value);
-                setErrorMessage("");
+                setPasswordError("");
               }}
+              error={passwordError || undefined}
               disabled={isSubmitting}
             />
 
-            {errorMessage && (
-              <div className={styles.errorMessage} role="alert">
-                {errorMessage}
-              </div>
-            )}
-
-            <Button type="submit" loading={isSubmitting}>
+            <Button type="submit" loading={isSubmitting} disabled={!canSubmit}>
               Entrar
             </Button>
 

@@ -5,32 +5,28 @@ import { forgotPassword } from "@/services/auth";
 import { normalizeApiError, showApiError } from "@/utils/apiError";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { toast } from "sonner";
 import styles from "@/pages/Login/LoginPage.module.css";
 
 export const ForgotPasswordPage = () => {
   const [email, setEmail] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (isSubmitting) return;
 
-    setErrorMessage("");
-    setSuccessMessage("");
     setIsSubmitting(true);
 
     try {
       const response = await forgotPassword({ email: email.trim() });
-      setSuccessMessage(response.message);
+      toast.success(response.message);
     } catch (error) {
       const apiError = normalizeApiError(
         error,
         "Nao foi possivel solicitar a redefinicao de senha.",
       );
 
-      setErrorMessage(apiError.mensagem ?? apiError.message);
       showApiError(apiError, "Nao foi possivel solicitar a redefinicao de senha.");
     } finally {
       setIsSubmitting(false);
@@ -67,20 +63,10 @@ export const ForgotPasswordPage = () => {
               type="email"
               id="forgotPasswordEmail"
               value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                setErrorMessage("");
-              }}
-              error={errorMessage || undefined}
+              onChange={(e) => setEmail(e.target.value)}
               disabled={isSubmitting}
               required
             />
-
-            {successMessage && (
-              <div className={styles.successMessage} role="status">
-                {successMessage}
-              </div>
-            )}
 
             <Button type="submit" loading={isSubmitting} disabled={!email.trim()}>
               Enviar link

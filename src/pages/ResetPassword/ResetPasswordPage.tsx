@@ -12,35 +12,47 @@ export const ResetPasswordPage = () => {
   const token = search.token ?? "";
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [confirmPasswordError, setConfirmPasswordError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const validate = () => {
+    let hasError = false;
+
     if (!token) {
-      return "O link de redefinicao esta incompleto ou invalido.";
+      showApiError(
+        new Error("O link de redefinicao esta incompleto ou invalido."),
+        "O link de redefinicao esta incompleto ou invalido.",
+      );
+      hasError = true;
     }
 
     if (newPassword.length < 6) {
-      return "Use pelo menos 6 caracteres na nova senha.";
+      setPasswordError("Use pelo menos 6 caracteres na nova senha.");
+      hasError = true;
+    } else {
+      setPasswordError("");
     }
 
     if (newPassword !== confirmPassword) {
-      return "As senhas nao coincidem.";
+      setConfirmPasswordError("As senhas nao coincidem.");
+      hasError = true;
+    } else {
+      setConfirmPasswordError("");
     }
 
-    return "";
+    return hasError;
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (isSubmitting) return;
 
-    const validationError = validate();
-    setErrorMessage(validationError);
+    const hasValidationError = validate();
     setSuccessMessage("");
 
-    if (validationError) {
+    if (hasValidationError) {
       return;
     }
 
@@ -98,8 +110,9 @@ export const ResetPasswordPage = () => {
               value={newPassword}
               onChange={(e) => {
                 setNewPassword(e.target.value);
-                setErrorMessage("");
+                setPasswordError("");
               }}
+              error={passwordError || undefined}
               disabled={isSubmitting}
               required
             />
@@ -111,9 +124,9 @@ export const ResetPasswordPage = () => {
               value={confirmPassword}
               onChange={(e) => {
                 setConfirmPassword(e.target.value);
-                setErrorMessage("");
+                setConfirmPasswordError("");
               }}
-              error={errorMessage || undefined}
+              error={confirmPasswordError || undefined}
               disabled={isSubmitting}
               required
             />
