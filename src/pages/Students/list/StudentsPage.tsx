@@ -23,6 +23,7 @@ import {
   STUDENTS_QUERY_STALE_TIME,
   useGetStudents,
 } from "@/queries/useGetStudents";
+import { maskCpf, maskEmail, maskPhone } from "@/utils/sensitiveData";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { EyeOff, Pencil, Search, UserMinus, UserPlus } from "lucide-react";
@@ -213,9 +214,9 @@ export const StudentsPage = () => {
                         )}
                       </div>
                     </TableCell>
-                    <TableCell>{student.cpf}</TableCell>
-                    <TableCell>{student.phone}</TableCell>
-                    <TableCell>{student.email}</TableCell>
+                    <TableCell>{maskCpf(student.cpf)}</TableCell>
+                    <TableCell>{maskPhone(student.phone)}</TableCell>
+                    <TableCell>{maskEmail(student.email)}</TableCell>
                     <TableCell center>
                       <span
                         className={`${styles.statusBadge} ${

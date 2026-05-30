@@ -20,6 +20,7 @@ import {
   type InstructorStatusFilter,
   useGetInstructors,
 } from "@/queries/useGetInstructors";
+import { maskEmail, maskPhone } from "@/utils/sensitiveData";
 import { useNavigate } from "@tanstack/react-router";
 import {
   BadgeCheck,
@@ -204,8 +205,8 @@ export const InstructorsPage = () => {
                       </div>
                     </TableCell>
                     <TableCell>{instructor.cref}</TableCell>
-                    <TableCell>{instructor.phone}</TableCell>
-                    <TableCell>{instructor.email}</TableCell>
+                    <TableCell>{maskPhone(instructor.phone)}</TableCell>
+                    <TableCell>{maskEmail(instructor.email)}</TableCell>
                     <TableCell>{instructor.specialty || "-"}</TableCell>
                     <TableCell center>
                       <span
