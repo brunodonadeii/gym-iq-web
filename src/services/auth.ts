@@ -1,7 +1,6 @@
 import { clearAuthStorage } from "@/utils/auth";
 import { parseApiResponse } from "@/utils/apiError";
-
-const API_URL = import.meta.env.VITE_API_URL;
+import { buildApiUrl } from "@/services/apiUrl";
 
 export type LoginRequest = {
   email: string;
@@ -28,7 +27,7 @@ export type ResetPasswordRequest = {
 };
 
 export async function login(data: LoginRequest): Promise<AuthResponse> {
-  const response = await fetch(`${API_URL}/auth/login`, {
+  const response = await fetch(buildApiUrl("auth/login"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -52,7 +51,7 @@ export async function login(data: LoginRequest): Promise<AuthResponse> {
 export async function forgotPassword(
   data: ForgotPasswordRequest,
 ): Promise<AuthMessageResponse> {
-  const response = await fetch(`${API_URL}/auth/forgot-password`, {
+  const response = await fetch(buildApiUrl("auth/forgot-password"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -67,7 +66,7 @@ export async function forgotPassword(
 export async function resetPassword(
   data: ResetPasswordRequest,
 ): Promise<AuthMessageResponse> {
-  const response = await fetch(`${API_URL}/auth/reset-password`, {
+  const response = await fetch(buildApiUrl("auth/reset-password"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),

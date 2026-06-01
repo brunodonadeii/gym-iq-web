@@ -1,7 +1,6 @@
 import { auth, clearAuthStorage } from "@/utils/auth";
 import { normalizeApiError } from "@/utils/apiError";
-
-const API_URL = import.meta.env.VITE_API_URL;
+import { buildApiUrl } from "@/services/apiUrl";
 
 const redirectToLogin = () => {
   const currentPath = `${window.location.pathname}${window.location.search}`;
@@ -37,7 +36,7 @@ export async function authFetch(url: string, options: RequestInit = {}) {
     token.startsWith("Bearer ") ? token : `Bearer ${token}`,
   );
 
-  const response = await fetch(`${API_URL}/${url}`, {
+  const response = await fetch(buildApiUrl(url), {
     ...options,
     headers,
   });

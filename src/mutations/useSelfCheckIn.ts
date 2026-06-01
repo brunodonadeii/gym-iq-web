@@ -3,13 +3,12 @@ import type {
   SelfCheckInPayload,
 } from "@/pages/PresenceCheckIn/types";
 import type { ApiError } from "@/utils/apiError";
+import { buildApiUrl } from "@/services/apiUrl";
 import { useMutation } from "@tanstack/react-query";
-
-const API_URL = import.meta.env.VITE_API_URL;
 
 
 async function selfCheckIn(payload: SelfCheckInPayload) {
-  const response = await fetch(`${API_URL}/presences/self-check-in`, {
+  const response = await fetch(buildApiUrl("presences/self-check-in"), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
