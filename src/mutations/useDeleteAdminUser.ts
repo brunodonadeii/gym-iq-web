@@ -1,10 +1,6 @@
 import { authFetch } from "@/services/api";
+import type { ApiError } from "@/utils/apiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-interface ApiError {
-  erro: string;
-  mensagem: string;
-}
 
 async function deleteAdminUser(id: string) {
   const response = await authFetch(`users/${id}`, {

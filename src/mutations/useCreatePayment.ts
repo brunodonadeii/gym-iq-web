@@ -1,11 +1,7 @@
 import type { Payment, PaymentCreateFormData } from "@/pages/Payments/types";
 import { authFetch } from "@/services/api";
+import type { ApiError } from "@/utils/apiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-interface ApiError {
-  erro: string;
-  mensagem: string;
-}
 
 async function createPayment(data: PaymentCreateFormData) {
   const payload = {

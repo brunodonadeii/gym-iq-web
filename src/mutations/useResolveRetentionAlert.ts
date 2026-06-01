@@ -2,12 +2,7 @@ import type { RetentionAlert } from "@/pages/Dashboard/types";
 import { authFetch } from "@/services/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { dashboardKeys, retentionAlertKeys } from "@/queries/dashboardKeys";
-
-interface ApiError {
-  erro?: string;
-  mensagem?: string;
-  message?: string;
-}
+import type { ApiError } from "@/utils/apiError";
 
 async function resolveRetentionAlert({ id }: { id: string }) {
   const response = await authFetch(`retention-alerts/${id}/resolve`, {

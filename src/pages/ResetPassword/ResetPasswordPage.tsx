@@ -71,8 +71,6 @@ export const ResetPasswordPage = () => {
         error,
         "Nao foi possivel redefinir a senha.",
       );
-
-      setErrorMessage(apiError.mensagem ?? apiError.message);
       showApiError(apiError, "Nao foi possivel redefinir a senha.");
     } finally {
       setIsSubmitting(false);

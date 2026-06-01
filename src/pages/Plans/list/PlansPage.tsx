@@ -24,16 +24,11 @@ import { Ban, Pencil, RotateCcw, Trash2, UserPlus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import styles from "./Plans.module.css";
+import type { ApiError } from "@/utils/apiError";
 
 type PlanStatusFilter = "active" | "inactive" | "all";
 
 type ConfirmAction = { type: "deactivate" | "delete"; plan: Plan };
-
-type ApiError = {
-  erro?: string;
-  mensagem?: string;
-  message?: string;
-};
 
 const planColumns = [
   { width: "20%" },
@@ -320,4 +315,3 @@ export const PlansPage = () => {
     </div>
   );
 };
-

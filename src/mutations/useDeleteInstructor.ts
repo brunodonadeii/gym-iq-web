@@ -1,11 +1,6 @@
 import { authFetch } from "@/services/api";
+import type { ApiError } from "@/utils/apiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-interface ApiError {
-  erro: string;
-  mensagem: string;
-  message?: string;
-}
 
 async function deleteInstructor({ id }: { id: string }) {
   const response = await authFetch(`instructors/${id}`, {

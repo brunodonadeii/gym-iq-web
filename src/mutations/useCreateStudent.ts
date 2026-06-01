@@ -1,11 +1,7 @@
 import type { Student, StudentCreateFormData } from "@/pages/Students/types";
 import { authFetch } from "@/services/api";
+import type { ApiError } from "@/utils/apiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-interface ApiError {
-  erro: string;
-  mensagem: string;
-}
 
 async function createStudent(data: StudentCreateFormData) {
   const response = await authFetch("students", {

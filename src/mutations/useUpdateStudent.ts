@@ -1,12 +1,8 @@
 import { invalidateStudentRelatedQueries } from "@/mutations/studentQueryInvalidation";
 import type { Student, StudentUpdateFormData } from "@/pages/Students/types";
 import { authFetch } from "@/services/api";
+import type { ApiError } from "@/utils/apiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-interface ApiError {
-  erro: string;
-  mensagem: string;
-}
 
 interface UpdateStudentData {
   id: string;

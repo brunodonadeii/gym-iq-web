@@ -1,13 +1,8 @@
 import { invalidateStudentRelatedQueries } from "@/mutations/studentQueryInvalidation";
 import type { Student } from "@/pages/Students/types";
 import { authFetch } from "@/services/api";
+import type { ApiError } from "@/utils/apiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-interface ApiError {
-  erro?: string;
-  mensagem?: string;
-  message?: string;
-}
 
 async function anonymizeStudent({ id }: { id: string }) {
   const response = await authFetch(`students/${id}/anonymize`, {

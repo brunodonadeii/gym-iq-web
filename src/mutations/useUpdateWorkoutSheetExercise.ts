@@ -3,12 +3,8 @@ import type {
   WorkoutSheetExerciseFormData,
 } from "@/pages/WorkoutSheets/types";
 import { authFetch } from "@/services/api";
+import type { ApiError } from "@/utils/apiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-interface ApiError {
-  erro: string;
-  mensagem: string;
-}
 
 type UpdateWorkoutSheetExerciseData = {
   id: string;

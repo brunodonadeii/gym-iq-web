@@ -2,15 +2,11 @@ import type {
   PresenceCheckInResponse,
   SelfCheckInPayload,
 } from "@/pages/PresenceCheckIn/types";
+import type { ApiError } from "@/utils/apiError";
 import { useMutation } from "@tanstack/react-query";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-interface ApiError {
-  erro?: string;
-  mensagem?: string;
-  message?: string;
-}
 
 async function selfCheckIn(payload: SelfCheckInPayload) {
   const response = await fetch(`${API_URL}/presences/self-check-in`, {

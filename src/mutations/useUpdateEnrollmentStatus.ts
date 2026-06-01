@@ -1,11 +1,7 @@
 import type { Enrollment, EnrollmentStatus } from "@/pages/Enrollments/types";
 import { authFetch } from "@/services/api";
+import type { ApiError } from "@/utils/apiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-interface ApiError {
-  erro: string;
-  mensagem: string;
-}
 
 type UpdateEnrollmentStatusData = {
   id: string;

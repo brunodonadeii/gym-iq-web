@@ -3,12 +3,8 @@ import type {
   InstructorCreateFormData,
 } from "@/pages/Instructors/types";
 import { authFetch } from "@/services/api";
+import type { ApiError } from "@/utils/apiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-interface ApiError {
-  erro: string;
-  mensagem: string;
-}
 
 async function createInstructor(data: InstructorCreateFormData) {
   const response = await authFetch("instructors", {

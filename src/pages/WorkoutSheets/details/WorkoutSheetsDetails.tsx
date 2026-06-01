@@ -36,6 +36,7 @@ import { Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import styles from "./WorkoutSheetsDetails.module.css";
+import type { ApiError } from "@/utils/apiError";
 
 const EMPTY_SHEET_FORM: WorkoutSheetFormData = {
   studentId: "",
@@ -72,13 +73,14 @@ const getSheetExerciseId = (exercise: WorkoutSheetExercise) =>
   String(exercise.workoutSheetExerciseId);
 
 const resolveExerciseName = (exercise: WorkoutSheetExercise) =>
-  exercise.exerciseName ??
-  `Exercício #${exercise.exerciseId}`;
+  exercise.exerciseName ?? `Exercício #${exercise.exerciseId}`;
 
 const resolveExerciseId = (exercise: WorkoutSheetExercise) =>
   String(exercise.exerciseId);
 
-const mapWorkoutSheetToForm = (details?: WorkoutSheet): WorkoutSheetFormData => ({
+const mapWorkoutSheetToForm = (
+  details?: WorkoutSheet,
+): WorkoutSheetFormData => ({
   studentId: String(details?.studentId ?? details?.student?.studentId ?? ""),
   instructorId: String(
     details?.instructorId ?? details?.instructor?.instructorId ?? "",
@@ -248,7 +250,7 @@ const WorkoutSheetsDetailsContent = ({
         );
         resetExerciseForm();
       },
-      onError: (e: { erro?: string; mensagem?: string }) => {
+      onError: (e: ApiError) => {
         toast.error(
           <div>
             <strong>{e?.erro ?? e?.error ?? "Erro"}</strong>
@@ -648,4 +650,3 @@ export const WorkoutSheetsDetails = () => {
     />
   );
 };
-

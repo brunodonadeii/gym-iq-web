@@ -1,12 +1,7 @@
 import { invalidateStudentRelatedQueries } from "@/mutations/studentQueryInvalidation";
 import { authFetch } from "@/services/api";
+import type { ApiError } from "@/utils/apiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-interface ApiError {
-  erro?: string;
-  mensagem?: string;
-  message?: string;
-}
 
 async function deactivateStudent({ id }: { id: string }) {
   const response = await authFetch(`students/${id}/inactive`, {

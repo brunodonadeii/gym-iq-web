@@ -128,10 +128,10 @@ export const InstructorsPage = () => {
     <div className={styles.page}>
       <div className={styles.topBar}>
         <div className={styles.topBarContent}>
-          <strong className={styles.topBarTitle}>Busca e cadastro</strong>
-          <span className={styles.topBarSubtitle}>
-            Pesquise por nome, CREF ou e-mail antes de criar um novo registro.
-          </span>
+          <h2 className={styles.topBarTitle}>Instrutores</h2>
+          <p className={styles.topBarSubtitle}>
+            Gerencie equipe, contato e status.
+          </p>
         </div>
 
         <div className={styles.topBarActions}>
@@ -158,7 +158,7 @@ export const InstructorsPage = () => {
             leftIcon={<UserRoundPlus size={18} />}
             onClick={() => navigate({ to: "/instructors/create" })}
           >
-            Novo Instrutor
+            Novo instrutor
           </Button>
         </div>
       </div>
@@ -166,10 +166,9 @@ export const InstructorsPage = () => {
       <section className={styles.tableSection}>
         <div className={styles.sectionHeader}>
           <div>
-            <h3 className={styles.sectionTitle}>Lista principal</h3>
+            <h3 className={styles.sectionTitle}>Lista de instrutores</h3>
             <p className={styles.sectionDescription}>
-              Consulte contato, registro profissional, especialidade e status.
-              Total encontrado: {data?.totalElements ?? 0}.
+              {data?.totalElements ?? 0} instrutor(es) encontrado(s).
             </p>
           </div>
         </div>
@@ -254,4 +253,3 @@ export const InstructorsPage = () => {
     </div>
   );
 };
-

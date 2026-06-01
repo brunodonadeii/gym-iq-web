@@ -3,6 +3,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface ApiError {
   erro: string;
+  error: string;
+  message: string;
   mensagem: string;
 }
 
