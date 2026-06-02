@@ -16,6 +16,7 @@ import {
   TableSkeletonRows,
 } from "@/components/Table/Table";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import { useActivateStudent } from "@/mutations/useActivateStudent";
 import { useAnonymizeStudent } from "@/mutations/useAnonymizeStudent";
 import { useDeactivateStudent } from "@/mutations/useDeactivateStudent";
 import { isAnonymizedStudent } from "@/pages/Students/types";
@@ -28,7 +29,14 @@ import {
 import { maskCpf, maskEmail, maskPhone } from "@/utils/sensitiveData";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
-import { EyeOff, Pencil, Search, UserMinus, UserPlus } from "lucide-react";
+import {
+  EyeOff,
+  Pencil,
+  RotateCcw,
+  Search,
+  UserMinus,
+  UserPlus,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import styles from "./StudentsPage.module.css";
@@ -83,6 +91,8 @@ export const StudentsPage = () => {
   );
   const { mutate: deactivateStudent, isPending: isDeactivatingStudent } =
     useDeactivateStudent();
+  const { mutate: activateStudent, isPending: isActivatingStudent } =
+    useActivateStudent();
   const { mutate: anonymizeStudent, isPending: isAnonymizingStudent } =
     useAnonymizeStudent();
   const students = data?.content ?? [];
@@ -140,6 +150,28 @@ export const StudentsPage = () => {
                 {/ativo/i.test(message)
                   ? "O aluno precisa estar inativo antes da anonimização."
                   : message}
+              </span>
+            </div>,
+          );
+        },
+      },
+    );
+  };
+
+  const handleActivateStudent = (studentId: string) => {
+    activateStudent(
+      { id: studentId },
+      {
+        onSuccess: () => {
+          toast.success("Aluno ativado com sucesso!");
+        },
+        onError: (e) => {
+          toast.error(
+            <div>
+              <strong>{e?.erro ?? e?.error ?? "Erro"}</strong>
+              <br />
+              <span>
+                {e?.mensagem ?? e?.message ?? "Nao foi possivel ativar o aluno."}
               </span>
             </div>,
           );
@@ -324,6 +356,16 @@ export const StudentsPage = () => {
                             },
                             ...(!student.active
                               ? [
+                                  {
+                                    label: "Ativar aluno",
+                                    icon: <RotateCcw size={15} />,
+                                    disabled:
+                                      isActivatingStudent || anonymized,
+                                    onSelect: () =>
+                                      handleActivateStudent(
+                                        String(student.studentId),
+                                      ),
+                                  },
                                   {
                                     label: "Anonimizar aluno",
                                     icon: <EyeOff size={15} />,
