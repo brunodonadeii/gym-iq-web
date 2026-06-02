@@ -18,7 +18,7 @@ const EMPTY_FORM: AdminUserCreateFormData = {
   email: "",
   password: "",
   role: "RECEPTION",
-  lgpdAccepted: true,
+  lgpdAccepted: false,
 };
 
 const roleOptions = [
@@ -51,12 +51,21 @@ const validate = (data: AdminUserCreateFormData) => {
     errors.role = "Escolha uma permissão válida.";
   }
 
+  if (!data.lgpdAccepted) {
+    errors.lgpdAccepted = "Confirme o aceite para continuar.";
+  }
+
   return errors;
 };
 
 const focusFirstError = (errors: FormErrors) => {
   const firstField = Object.keys(errors)[0];
   if (!firstField) return;
+
+  if (firstField === "lgpdAccepted") {
+    document.getElementById("lgpdAccepted")?.focus();
+    return;
+  }
 
   document.getElementById(firstField)?.focus();
 };
@@ -183,6 +192,29 @@ export const AdminUsersCreate = () => {
           required
         />
       </div>
+
+      <label className={styles.lgpdBox}>
+        <input
+          id="lgpdAccepted"
+          type="checkbox"
+          checked={data.lgpdAccepted}
+          onChange={(event) => {
+            setData((prev) => ({
+              ...prev,
+              lgpdAccepted: event.target.checked,
+            }));
+            setErrors((prev) => ({ ...prev, lgpdAccepted: undefined }));
+          }}
+          required
+        />
+        <span>
+          Declaro que o usuário aceitou o uso dos dados para cadastro e acesso
+          interno ao sistema.
+        </span>
+      </label>
+      {errors.lgpdAccepted && (
+        <div className={styles.checkboxError}>{errors.lgpdAccepted}</div>
+      )}
     </Form>
   );
 };

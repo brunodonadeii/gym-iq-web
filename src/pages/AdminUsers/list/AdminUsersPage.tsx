@@ -18,6 +18,7 @@ import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useDeleteAdminUser } from "@/mutations/useDeleteAdminUser";
 import type { AdminUser, AdminUserRole } from "@/pages/AdminUsers/types";
 import { useGetAdminUsers } from "@/queries/useGetAdminUsers";
+import { maskEmail } from "@/utils/sensitiveData";
 import { useNavigate } from "@tanstack/react-router";
 import { Pencil, PlusCircle, Search, Trash2 } from "lucide-react";
 import { useState } from "react";
@@ -155,7 +156,7 @@ export const AdminUsersPage = () => {
                           </span>
                         </div>
                       </TableCell>
-                      <TableCell>{user.email}</TableCell>
+                      <TableCell>{maskEmail(user.email)}</TableCell>
                       <TableCell>{roleLabels[user.role]}</TableCell>
                       <TableCell center>
                         <span

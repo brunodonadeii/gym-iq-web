@@ -21,6 +21,7 @@ import { useGetEnrollments } from "@/queries/useGetEnrollments";
 import { useGetPlans } from "@/queries/useGetPlans";
 import { useGetStudentEnrollments } from "@/queries/useGetStudentEnrollments";
 import { useGetStudentOptions } from "@/queries/useGetStudentOptions";
+import { maskEmail } from "@/utils/sensitiveData";
 import { useNavigate } from "@tanstack/react-router";
 import {
   BadgeCheck,
@@ -58,7 +59,9 @@ const isRecurringEnrollment = (enrollment?: Enrollment | null) => {
 
   const rawEndDate = enrollment.endDate;
   const normalizedEndDate =
-    typeof rawEndDate === "string" ? rawEndDate.trim().toLowerCase() : rawEndDate;
+    typeof rawEndDate === "string"
+      ? rawEndDate.trim().toLowerCase()
+      : rawEndDate;
 
   return (
     normalizedEndDate === null ||
@@ -79,7 +82,9 @@ const formatDate = (value?: string | null) =>
     : "Não informado";
 
 const formatEndDate = (enrollment?: Enrollment | null) =>
-  isRecurringEnrollment(enrollment) ? "Recorrente" : formatDate(enrollment?.endDate);
+  isRecurringEnrollment(enrollment)
+    ? "Recorrente"
+    : formatDate(enrollment?.endDate);
 
 const getEnrollmentTermLabel = (enrollment?: Enrollment | null) =>
   isRecurringEnrollment(enrollment) ? "Mensal recorrente" : "Prazo determinado";
@@ -145,7 +150,9 @@ export const EnrollmentsPage = () => {
     ? (filteredEnrollments?.content ?? [])
     : (allEnrollments?.content ?? []);
 
-  const currentPage = studentFilterEnabled ? filteredEnrollments : allEnrollments;
+  const currentPage = studentFilterEnabled
+    ? filteredEnrollments
+    : allEnrollments;
   const isLoadingEnrollments = studentFilterEnabled
     ? isLoadingStudentEnrollments
     : isLoadingAllEnrollments;
@@ -315,7 +322,9 @@ export const EnrollmentsPage = () => {
                 {selectedStudentName || `Aluno #${selectedStudentId}`}
               </h3>
               <p className={styles.summaryDescription}>
-                {selectedStudentEmail || "Sem e-mail informado"}
+                {selectedStudentEmail
+                  ? maskEmail(selectedStudentEmail)
+                  : "Sem e-mail informado"}
               </p>
             </div>
             <div className={styles.summaryBadge}>
@@ -401,7 +410,9 @@ export const EnrollmentsPage = () => {
                         </span>
                       </div>
                     </TableCell>
-                    <TableCell>{resolveStudentEmail(enrollment)}</TableCell>
+                    <TableCell>
+                      {maskEmail(resolveStudentEmail(enrollment))}
+                    </TableCell>
                     <TableCell>{resolvePlanName(enrollment)}</TableCell>
                     <TableCell>{formatDate(enrollment.startDate)}</TableCell>
                     <TableCell>
@@ -452,5 +463,3 @@ export const EnrollmentsPage = () => {
     </div>
   );
 };
-
-
