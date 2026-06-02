@@ -1,4 +1,8 @@
-import type { ChangeEventHandler, InputHTMLAttributes } from "react";
+import type {
+  ChangeEventHandler,
+  HTMLAttributes,
+  InputHTMLAttributes,
+} from "react";
 import styles from "./TextField.module.css";
 
 type TextFieldProps = Omit<
@@ -10,6 +14,7 @@ type TextFieldProps = Omit<
   onChange: ChangeEventHandler<HTMLInputElement>;
   helperText?: string;
   error?: string;
+  containerProps?: HTMLAttributes<HTMLDivElement>;
 };
 
 export const TextField = ({
@@ -19,12 +24,17 @@ export const TextField = ({
   id,
   helperText,
   error,
+  containerProps,
   ...rest
 }: TextFieldProps) => {
+  const { className, ...containerRest } = containerProps ?? {};
   const describedBy = error || helperText ? `${id}-helper` : undefined;
 
   return (
-    <div className={styles.formGroup}>
+    <div
+      className={[styles.formGroup, className].filter(Boolean).join(" ")}
+      {...containerRest}
+    >
       <label className={styles.label} htmlFor={id}>
         {label}
       </label>

@@ -35,8 +35,8 @@ import { useNavigate, useParams } from "@tanstack/react-router";
 import { Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import styles from "./WorkoutSheetsDetails.module.css";
 import type { ApiError } from "@/utils/apiError";
+import styles from "./WorkoutSheetsDetails.module.css";
 
 const EMPTY_SHEET_FORM: WorkoutSheetFormData = {
   studentId: "",
@@ -60,11 +60,10 @@ const EMPTY_EXERCISE_FORM: WorkoutSheetExerciseFormData = {
 };
 
 const exerciseColumns = [
-  { width: "20%" },
-  { width: "10%" },
+  { width: "24%" },
   { width: "12%" },
-  { width: "12%" },
-  { width: "12%" },
+  { width: "16%" },
+  { width: "14%" },
   { width: "22%" },
   { width: "12%" },
 ];
@@ -73,7 +72,7 @@ const getSheetExerciseId = (exercise: WorkoutSheetExercise) =>
   String(exercise.workoutSheetExerciseId);
 
 const resolveExerciseName = (exercise: WorkoutSheetExercise) =>
-  exercise.exerciseName ?? `Exercício #${exercise.exerciseId}`;
+  exercise.exerciseName ?? `Exercicio #${exercise.exerciseId}`;
 
 const resolveExerciseId = (exercise: WorkoutSheetExercise) =>
   String(exercise.exerciseId);
@@ -106,6 +105,10 @@ type WorkoutSheetsDetailsContentProps = {
   details?: WorkoutSheet;
   isLoadingDetails: boolean;
   workoutSheetId?: string;
+};
+
+const focusById = (id: string) => {
+  document.getElementById(id)?.focus();
 };
 
 const WorkoutSheetsDetailsContent = ({
@@ -236,6 +239,26 @@ const WorkoutSheetsDetailsContent = ({
   };
 
   const handleSubmitExercise = () => {
+    if (!exerciseForm.exerciseId) {
+      focusById("exerciseId");
+      return;
+    }
+
+    if (!exerciseForm.sets) {
+      focusById("sets");
+      return;
+    }
+
+    if (!exerciseForm.repetitions) {
+      focusById("repetitions");
+      return;
+    }
+
+    if (!exerciseForm.executionOrder) {
+      focusById("executionOrder");
+      return;
+    }
+
     const payload = {
       workoutSheetId: String(workoutSheetId),
       data: exerciseForm,
@@ -245,8 +268,8 @@ const WorkoutSheetsDetailsContent = ({
       onSuccess: () => {
         toast.success(
           editingExerciseId
-            ? "Exercício atualizado com sucesso!"
-            : "Exercício adicionado com sucesso!",
+            ? "Exercicio atualizado com sucesso!"
+            : "Exercicio adicionado com sucesso!",
         );
         resetExerciseForm();
       },
@@ -293,7 +316,7 @@ const WorkoutSheetsDetailsContent = ({
     deleteExercise(
       { id, workoutSheetId: String(workoutSheetId) },
       {
-        onSuccess: () => toast.success("Exercício removido da ficha!"),
+        onSuccess: () => toast.success("Exercicio removido da ficha!"),
         onError: (e) => {
           toast.error(
             <div>
@@ -314,7 +337,7 @@ const WorkoutSheetsDetailsContent = ({
           <div>
             <h3 className={styles.sectionTitle}>Dados da ficha</h3>
             <p className={styles.sectionDescription}>
-              Atualize aluno, instrutor, nome, objetivo e período da ficha.
+              Atualize aluno, instrutor, nome, objetivo e periodo da ficha.
             </p>
           </div>
         </div>
@@ -386,7 +409,7 @@ const WorkoutSheetsDetailsContent = ({
               onChange={setSheetField("goal")}
             />
             <TextField
-              label="Data de início"
+              label="Data de inicio"
               id="startDate"
               type="date"
               value={sheetForm.startDate}
@@ -400,10 +423,11 @@ const WorkoutSheetsDetailsContent = ({
               onChange={setSheetField("endDate")}
             />
             <TextField
-              label="Observações"
+              label="Observacoes"
               id="notes"
               value={sheetForm.notes}
               onChange={setSheetField("notes")}
+              containerProps={{ className: styles.fieldWide }}
             />
           </div>
         )}
@@ -435,16 +459,16 @@ const WorkoutSheetsDetailsContent = ({
       <section className={styles.card}>
         <div className={styles.sectionHeader}>
           <div>
-            <h3 className={styles.sectionTitle}>Exercícios da ficha</h3>
+            <h3 className={styles.sectionTitle}>Exercicios da ficha</h3>
             <p className={styles.sectionDescription}>
-              Adicione ou edite series, repeticoes, carga, descanso e ordem.
+              Adicione ou edite exercicio, series, repeticoes, descanso e ordem.
             </p>
           </div>
         </div>
 
-        <div className={styles.compactGrid}>
+        <div className={styles.grid}>
           <Autocomplete
-            label="Exercício"
+            label="Exercicio"
             id="exerciseId"
             search={exerciseSearch}
             onSearchChange={(value) => {
@@ -464,7 +488,7 @@ const WorkoutSheetsDetailsContent = ({
             }}
             options={exerciseOptions}
             loading={isFetchingExercises}
-            placeholder="Digite o nome do exercício"
+            placeholder="Digite o nome do exercicio"
           />
           <TextField
             label="Series"
@@ -473,29 +497,26 @@ const WorkoutSheetsDetailsContent = ({
             value={exerciseForm.sets}
             onChange={setExerciseField("sets")}
           />
+        </div>
+
+        <div className={styles.grid}>
           <TextField
             label="Repeticoes"
             id="repetitions"
-            type="number"
             value={exerciseForm.repetitions}
             onChange={setExerciseField("repetitions")}
+            placeholder="10-12"
           />
           <TextField
-            label="Carga"
-            id="loadKg"
-            type="number"
-            value={exerciseForm.loadKg}
-            onChange={setExerciseField("loadKg")}
-            placeholder="40"
-          />
-          <TextField
-            label="Descanso"
+            label="Descanso em segundos"
             id="restSeconds"
             type="number"
             value={exerciseForm.restSeconds}
             onChange={setExerciseField("restSeconds")}
-            placeholder="60"
           />
+        </div>
+
+        <div className={styles.grid}>
           <TextField
             label="Ordem"
             id="executionOrder"
@@ -503,11 +524,8 @@ const WorkoutSheetsDetailsContent = ({
             value={exerciseForm.executionOrder}
             onChange={setExerciseField("executionOrder")}
           />
-        </div>
-
-        <div className={styles.grid}>
           <TextField
-            label="Observações"
+            label="Observacoes do exercicio"
             id="notes"
             value={exerciseForm.notes}
             onChange={setExerciseField("notes")}
@@ -521,17 +539,8 @@ const WorkoutSheetsDetailsContent = ({
               Cancelar edicao
             </Button>
           )}
-          <Button
-            onClick={handleSubmitExercise}
-            loading={isExerciseSubmitting}
-            disabled={
-              !exerciseForm.exerciseId ||
-              !exerciseForm.sets ||
-              !exerciseForm.repetitions ||
-              !exerciseForm.executionOrder
-            }
-          >
-            {editingExerciseId ? "Salvar exercício" : "Adicionar exercício"}
+          <Button onClick={handleSubmitExercise} loading={isExerciseSubmitting}>
+            {editingExerciseId ? "Salvar exercicio" : "Adicionar exercicio"}
           </Button>
         </div>
       </section>
@@ -540,26 +549,25 @@ const WorkoutSheetsDetailsContent = ({
         <div className={styles.tableHeader}>
           <h3 className={styles.sectionTitle}>Ordem da ficha</h3>
           <p className={styles.sectionDescription}>
-            {sheetExercises?.totalElements ?? 0} exercício(s) vinculados.
+            {sheetExercises?.totalElements ?? 0} exercicio(s) vinculados.
           </p>
         </div>
 
         <div className={styles.tableWrap}>
-          <Table columns={exerciseColumns} minWidth="1040px">
+          <Table columns={exerciseColumns} minWidth="980px">
             <TableHead>
               <TableRow>
-                <TableHeaderCell>Exercício</TableHeaderCell>
+                <TableHeaderCell>Exercicio</TableHeaderCell>
                 <TableHeaderCell>Series</TableHeaderCell>
                 <TableHeaderCell>Repeticoes</TableHeaderCell>
-                <TableHeaderCell>Carga</TableHeaderCell>
                 <TableHeaderCell>Descanso</TableHeaderCell>
-                <TableHeaderCell>Observações</TableHeaderCell>
-                <TableHeaderCell center>Ações</TableHeaderCell>
+                <TableHeaderCell>Observacoes</TableHeaderCell>
+                <TableHeaderCell center>Acoes</TableHeaderCell>
               </TableRow>
             </TableHead>
 
             <TableBody>
-              {tableLoading && <TableSkeletonRows columns={7} />}
+              {tableLoading && <TableSkeletonRows columns={6} />}
 
               {!tableLoading &&
                 exerciseRows.map((exercise) => {
@@ -570,18 +578,14 @@ const WorkoutSheetsDetailsContent = ({
                       <TableCell>
                         <div className={styles.nameCell}>
                           <span className={styles.namePrimary}>
-                            {exercise.executionOrder}.{" "}
-                            {resolveExerciseName(exercise)}
+                            {exercise.executionOrder}. {resolveExerciseName(exercise)}
                           </span>
                         </div>
                       </TableCell>
                       <TableCell>{exercise.sets}</TableCell>
                       <TableCell>{exercise.repetitions}</TableCell>
-                      <TableCell>{exercise.loadKg ?? "-"}</TableCell>
                       <TableCell>
-                        {exercise.restSeconds
-                          ? `${exercise.restSeconds}s`
-                          : "-"}
+                        {exercise.restSeconds ? `${exercise.restSeconds}s` : "-"}
                       </TableCell>
                       <TableCell>
                         <span className={styles.nameSecondary}>
@@ -612,8 +616,8 @@ const WorkoutSheetsDetailsContent = ({
 
               {!tableLoading && exerciseRows.length === 0 && (
                 <TableEmptyState
-                  colSpan={7}
-                  message="Nenhum exercício vinculado a esta ficha."
+                  colSpan={6}
+                  message="Nenhum exercicio vinculado a esta ficha."
                 />
               )}
             </TableBody>

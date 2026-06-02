@@ -37,11 +37,18 @@
   color: var(--text-primary);
   background-color: var(--surface-alt);
   outline: none;
+  cursor: pointer;
+  color-scheme: light dark;
   transition:
     border-color 0.2s ease,
     box-shadow 0.2s ease,
     background-color 0.2s ease,
     color 0.2s ease;
+}
+
+.select option {
+  color: var(--text-primary);
+  background: var(--surface);
 }
 
 .select:hover {
