@@ -126,6 +126,7 @@ export const StudentsEdit = () => {
           value={data.cpf}
           onChange={setMasked("cpf", "###.###.###-##")}
           placeholder="000.000.000-00"
+          disabled
           required
         />
         <TextField
