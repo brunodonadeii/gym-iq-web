@@ -1,5 +1,6 @@
 import { Button } from "@/components/Button/Button";
 import { Dropdown, type DropdownItem } from "@/components/Dropdown/Dropdown";
+import { ListToolbar } from "@/components/ListToolbar/ListToolbar";
 import { Pagination } from "@/components/Pagination/Pagination";
 import { SearchBar } from "@/components/SearchBar/SearchBar";
 import { SelectField } from "@/components/SelectField/SelectField";
@@ -58,7 +59,7 @@ const formatDate = (value?: string) =>
         month: "2-digit",
         year: "numeric",
       })
-    : "Não informado";
+    : "Nao informado";
 
 export const InstructorsPage = () => {
   const isAdmin = auth.hasAnyRole(["ADMIN"]);
@@ -96,9 +97,7 @@ export const InstructorsPage = () => {
               <strong>{e?.erro ?? e?.error ?? "Erro"}</strong>
               <br />
               <span>
-                {e?.mensagem ??
-                  e?.message ??
-                  "Não foi possível inativar o instrutor."}
+                {e?.mensagem ?? e?.message ?? "Nao foi possivel inativar o instrutor."}
               </span>
             </div>,
           );
@@ -133,42 +132,42 @@ export const InstructorsPage = () => {
   return (
     <div className={styles.page}>
       <div className={styles.topBar}>
-        <div className={styles.topBarContent}>
-          <h2 className={styles.topBarTitle}>Instrutores</h2>
-          <p className={styles.topBarSubtitle}>
-            Gerencie equipe, contato e status.
-          </p>
-        </div>
-
-        <div className={styles.topBarActions}>
-          <SelectField
-            label="Status"
-            id="instructorStatusFilter"
-            value={statusFilter}
-            onChange={(event) => {
-              setStatusFilter(event.target.value as InstructorStatusFilter);
-              setPage(0);
-            }}
-            options={statusOptions}
-            containerProps={{ className: styles.filterField }}
-          />
-          <SearchBar
-            icon={<Search size={15} />}
-            placeholder="Buscar por nome, CREF ou e-mail"
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(0);
-            }}
-          />
-          {isAdmin && (
-            <Button
-              leftIcon={<UserRoundPlus size={18} />}
-              onClick={() => navigate({ to: "/instructors/create" })}
-            >
-              Novo instrutor
-            </Button>
-          )}
-        </div>
+        <ListToolbar
+          search={
+            <SearchBar
+              icon={<Search size={15} />}
+              placeholder="Buscar por nome, CREF ou e-mail"
+              containerClassName={styles.searchField}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(0);
+              }}
+            />
+          }
+          filters={
+            <SelectField
+              label="Status"
+              id="instructorStatusFilter"
+              value={statusFilter}
+              onChange={(event) => {
+                setStatusFilter(event.target.value as InstructorStatusFilter);
+                setPage(0);
+              }}
+              options={statusOptions}
+              containerProps={{ className: styles.filterField }}
+            />
+          }
+          action={
+            isAdmin ? (
+              <Button
+                leftIcon={<UserRoundPlus size={18} />}
+                onClick={() => navigate({ to: "/instructors/create" })}
+              >
+                Novo instrutor
+              </Button>
+            ) : null
+          }
+        />
       </div>
 
       <section className={styles.tableSection}>
@@ -191,7 +190,7 @@ export const InstructorsPage = () => {
                 <TableHeaderCell>E-mail</TableHeaderCell>
                 <TableHeaderCell>Especialidade</TableHeaderCell>
                 <TableHeaderCell center>Status</TableHeaderCell>
-                <TableHeaderCell center>Ações</TableHeaderCell>
+                <TableHeaderCell center>Acoes</TableHeaderCell>
               </TableRow>
             </TableHead>
 

@@ -57,6 +57,10 @@
   min-width: 150px;
 }
 
+.searchField {
+  width: 100%;
+}
+
 .tableSection {
   overflow: hidden;
 }

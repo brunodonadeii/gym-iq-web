@@ -26,7 +26,7 @@ import {
 import { auth } from "@/utils/auth";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
-import { Eye, PlusCircle, Trash2 } from "lucide-react";
+import { Pencil, PlusCircle, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import styles from "./WorkoutSheetsPage.module.css";
@@ -345,8 +345,8 @@ export const WorkoutSheetsPage = () => {
                         <Dropdown
                           items={[
                             {
-                              label: "Detalhes",
-                              icon: <Eye size={15} />,
+                              label: "Editar",
+                              icon: <Pencil size={15} />,
                               disabled: !sheetId,
                               onSelect: () =>
                                 navigate({

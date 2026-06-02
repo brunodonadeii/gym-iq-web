@@ -189,9 +189,6 @@ export const StudentPortalPage = () => {
                       <p className={styles.itemTitle}>
                         {formatDateTime(presence.checkInAt)}
                       </p>
-                      <p className={styles.itemDescription}>
-                        Saida: {formatDateTime(presence.checkOutAt)}
-                      </p>
                     </div>
                   </div>
                 ))}

@@ -1,6 +1,7 @@
 import { Button } from "@/components/Button/Button";
 import { ConfirmDialog } from "@/components/ConfirmDialog/ConfirmDialog";
 import { Dropdown } from "@/components/Dropdown/Dropdown";
+import { ListToolbar } from "@/components/ListToolbar/ListToolbar";
 import { Pagination } from "@/components/Pagination/Pagination";
 import { SearchBar } from "@/components/SearchBar/SearchBar";
 import {
@@ -34,7 +35,7 @@ const userColumns = [
 
 const roleLabels: Record<AdminUserRole, string> = {
   ADMIN: "Administrador",
-  RECEPTION: "Recepção",
+  RECEPTION: "Recepcao",
 };
 
 const formatDate = (value?: string | null) =>
@@ -71,7 +72,7 @@ export const AdminUsersPage = () => {
       { id: getAdminUserId(userToDelete) },
       {
         onSuccess: () => {
-          toast.success("Usuário administrativo removido com sucesso.");
+          toast.success("Usuario administrativo removido com sucesso.");
           setUserToDelete(null);
         },
         onError: (e) => {
@@ -80,7 +81,7 @@ export const AdminUsersPage = () => {
               <strong>{e?.erro ?? e?.error ?? "Erro"}</strong>
               <br />
               <span>
-                {e?.mensagem ?? e?.message ?? "Não foi possível remover este usuário."}
+                {e?.mensagem ?? e?.message ?? "Nao foi possivel remover este usuario."}
               </span>
             </div>,
           );
@@ -92,29 +93,35 @@ export const AdminUsersPage = () => {
   return (
     <div className={styles.page}>
       <div className={styles.topBar}>
-        <SearchBar
-          icon={<Search size={15} />}
-          placeholder="Buscar por nome, e-mail ou permissão"
-          value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
-            setPage(0);
-          }}
+        <ListToolbar
+          search={
+            <SearchBar
+              icon={<Search size={15} />}
+              placeholder="Buscar por nome, e-mail ou permissao"
+              value={search}
+              containerClassName={styles.searchField}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(0);
+              }}
+            />
+          }
+          action={
+            <Button
+              leftIcon={<PlusCircle size={18} />}
+              onClick={() => navigate({ to: "/admin-users/create" })}
+            >
+              Novo usuario
+            </Button>
+          }
         />
-
-        <Button
-          leftIcon={<PlusCircle size={18} />}
-          onClick={() => navigate({ to: "/admin-users/create" })}
-        >
-          Novo usuário
-        </Button>
       </div>
 
       <section className={styles.tableSection}>
         <div className={styles.sectionHeader}>
-          <h3 className={styles.sectionTitle}>Usuários administrativos</h3>
+          <h3 className={styles.sectionTitle}>Usuarios administrativos</h3>
           <p className={styles.sectionDescription}>
-            {data?.totalElements ?? 0} usuário(s) interno(s) encontrado(s).
+            {data?.totalElements ?? 0} usuario(s) interno(s) encontrado(s).
           </p>
         </div>
 
@@ -124,10 +131,10 @@ export const AdminUsersPage = () => {
               <TableRow>
                 <TableHeaderCell>Nome</TableHeaderCell>
                 <TableHeaderCell>E-mail</TableHeaderCell>
-                <TableHeaderCell>Permissão</TableHeaderCell>
+                <TableHeaderCell>Permissao</TableHeaderCell>
                 <TableHeaderCell center>Status</TableHeaderCell>
                 <TableHeaderCell>Criado em</TableHeaderCell>
-                <TableHeaderCell center>Ações</TableHeaderCell>
+                <TableHeaderCell center>Acoes</TableHeaderCell>
               </TableRow>
             </TableHead>
 
@@ -192,7 +199,7 @@ export const AdminUsersPage = () => {
               {!isLoading && users.length === 0 && (
                 <TableEmptyState
                   colSpan={6}
-                  message="Nenhum usuário administrativo encontrado."
+                  message="Nenhum usuario administrativo encontrado."
                 />
               )}
             </TableBody>
@@ -213,13 +220,13 @@ export const AdminUsersPage = () => {
 
       <ConfirmDialog
         open={!!userToDelete}
-        title="Remover usuário administrativo?"
+        title="Remover usuario administrativo?"
         description={
           userToDelete
-            ? `O acesso de ${userToDelete.name} será removido. Esta ação deve ser usada apenas para usuários internos.`
+            ? `O acesso de ${userToDelete.name} sera removido. Esta acao deve ser usada apenas para usuarios internos.`
             : ""
         }
-        confirmLabel="Remover usuário"
+        confirmLabel="Remover usuario"
         loading={isDeleting}
         onCancel={() => setUserToDelete(null)}
         onConfirm={handleDelete}

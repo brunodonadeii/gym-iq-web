@@ -27,13 +27,18 @@
   color: var(--muted);
 }
 
-.input[type="date"] {
+.input[type="date"],
+.input[type="datetime-local"] {
   padding-right: 14px;
+  color-scheme: light;
 }
 
-.input[type="date"]::-webkit-calendar-picker-indicator {
+.input[type="date"]::-webkit-calendar-picker-indicator,
+.input[type="datetime-local"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
-  opacity: 0.72;
+  opacity: 1;
+  filter: invert(22%) sepia(12%) saturate(552%) hue-rotate(181deg)
+    brightness(92%) contrast(88%);
 }
 
 .input[type="number"]::-webkit-outer-spin-button,
@@ -74,8 +79,28 @@
 }
 
 .label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   font-size: 0.95rem;
   font-weight: 600;
+  color: var(--muted);
+}
+
+.requiredMeta,
+.optionalMeta {
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.requiredMeta {
+  color: var(--primary);
+}
+
+.optionalMeta {
   color: var(--muted);
 }
 

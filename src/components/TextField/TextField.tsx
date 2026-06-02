@@ -25,6 +25,7 @@ export const TextField = ({
   helperText,
   error,
   containerProps,
+  required,
   ...rest
 }: TextFieldProps) => {
   const { className, ...containerRest } = containerProps ?? {};
@@ -36,7 +37,13 @@ export const TextField = ({
       {...containerRest}
     >
       <label className={styles.label} htmlFor={id}>
-        {label}
+        <span>{label}</span>
+        <span
+          className={required ? styles.requiredMeta : styles.optionalMeta}
+          aria-hidden="true"
+        >
+          {required ? "Obrigatorio" : "Opcional"}
+        </span>
       </label>
 
       <input
@@ -48,6 +55,7 @@ export const TextField = ({
         onChange={onChange}
         aria-invalid={Boolean(error)}
         aria-describedby={describedBy}
+        required={required}
         {...rest}
       />
 

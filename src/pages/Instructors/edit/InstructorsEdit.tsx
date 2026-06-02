@@ -123,10 +123,6 @@ export const InstructorsEdit = () => {
             <strong>{details.active ? "Ativo" : "Inativo"}</strong>
           </div>
           <div className={styles.summaryItem}>
-            <span>LGPD</span>
-            <strong>{details.lgpdAccepted ? "Aceito" : "Pendente"}</strong>
-          </div>
-          <div className={styles.summaryItem}>
             <span>Criado em</span>
             <strong>{formatDate(details.createdAt)}</strong>
           </div>
@@ -204,20 +200,6 @@ export const InstructorsEdit = () => {
         />
       </div>
 
-      <label className={styles.lgpdBox}>
-        <input
-          type="checkbox"
-          checked={data.lgpdAccepted}
-          disabled={!isAdmin}
-          onChange={(event) =>
-            setData((prev) => ({
-              ...prev,
-              lgpdAccepted: event.target.checked,
-            }))
-          }
-        />
-        <span>Consentimento LGPD do instrutor confirmado.</span>
-      </label>
     </Form>
   );
 };

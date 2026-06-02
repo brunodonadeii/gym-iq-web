@@ -33,6 +33,7 @@ export const SelectField = ({
   helperText,
   error,
   containerProps,
+  required,
   ...rest
 }: SelectFieldProps) => {
   const { className, ...containerRest } = containerProps ?? {};
@@ -44,7 +45,13 @@ export const SelectField = ({
       {...containerRest}
     >
       <label className={styles.label} htmlFor={id}>
-        {label}
+        <span>{label}</span>
+        <span
+          className={required ? styles.requiredMeta : styles.optionalMeta}
+          aria-hidden="true"
+        >
+          {required ? "Obrigatorio" : "Opcional"}
+        </span>
       </label>
 
       <div className={styles.selectWrapper}>
@@ -57,6 +64,7 @@ export const SelectField = ({
           onChange={onChange}
           aria-invalid={Boolean(error)}
           aria-describedby={describedBy}
+          required={required}
           {...rest}
         >
           {options.map((option) => (

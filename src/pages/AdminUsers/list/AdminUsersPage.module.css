@@ -20,6 +20,10 @@
   padding: 18px 20px;
 }
 
+.searchField {
+  width: 100%;
+}
+
 .tableSection {
   overflow: hidden;
 }

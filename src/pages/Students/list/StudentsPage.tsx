@@ -1,6 +1,7 @@
 import { Button } from "@/components/Button/Button";
 import { ConfirmDialog } from "@/components/ConfirmDialog/ConfirmDialog";
 import { Dropdown } from "@/components/Dropdown/Dropdown";
+import { ListToolbar } from "@/components/ListToolbar/ListToolbar";
 import { Pagination } from "@/components/Pagination/Pagination";
 import { SearchBar } from "@/components/SearchBar/SearchBar";
 import {
@@ -97,9 +98,7 @@ export const StudentsPage = () => {
               <strong>{e?.erro ?? e?.error ?? "Erro"}</strong>
               <br />
               <span>
-                {e?.mensagem ??
-                  e?.message ??
-                  "Não foi possível inativar o aluno."}
+                {e?.mensagem ?? e?.message ?? "Nao foi possivel inativar o aluno."}
               </span>
             </div>,
           );
@@ -120,7 +119,7 @@ export const StudentsPage = () => {
           const message =
             e?.mensagem ??
             e?.message ??
-            "Não foi possível anonimizar o aluno.";
+            "Nao foi possivel anonimizar o aluno.";
 
           toast.error(
             <div>
@@ -169,20 +168,27 @@ export const StudentsPage = () => {
   return (
     <div className={styles.page}>
       <div className={styles.topBar}>
-        <SearchBar
-          icon={<Search size={15} />}
-          placeholder="Buscar por nome, CPF ou email"
-          onChange={(e) => {
-            setSearch(e.target.value);
-            setPage(0);
-          }}
+        <ListToolbar
+          search={
+            <SearchBar
+              icon={<Search size={15} />}
+              placeholder="Buscar por nome, CPF ou email"
+              containerClassName={styles.searchField}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(0);
+              }}
+            />
+          }
+          action={
+            <Button
+              leftIcon={<UserPlus size={18} />}
+              onClick={() => navigate({ to: "/students/create" })}
+            >
+              Novo Aluno
+            </Button>
+          }
         />
-        <Button
-          leftIcon={<UserPlus size={18} />}
-          onClick={() => navigate({ to: "/students/create" })}
-        >
-          Novo Aluno
-        </Button>
       </div>
 
       <section className={styles.tableSection}>
@@ -204,7 +210,7 @@ export const StudentsPage = () => {
                 <TableHeaderCell>Telefone</TableHeaderCell>
                 <TableHeaderCell>Email</TableHeaderCell>
                 <TableHeaderCell center>Status</TableHeaderCell>
-                <TableHeaderCell center>Ações</TableHeaderCell>
+                <TableHeaderCell center>Acoes</TableHeaderCell>
               </TableRow>
             </TableHead>
 
@@ -342,9 +348,9 @@ export const StudentsPage = () => {
         }
         description={
           confirmAction?.type === "anonymize"
-            ? `Os dados pessoais de ${confirmAction.studentName} serão removidos e o histórico será preservado. Esta ação exige que o aluno já esteja inativo.`
+            ? `Os dados pessoais de ${confirmAction.studentName} serao removidos e o historico sera preservado. Esta acao exige que o aluno ja esteja inativo.`
             : confirmAction
-              ? `${confirmAction.studentName} perderá o acesso ativo, mas o histórico será preservado.`
+              ? `${confirmAction.studentName} perdera o acesso ativo, mas o historico sera preservado.`
               : ""
         }
         confirmLabel={
@@ -359,4 +365,3 @@ export const StudentsPage = () => {
     </div>
   );
 };
-
