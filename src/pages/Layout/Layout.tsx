@@ -9,6 +9,7 @@ import {
   ClipboardList,
   CreditCard,
   Dumbbell,
+  FileSearch,
   Layers,
   ShieldPlus,
   Users,
@@ -76,6 +77,12 @@ const sidebarItems: SidebarItem[] = [
     label: "Usuários",
     icon: <ShieldPlus size={20} />,
     to: "/admin-users",
+    roles: ["ADMIN"],
+  },
+  {
+    label: "Logs",
+    icon: <FileSearch size={20} />,
+    to: "/audit-logs",
     roles: ["ADMIN"],
   },
 ];
