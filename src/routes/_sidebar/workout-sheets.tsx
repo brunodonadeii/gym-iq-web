@@ -3,7 +3,7 @@ import { createFileRoute, Outlet } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_sidebar/workout-sheets")({
   beforeLoad: ({ context }) => {
-    requireRoles(context, ["ADMIN"]);
+    requireRoles(context, ["ADMIN", "INSTRUCTOR"]);
   },
   component: () => <Outlet />,
 });

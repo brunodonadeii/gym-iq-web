@@ -122,6 +122,7 @@ export const getDefaultPathByRole = (role: UserRole | null) => {
   if (role === "STUDENT") return "/student";
   if (role === "ADMIN") return "/dashboard";
   if (role === "RECEPTION") return "/students";
+  if (role === "INSTRUCTOR") return "/exercises";
 
   return "/unauthorized";
 };
