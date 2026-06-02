@@ -31,7 +31,9 @@ const formatDate = (value?: string | null) =>
     : "Não informado";
 
 const formatEndDate = (enrollment?: Enrollment | null) =>
-  isRecurringEnrollment(enrollment) ? "Recorrente" : formatDate(enrollment?.endDate);
+  isRecurringEnrollment(enrollment)
+    ? "Recorrente"
+    : formatDate(enrollment?.endDate);
 
 const resolveStudentName = (enrollment?: Enrollment) =>
   enrollment?.student?.name ??
@@ -63,11 +65,17 @@ const EnrollmentsRenewForm = ({
   const navigate = useNavigate();
   const { mutate, isPending } = useRenewEnrollment();
   const [data, setData] = useState<EnrollmentRenewFormData>(initialData);
+  const [planError, setPlanError] = useState("");
   const { set } = useFormInputs(setData);
 
   const handleSubmit = () => {
     if (recurring) {
       toast.info("Matrículas recorrentes não permitem renovação manual.");
+      return;
+    }
+
+    if (!data.newPlanId) {
+      setPlanError("Selecione o novo plano.");
       return;
     }
 
@@ -107,7 +115,7 @@ const EnrollmentsRenewForm = ({
           <Button
             onClick={handleSubmit}
             loading={isPending}
-            disabled={!data.newPlanId || recurring}
+            disabled={recurring}
           >
             {recurring ? "Renovação automática" : "Renovar"}
           </Button>
@@ -148,9 +156,13 @@ const EnrollmentsRenewForm = ({
           label="Novo plano"
           id="newPlanId"
           value={data.newPlanId}
-          onChange={set("newPlanId")}
+          onChange={(event) => {
+            set("newPlanId")(event);
+            setPlanError("");
+          }}
           options={planOptions}
           disabled={recurring}
+          error={planError || undefined}
           required
         />
       </div>
@@ -209,5 +221,3 @@ export const EnrollmentsRenew = () => {
     />
   );
 };
-
-

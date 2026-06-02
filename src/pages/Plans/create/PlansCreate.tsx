@@ -19,11 +19,30 @@ const EMPTY_FORM: PlanFormData = {
 
 export const PlansCreate = () => {
   const [data, setData] = useState<PlanFormData>(EMPTY_FORM);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const { set } = useFormInputs(setData);
   const { mutate, isPending } = useCreatePlan();
   const navigate = useNavigate();
 
+  const validate = () => {
+    const nextErrors: Record<string, string> = {};
+
+    if (!data.name.trim()) nextErrors.name = "Informe o nome.";
+    if (!data.description.trim()) nextErrors.description = "Informe a descricao.";
+    if (!data.monthlyPrice || Number(data.monthlyPrice) <= 0) {
+      nextErrors.monthlyPrice = "Informe um valor mensal maior que zero.";
+    }
+    if (!data.durationMonths || Number(data.durationMonths) <= 0) {
+      nextErrors.durationMonths = "Informe uma duracao maior que zero.";
+    }
+
+    setErrors(nextErrors);
+    return Object.keys(nextErrors).length === 0;
+  };
+
   const handleSubmit = () => {
+    if (!validate()) return;
+
     mutate(
       { data },
       {
@@ -47,7 +66,7 @@ export const PlansCreate = () => {
   return (
     <Form
       title="Dados do plano"
-      description="Informações base para identificar e criar um plano."
+      description="Informacoes base para identificar e criar um plano."
       actions={
         <>
           <Button
@@ -67,17 +86,25 @@ export const PlansCreate = () => {
           label="Nome"
           id="name"
           value={data.name}
-          onChange={set("name")}
+          onChange={(event) => {
+            set("name")(event);
+            setErrors((prev) => ({ ...prev, name: "" }));
+          }}
+          error={errors.name}
           required
         />
       </div>
 
       <div className={styles.row}>
         <TextField
-          label="Descrição"
+          label="Descricao"
           id="description"
           value={data.description}
-          onChange={set("description")}
+          onChange={(event) => {
+            set("description")(event);
+            setErrors((prev) => ({ ...prev, description: "" }));
+          }}
+          error={errors.description}
           required
         />
       </div>
@@ -88,24 +115,29 @@ export const PlansCreate = () => {
           id="monthlyPrice"
           inputMode="numeric"
           value={formatCurrencyInput(data.monthlyPrice)}
-          onChange={(event) =>
+          onChange={(event) => {
             setData((prev) => ({
               ...prev,
               monthlyPrice: parseCurrencyInput(event.target.value),
-            }))
-          }
+            }));
+            setErrors((prev) => ({ ...prev, monthlyPrice: "" }));
+          }}
           placeholder="50,00"
+          error={errors.monthlyPrice}
           required
         />
         <TextField
-          label="Duração em meses"
+          label="Duracao em meses"
           id="durationMonths"
           value={data.durationMonths}
-          onChange={set("durationMonths")}
+          onChange={(event) => {
+            set("durationMonths")(event);
+            setErrors((prev) => ({ ...prev, durationMonths: "" }));
+          }}
+          error={errors.durationMonths}
           required
         />
       </div>
     </Form>
   );
 };
-

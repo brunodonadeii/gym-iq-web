@@ -24,18 +24,48 @@ const EMPTY_FORM: StudentCreateFormData = {
 export const StudentsCreate = () => {
   const navigate = useNavigate();
   const [data, setData] = useState<StudentCreateFormData>(EMPTY_FORM);
+  const [errors, setErrors] = useState<Partial<Record<string, string>>>({});
   const { set, setMasked } = useFormInputs(setData);
   const { mutate: mutateCreate, isPending } = useCreateStudent();
-  const canSubmit =
-    data.name &&
-    data.email &&
-    data.password &&
-    data.cpf &&
-    data.birthDate &&
-    data.phone &&
-    data.lgpdAccepted;
 
-  const handleSubmit = async () => {
+  const focusFirstError = (
+    nextErrors: Partial<Record<string, string>>,
+  ) => {
+    const firstField = Object.keys(nextErrors)[0];
+    if (!firstField) return;
+
+    if (firstField === "lgpdAccepted") {
+      document.getElementById("lgpdAccepted")?.focus();
+      return;
+    }
+
+    document.getElementById(firstField)?.focus();
+  };
+
+  const validate = () => {
+    const nextErrors: Partial<Record<string, string>> = {};
+
+    if (!data.name.trim()) nextErrors.name = "Informe o nome.";
+    if (!data.email.trim()) nextErrors.email = "Informe o e-mail.";
+    if (!data.password) nextErrors.password = "Informe a senha.";
+    if (!data.cpf.trim()) nextErrors.cpf = "Informe o CPF.";
+    if (!data.birthDate) nextErrors.birthDate = "Informe a data de nascimento.";
+    if (!data.phone.trim()) nextErrors.phone = "Informe o telefone.";
+    if (!data.lgpdAccepted) {
+      nextErrors.lgpdAccepted = "Confirme o aceite para continuar.";
+    }
+
+    setErrors(nextErrors);
+    return nextErrors;
+  };
+
+  const handleSubmit = () => {
+    const nextErrors = validate();
+    if (Object.keys(nextErrors).length > 0) {
+      focusFirstError(nextErrors);
+      return;
+    }
+
     mutateCreate(data, {
       onSuccess: () => {
         toast.success("Aluno criado com sucesso!");
@@ -56,7 +86,7 @@ export const StudentsCreate = () => {
   return (
     <Form
       title="Dados pessoais"
-      description="Informações base para identificar o aluno e iniciar o acesso."
+      description="Informacoes base para identificar o aluno e iniciar o acesso."
       actions={
         <>
           <Button
@@ -65,11 +95,7 @@ export const StudentsCreate = () => {
           >
             Cancelar
           </Button>
-          <Button
-            onClick={handleSubmit}
-            loading={isPending}
-            disabled={!canSubmit}
-          >
+          <Button onClick={handleSubmit} loading={isPending}>
             Salvar
           </Button>
         </>
@@ -80,7 +106,11 @@ export const StudentsCreate = () => {
           label="Nome"
           id="name"
           value={data.name}
-          onChange={set("name")}
+          onChange={(event) => {
+            set("name")(event);
+            setErrors((prev) => ({ ...prev, name: undefined }));
+          }}
+          error={errors.name}
           required
         />
       </div>
@@ -91,7 +121,11 @@ export const StudentsCreate = () => {
           type="email"
           id="email"
           value={data.email}
-          onChange={set("email")}
+          onChange={(event) => {
+            set("email")(event);
+            setErrors((prev) => ({ ...prev, email: undefined }));
+          }}
+          error={errors.email}
           required
         />
 
@@ -100,7 +134,11 @@ export const StudentsCreate = () => {
           type="password"
           id="password"
           value={data.password}
-          onChange={set("password")}
+          onChange={(event) => {
+            set("password")(event);
+            setErrors((prev) => ({ ...prev, password: undefined }));
+          }}
+          error={errors.password}
           required
         />
       </div>
@@ -110,8 +148,12 @@ export const StudentsCreate = () => {
           label="CPF"
           id="cpf"
           value={data.cpf}
-          onChange={setMasked("cpf", "###.###.###-##")}
+          onChange={(event) => {
+            setMasked("cpf", "###.###.###-##")(event);
+            setErrors((prev) => ({ ...prev, cpf: undefined }));
+          }}
           placeholder="000.000.000-00"
+          error={errors.cpf}
           required
         />
         <TextField
@@ -119,7 +161,11 @@ export const StudentsCreate = () => {
           type="date"
           id="birthDate"
           value={data.birthDate}
-          onChange={set("birthDate")}
+          onChange={(event) => {
+            set("birthDate")(event);
+            setErrors((prev) => ({ ...prev, birthDate: undefined }));
+          }}
+          error={errors.birthDate}
           required
         />
       </div>
@@ -129,14 +175,18 @@ export const StudentsCreate = () => {
           label="Telefone"
           id="phone"
           value={data.phone}
-          onChange={setMasked("phone", "(##) #####-####")}
+          onChange={(event) => {
+            setMasked("phone", "(##) #####-####")(event);
+            setErrors((prev) => ({ ...prev, phone: undefined }));
+          }}
           placeholder="(11) 99999-9999"
+          error={errors.phone}
           required
         />
       </div>
 
       <fieldset className={styles.fieldset}>
-        <legend className={styles.legend}>Endereço</legend>
+        <legend className={styles.legend}>Endereco</legend>
         <div className={styles.row}>
           <TextField
             label="CEP"
@@ -150,21 +200,26 @@ export const StudentsCreate = () => {
 
       <label className={styles.lgpdBox}>
         <input
+          id="lgpdAccepted"
           type="checkbox"
           checked={data.lgpdAccepted}
-          onChange={(event) =>
+          onChange={(event) => {
             setData((prev) => ({
               ...prev,
               lgpdAccepted: event.target.checked,
-            }))
-          }
+            }));
+            setErrors((prev) => ({ ...prev, lgpdAccepted: undefined }));
+          }}
           required
         />
         <span>
-          Declaro que o aluno aceitou o uso dos dados para cadastro e gestão do
+          Declaro que o aluno aceitou o uso dos dados para cadastro e gestao do
           acesso na academia.
         </span>
       </label>
+      {errors.lgpdAccepted && (
+        <div className={styles.checkboxError}>{errors.lgpdAccepted}</div>
+      )}
     </Form>
   );
 };

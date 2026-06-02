@@ -22,3 +22,10 @@
   margin-top: 2px;
   accent-color: var(--primary);
 }
+
+.checkboxError {
+  margin-top: -6px;
+  color: var(--danger);
+  font-size: 0.875rem;
+  line-height: 1.4;
+}

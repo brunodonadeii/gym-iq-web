@@ -121,6 +121,13 @@
   accent-color: var(--primary);
 }
 
+.checkboxError {
+  margin-top: -6px;
+  color: var(--danger);
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
 @media (max-width: 980px) {
   .intro {
     grid-template-columns: 1fr;

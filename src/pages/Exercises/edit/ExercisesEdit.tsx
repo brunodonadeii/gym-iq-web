@@ -34,16 +34,31 @@ const ExercisesEditForm = ({
   loading,
 }: ExercisesEditFormProps) => {
   const [data, setData] = useState<ExerciseFormData>(initialData);
+  const [errors, setErrors] = useState<Partial<Record<keyof ExerciseFormData, string>>>({});
   const { set } = useFormInputs(setData);
   const navigate = useNavigate();
   const { mutate, isPending } = useUpdateExercise();
 
+  const validate = () => {
+    const nextErrors: Partial<Record<keyof ExerciseFormData, string>> = {};
+
+    if (!data.name.trim()) nextErrors.name = "Informe o nome.";
+    if (!data.muscleGroup.trim()) {
+      nextErrors.muscleGroup = "Informe o grupo muscular.";
+    }
+
+    setErrors(nextErrors);
+    return Object.keys(nextErrors).length === 0;
+  };
+
   const handleSubmit = () => {
+    if (!validate()) return;
+
     mutate(
       { id: String(exerciseId), data },
       {
         onSuccess: () => {
-          toast.success("Exercício editado com sucesso!");
+          toast.success("Exercicio editado com sucesso!");
           navigate({ to: "/exercises" });
         },
         onError: (e) => {
@@ -61,8 +76,8 @@ const ExercisesEditForm = ({
 
   return (
     <Form
-      title="Dados do exercício"
-      description="Atualize as informações usadas nas fichas de treino."
+      title="Dados do exercicio"
+      description="Atualize as informacoes usadas nas fichas de treino."
       loading={loading}
       actions={
         <>
@@ -72,11 +87,7 @@ const ExercisesEditForm = ({
           >
             Cancelar
           </Button>
-          <Button
-            onClick={handleSubmit}
-            loading={isPending}
-            disabled={!data.name || !data.muscleGroup}
-          >
+          <Button onClick={handleSubmit} loading={isPending}>
             Salvar
           </Button>
         </>
@@ -87,20 +98,29 @@ const ExercisesEditForm = ({
           label="Nome"
           id="name"
           value={data.name}
-          onChange={set("name")}
+          onChange={(event) => {
+            set("name")(event);
+            setErrors((prev) => ({ ...prev, name: undefined }));
+          }}
+          error={errors.name}
           required
         />
         <TextField
           label="Grupo muscular"
           id="muscleGroup"
           value={data.muscleGroup}
-          onChange={set("muscleGroup")}
+          onChange={(event) => {
+            set("muscleGroup")(event);
+            setErrors((prev) => ({ ...prev, muscleGroup: undefined }));
+          }}
+          error={errors.muscleGroup}
+          required
         />
       </div>
 
       <div className={styles.row}>
         <TextField
-          label="Descrição"
+          label="Descricao"
           id="description"
           value={data.description}
           onChange={set("description")}
@@ -125,5 +145,3 @@ export const ExercisesEdit = () => {
     />
   );
 };
-
-

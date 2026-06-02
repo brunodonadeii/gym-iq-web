@@ -142,13 +142,9 @@ export const AdminUsersPage = () => {
                     <TableRow key={userId || user.email}>
                       <TableCell>
                         <div className={styles.nameCell}>
-                          <span className={styles.namePrimary}>
-                            {user.name}
-                          </span>
+                          <span className={styles.namePrimary}>{user.name}</span>
                           <span className={styles.nameSecondary}>
-                            {user.lgpdAccepted
-                              ? "LGPD aceita"
-                              : "LGPD pendente"}
+                            {user.lgpdAccepted ? "LGPD aceita" : "LGPD pendente"}
                           </span>
                         </div>
                       </TableCell>
@@ -231,5 +227,3 @@ export const AdminUsersPage = () => {
     </div>
   );
 };
-
-

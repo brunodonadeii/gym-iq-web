@@ -27,7 +27,7 @@ const formatDate = (value?: string) =>
         month: "2-digit",
         year: "numeric",
       })
-    : "Não informado";
+    : "Nao informado";
 
 export const InstructorsEdit = () => {
   const isAdmin = auth.hasAnyRole(["ADMIN"]);
@@ -35,6 +35,7 @@ export const InstructorsEdit = () => {
   const instructorId = params.instructorId;
   const navigate = useNavigate();
   const [data, setData] = useState<InstructorUpdateFormData>(EMPTY_FORM);
+  const [errors, setErrors] = useState<Partial<Record<string, string>>>({});
   const { set, setMasked } = useFormInputs(setData);
   const { data: details, isLoading } = useGetInstructorById(instructorId);
   const { mutate, isPending } = useUpdateInstructor();
@@ -42,7 +43,6 @@ export const InstructorsEdit = () => {
   useEffect(() => {
     if (!details) return;
 
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setData({
       name: details.name,
       email: details.email,
@@ -53,9 +53,21 @@ export const InstructorsEdit = () => {
     });
   }, [details]);
 
-  const canSubmit = data.name && data.email && data.cref && data.phone;
+  const validate = () => {
+    const nextErrors: Partial<Record<string, string>> = {};
+
+    if (!data.name.trim()) nextErrors.name = "Informe o nome.";
+    if (!data.email.trim()) nextErrors.email = "Informe o e-mail.";
+    if (!data.cref.trim()) nextErrors.cref = "Informe o CREF.";
+    if (!data.phone.trim()) nextErrors.phone = "Informe o telefone.";
+
+    setErrors(nextErrors);
+    return Object.keys(nextErrors).length === 0;
+  };
 
   const handleSubmit = () => {
+    if (!validate()) return;
+
     mutate(
       { id: instructorId, data },
       {
@@ -89,11 +101,7 @@ export const InstructorsEdit = () => {
             {isAdmin ? "Cancelar" : "Voltar"}
           </Button>
           {isAdmin && (
-            <Button
-              onClick={handleSubmit}
-              loading={isPending}
-              disabled={!canSubmit}
-            >
+            <Button onClick={handleSubmit} loading={isPending}>
               Salvar
             </Button>
           )}
@@ -107,7 +115,7 @@ export const InstructorsEdit = () => {
             <strong>#{details.instructorId}</strong>
           </div>
           <div className={styles.summaryItem}>
-            <span>Usuário</span>
+            <span>Usuario</span>
             <strong>#{details.userId}</strong>
           </div>
           <div className={styles.summaryItem}>
@@ -130,8 +138,12 @@ export const InstructorsEdit = () => {
           label="Nome"
           id="name"
           value={data.name}
-          onChange={set("name")}
+          onChange={(event) => {
+            set("name")(event);
+            setErrors((prev) => ({ ...prev, name: undefined }));
+          }}
           disabled={!isAdmin}
+          error={errors.name}
           required
         />
       </div>
@@ -142,8 +154,12 @@ export const InstructorsEdit = () => {
           type="email"
           id="email"
           value={data.email}
-          onChange={set("email")}
+          onChange={(event) => {
+            set("email")(event);
+            setErrors((prev) => ({ ...prev, email: undefined }));
+          }}
           disabled={!isAdmin}
+          error={errors.email}
           required
         />
       </div>
@@ -153,18 +169,26 @@ export const InstructorsEdit = () => {
           label="CREF"
           id="cref"
           value={data.cref}
-          onChange={set("cref")}
+          onChange={(event) => {
+            set("cref")(event);
+            setErrors((prev) => ({ ...prev, cref: undefined }));
+          }}
           placeholder="123456-G/SP"
           disabled={!isAdmin}
+          error={errors.cref}
           required
         />
         <TextField
           label="Telefone"
           id="phone"
           value={data.phone}
-          onChange={setMasked("phone", "(##) #####-####")}
+          onChange={(event) => {
+            setMasked("phone", "(##) #####-####")(event);
+            setErrors((prev) => ({ ...prev, phone: undefined }));
+          }}
           placeholder="(11) 99999-9999"
           disabled={!isAdmin}
+          error={errors.phone}
           required
         />
       </div>
@@ -197,5 +221,3 @@ export const InstructorsEdit = () => {
     </Form>
   );
 };
-
-

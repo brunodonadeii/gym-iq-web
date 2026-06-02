@@ -21,6 +21,7 @@ const EMPTY_FORM: EnrollmentCreateFormData = {
 
 export const EnrollmentsCreate = () => {
   const [data, setData] = useState<EnrollmentCreateFormData>(EMPTY_FORM);
+  const [errors, setErrors] = useState<Partial<Record<string, string>>>({});
   const [studentSearch, setStudentSearch] = useState("");
   const [planSearch, setPlanSearch] = useState("");
   const debouncedStudentSearch = useDebouncedValue(studentSearch);
@@ -54,10 +55,22 @@ export const EnrollmentsCreate = () => {
         description: `R$ ${plan.monthlyPrice} - ${plan.durationMonths} meses`,
       })) ?? [];
 
+  const validate = () => {
+    const nextErrors: Partial<Record<string, string>> = {};
+
+    if (!data.studentId) nextErrors.studentId = "Selecione o aluno.";
+    if (!data.planId) nextErrors.planId = "Selecione o plano.";
+
+    setErrors(nextErrors);
+    return Object.keys(nextErrors).length === 0;
+  };
+
   const handleSubmit = () => {
+    if (!validate()) return;
+
     mutate(data, {
       onSuccess: () => {
-        toast.success("Matrícula criada com sucesso!");
+        toast.success("Matricula criada com sucesso!");
         navigate({ to: "/enrollments" });
       },
       onError: (e) => {
@@ -74,8 +87,8 @@ export const EnrollmentsCreate = () => {
 
   return (
     <Form
-      title="Dados da matrícula"
-      description="Selecione o aluno, o plano e defina a data inicial quando precisar agendar a vigência."
+      title="Dados da matricula"
+      description="Selecione o aluno, o plano e defina a data inicial quando precisar agendar a vigencia."
       loading={loadingDependencies}
       actions={
         <>
@@ -85,11 +98,7 @@ export const EnrollmentsCreate = () => {
           >
             Cancelar
           </Button>
-          <Button
-            onClick={handleSubmit}
-            loading={isPending}
-            disabled={!data.studentId || !data.planId}
-          >
+          <Button onClick={handleSubmit} loading={isPending}>
             Salvar
           </Button>
         </>
@@ -103,10 +112,12 @@ export const EnrollmentsCreate = () => {
           onSearchChange={(value) => {
             setStudentSearch(value);
             setData((prev) => ({ ...prev, studentId: "" }));
+            setErrors((prev) => ({ ...prev, studentId: undefined }));
           }}
           onSelect={(option) => {
             setStudentSearch(option.label);
             setData((prev) => ({ ...prev, studentId: option.value }));
+            setErrors((prev) => ({ ...prev, studentId: undefined }));
           }}
           onClear={() => {
             setStudentSearch("");
@@ -116,6 +127,7 @@ export const EnrollmentsCreate = () => {
           loading={isFetchingStudentOptions}
           placeholder="Digite nome, CPF ou e-mail"
           helperText="Busca leve em /students/options."
+          error={errors.studentId}
           required
         />
         <Autocomplete
@@ -125,10 +137,12 @@ export const EnrollmentsCreate = () => {
           onSearchChange={(value) => {
             setPlanSearch(value);
             setData((prev) => ({ ...prev, planId: "" }));
+            setErrors((prev) => ({ ...prev, planId: undefined }));
           }}
           onSelect={(option) => {
             setPlanSearch(option.label);
             setData((prev) => ({ ...prev, planId: option.value }));
+            setErrors((prev) => ({ ...prev, planId: undefined }));
           }}
           onClear={() => {
             setPlanSearch("");
@@ -137,13 +151,14 @@ export const EnrollmentsCreate = () => {
           options={autocompletePlanOptions}
           loading={isLoadingPlans}
           placeholder="Digite o nome do plano"
+          error={errors.planId}
           required
         />
       </div>
 
       <div className={styles.row}>
         <TextField
-          label="Data de início"
+          label="Data de inicio"
           id="startDate"
           type="date"
           value={data.startDate}
@@ -153,5 +168,3 @@ export const EnrollmentsCreate = () => {
     </Form>
   );
 };
-
-
