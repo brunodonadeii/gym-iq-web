@@ -1,12 +1,13 @@
-import { DashboardSection } from "@/pages/Dashboard/components/DashboardSection";
+import { TextField } from "@/components/TextField/TextField";
+import { AccessBlocked } from "@/pages/Dashboard/components/AccessBlocked";
 import {
   EnrollmentStatusChart,
   FinancialStatusChart,
   RiskDistributionChart,
 } from "@/pages/Dashboard/components/DashboardCharts";
+import { DashboardSection } from "@/pages/Dashboard/components/DashboardSection";
 import { MetricCard } from "@/pages/Dashboard/components/MetricCard";
 import { OpenRetentionAlertsTable } from "@/pages/Dashboard/components/OpenRetentionAlertsTable";
-import { AccessBlocked } from "@/pages/Dashboard/components/AccessBlocked";
 import { OPEN_ALERTS_SORT } from "@/pages/Dashboard/constants";
 import type { RetentionAlert } from "@/pages/Dashboard/types";
 import {
@@ -40,14 +41,35 @@ import { useState } from "react";
 import { toast } from "sonner";
 import styles from "./DashboardPage.module.css";
 
+const getCurrentMonthDateRange = () => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+
+  const startDate = new Date(year, month, 1).toISOString().slice(0, 10);
+  const endDate = new Date(year, month + 1, 0).toISOString().slice(0, 10);
+
+  return { startDate, endDate };
+};
+
 export const DashboardPage = () => {
   const isAdmin = auth.hasAnyRole(["ADMIN"]);
   const [openAlertsPage, setOpenAlertsPage] = useState(0);
   const [openAlertsSize, setOpenAlertsSize] = useState(10);
+  const [{ startDate: financialStartDate, endDate: financialEndDate }, setFinancialRange] =
+    useState(getCurrentMonthDateRange);
+  const [{ startDate: operationsStartDate, endDate: operationsEndDate }, setOperationsRange] =
+    useState(getCurrentMonthDateRange);
 
   const retention = useGetRetentionDashboard(isAdmin);
-  const financial = useGetFinancialDashboard(isAdmin);
-  const operations = useGetOperationsDashboard(isAdmin);
+  const financial = useGetFinancialDashboard(isAdmin, {
+    startDate: financialStartDate || undefined,
+    endDate: financialEndDate || undefined,
+  });
+  const operations = useGetOperationsDashboard(isAdmin, {
+    startDate: operationsStartDate || undefined,
+    endDate: operationsEndDate || undefined,
+  });
   const openAlerts = useGetOpenRetentionAlerts(
     {
       page: openAlertsPage,
@@ -238,6 +260,36 @@ export const DashboardPage = () => {
         generatedAt={financial.data?.generatedAt}
         loading={financialLoading}
         error={financial.error}
+        action={
+          <div className={styles.sectionFilters}>
+            <TextField
+              label="Início"
+              id="financialStartDate"
+              type="date"
+              value={financialStartDate}
+              onChange={(event) =>
+                setFinancialRange((prev) => ({
+                  ...prev,
+                  startDate: event.target.value,
+                }))
+              }
+              containerProps={{ className: styles.sectionFilterField }}
+            />
+            <TextField
+              label="Fim"
+              id="financialEndDate"
+              type="date"
+              value={financialEndDate}
+              onChange={(event) =>
+                setFinancialRange((prev) => ({
+                  ...prev,
+                  endDate: event.target.value,
+                }))
+              }
+              containerProps={{ className: styles.sectionFilterField }}
+            />
+          </div>
+        }
       >
         <div className={styles.metricGrid}>
           <MetricCard
@@ -287,6 +339,36 @@ export const DashboardPage = () => {
         generatedAt={operations.data?.generatedAt}
         loading={operationsLoading}
         error={operations.error}
+        action={
+          <div className={styles.sectionFilters}>
+            <TextField
+              label="Início"
+              id="operationsStartDate"
+              type="date"
+              value={operationsStartDate}
+              onChange={(event) =>
+                setOperationsRange((prev) => ({
+                  ...prev,
+                  startDate: event.target.value,
+                }))
+              }
+              containerProps={{ className: styles.sectionFilterField }}
+            />
+            <TextField
+              label="Fim"
+              id="operationsEndDate"
+              type="date"
+              value={operationsEndDate}
+              onChange={(event) =>
+                setOperationsRange((prev) => ({
+                  ...prev,
+                  endDate: event.target.value,
+                }))
+              }
+              containerProps={{ className: styles.sectionFilterField }}
+            />
+          </div>
+        }
       >
         <div className={styles.metricGrid}>
           <MetricCard

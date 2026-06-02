@@ -3,8 +3,10 @@ import type { PageRequest } from "@/types/pagination";
 export const dashboardKeys = {
   all: ["dashboard"] as const,
   retention: () => [...dashboardKeys.all, "retention"] as const,
-  financial: () => [...dashboardKeys.all, "financial"] as const,
-  operations: () => [...dashboardKeys.all, "operations"] as const,
+  financial: (filters?: { startDate?: string; endDate?: string }) =>
+    [...dashboardKeys.all, "financial", filters] as const,
+  operations: (filters?: { startDate?: string; endDate?: string }) =>
+    [...dashboardKeys.all, "operations", filters] as const,
 };
 
 export const retentionAlertKeys = {
