@@ -13,19 +13,7 @@
 }
 
 .topBar {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 16px;
   padding: 18px 20px;
-}
-
-.topBarActions {
-  display: flex;
-  align-items: flex-end;
-  justify-content: flex-end;
-  gap: 12px;
-  flex-wrap: wrap;
 }
 
 .searchField {
@@ -98,12 +86,6 @@
 }
 
 @media (max-width: 768px) {
-  .topBar,
-  .topBarActions {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
   .filterField {
     min-width: 0;
   }

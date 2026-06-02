@@ -1,8 +1,12 @@
+import { Check, ChevronDown } from "lucide-react";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import type {
+  ChangeEvent,
   ChangeEventHandler,
   HTMLAttributes,
   SelectHTMLAttributes,
 } from "react";
+import { useMemo } from "react";
 import styles from "./SelectField.module.css";
 
 export type SelectOption = {
@@ -34,10 +38,35 @@ export const SelectField = ({
   error,
   containerProps,
   required,
-  ...rest
+  disabled,
+  name,
+  ..._rest
 }: SelectFieldProps) => {
   const { className, ...containerRest } = containerProps ?? {};
   const describedBy = error || helperText ? `${id}-helper` : undefined;
+  const normalizedValue = String(value ?? "");
+
+  const selectedOption = useMemo(
+    () => options.find((option) => option.value === normalizedValue),
+    [normalizedValue, options],
+  );
+
+  const emitChange = (nextValue: string) => {
+    const syntheticEvent = {
+      target: {
+        value: nextValue,
+        name,
+        id,
+      },
+      currentTarget: {
+        value: nextValue,
+        name,
+        id,
+      },
+    } as ChangeEvent<HTMLSelectElement>;
+
+    onChange(syntheticEvent);
+  };
 
   return (
     <div
@@ -53,30 +82,63 @@ export const SelectField = ({
         )}
       </label>
 
-      <div className={styles.selectWrapper}>
-        <select
-          className={[styles.select, error && styles.selectError]
-            .filter(Boolean)
-            .join(" ")}
-          id={id}
-          value={value}
-          onChange={onChange}
-          aria-invalid={Boolean(error)}
-          aria-describedby={describedBy}
-          required={required}
-          {...rest}
-        >
-          {options.map((option) => (
-            <option
-              key={`${option.value}-${option.label}`}
-              value={option.value}
-              disabled={option.disabled}
-            >
-              {option.label}
-            </option>
-          ))}
-        </select>
-      </div>
+      <input
+        type="hidden"
+        id={id}
+        name={name}
+        value={normalizedValue}
+        required={required}
+      />
+
+      <DropdownMenu.Root modal={false}>
+        <DropdownMenu.Trigger asChild disabled={disabled}>
+          <button
+            type="button"
+            className={[styles.trigger, error && styles.triggerError]
+              .filter(Boolean)
+              .join(" ")}
+            aria-invalid={Boolean(error)}
+            aria-describedby={describedBy}
+            aria-label={label}
+            disabled={disabled}
+          >
+            <span className={styles.triggerText}>
+              {selectedOption?.label ?? "Selecione"}
+            </span>
+            <ChevronDown size={18} className={styles.triggerIcon} />
+          </button>
+        </DropdownMenu.Trigger>
+
+        <DropdownMenu.Portal>
+          <DropdownMenu.Content
+            className={styles.content}
+            sideOffset={8}
+            align="start"
+          >
+            {options.map((option) => {
+              const selected = option.value === normalizedValue;
+
+              return (
+                <DropdownMenu.Item
+                  key={`${option.value}-${option.label}`}
+                  className={[
+                    styles.item,
+                    selected && styles.itemSelected,
+                    option.disabled && styles.itemDisabled,
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                  disabled={option.disabled}
+                  onSelect={() => emitChange(option.value)}
+                >
+                  <span className={styles.itemLabel}>{option.label}</span>
+                  {selected && <Check size={16} className={styles.itemCheck} />}
+                </DropdownMenu.Item>
+              );
+            })}
+          </DropdownMenu.Content>
+        </DropdownMenu.Portal>
+      </DropdownMenu.Root>
 
       {(error || helperText) && (
         <span

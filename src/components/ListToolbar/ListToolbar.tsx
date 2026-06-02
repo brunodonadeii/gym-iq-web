@@ -9,11 +9,13 @@ type ListToolbarProps = {
 
 export const ListToolbar = ({ search, filters, action }: ListToolbarProps) => {
   return (
-    <div className={styles.toolbar}>
+    <div
+      className={`${styles.toolbar} ${!search ? styles.toolbarSearchless : ""}`}
+    >
       <div className={styles.searchSlot}>{search}</div>
-      <div className={styles.controlsSlot}>
-        {filters}
-        {action}
+      <div className={styles.trailingSlot}>
+        <div className={styles.filtersSlot}>{filters}</div>
+        <div className={styles.actionSlot}>{action}</div>
       </div>
     </div>
   );

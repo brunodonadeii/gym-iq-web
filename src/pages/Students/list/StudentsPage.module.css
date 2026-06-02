@@ -123,10 +123,6 @@
 }
 
 .topBar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
   padding: 18px 20px;
   background: var(--surface);
   border-radius: 20px;
@@ -286,13 +282,7 @@
 }
 
 @media (max-width: 768px) {
-  .topBar,
   .sectionHeader {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .topBarActions {
     flex-direction: column;
     align-items: stretch;
   }

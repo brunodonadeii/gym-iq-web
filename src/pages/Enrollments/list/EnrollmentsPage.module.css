@@ -82,10 +82,6 @@
 }
 
 .topBar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
   padding: 18px 20px;
 }
 
@@ -119,6 +115,10 @@
 }
 
 .filterField {
+  min-width: 180px;
+}
+
+.filterFieldLarge {
   min-width: 280px;
 }
 
@@ -249,19 +249,14 @@
 }
 
 @media (max-width: 768px) {
-  .topBar,
   .summaryHeader,
   .sectionHeader {
     flex-direction: column;
     align-items: stretch;
   }
 
-  .topBarActions {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .filterField {
+  .filterField,
+  .filterFieldLarge {
     min-width: 0;
   }
 

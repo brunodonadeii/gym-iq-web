@@ -1,22 +1,43 @@
 .toolbar {
   display: grid;
-  grid-template-columns: minmax(260px, 1fr) auto;
+  grid-template-columns: minmax(320px, 1fr) auto;
   gap: 16px;
   align-items: end;
+  width: 100%;
+}
+
+.toolbarSearchless {
+  grid-template-columns: 1fr;
 }
 
 .searchSlot {
   min-width: 0;
 }
 
-.controlsSlot {
+.trailingSlot {
+  display: flex;
+  align-items: end;
+  justify-content: flex-end;
+  gap: 16px;
+  min-width: 0;
+}
+
+.filtersSlot {
   display: flex;
   align-items: end;
   justify-content: flex-end;
   gap: 12px;
+  min-width: 0;
 }
 
-.controlsSlot > * {
+.filtersSlot > * {
+  flex: 0 0 auto;
+}
+
+.actionSlot {
+  display: flex;
+  align-items: end;
+  justify-content: flex-end;
   flex: 0 0 auto;
 }
 
@@ -25,8 +46,14 @@
     grid-template-columns: 1fr;
   }
 
-  .controlsSlot {
+  .trailingSlot,
+  .filtersSlot,
+  .actionSlot {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .trailingSlot {
+    gap: 12px;
   }
 }
