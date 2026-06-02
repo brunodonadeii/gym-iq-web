@@ -1,6 +1,7 @@
 import { Button } from "@/components/Button/Button";
 import { ConfirmDialog } from "@/components/ConfirmDialog/ConfirmDialog";
 import { Dropdown } from "@/components/Dropdown/Dropdown";
+import { ListToolbar } from "@/components/ListToolbar/ListToolbar";
 import { Pagination } from "@/components/Pagination/Pagination";
 import { SearchBar } from "@/components/SearchBar/SearchBar";
 import { SelectField } from "@/components/SelectField/SelectField";
@@ -74,8 +75,7 @@ export const ExercisesPage = () => {
 
     queryClient.prefetchQuery({
       queryKey: ["exercises", queryMode, debouncedSearch, nextPagination],
-      queryFn: () =>
-        fetchExercises(queryMode, debouncedSearch, nextPagination),
+      queryFn: () => fetchExercises(queryMode, debouncedSearch, nextPagination),
       staleTime: 5 * 60 * 1000,
       gcTime: 15 * 60 * 1000,
     });
@@ -117,45 +117,51 @@ export const ExercisesPage = () => {
   return (
     <div className={styles.page}>
       <div className={styles.topBar}>
-        <SearchBar
-          icon={<Search size={15} />}
-          placeholder="Buscar exercício"
-          onChange={(e) => {
-            setSearch(e.target.value);
-            setPage(0);
-          }}
+        <ListToolbar
+          search={
+            <SearchBar
+              icon={<Search size={15} />}
+              placeholder="Buscar por nome ou grupo muscular"
+              containerClassName={styles.searchField}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(0);
+              }}
+            />
+          }
+          filters={
+            <SelectField
+              label="Status"
+              id="exerciseStatusFilter"
+              value={statusFilter}
+              onChange={(e) => {
+                setStatusFilter(e.target.value as ExerciseStatusFilter);
+                setPage(0);
+              }}
+              options={[
+                { label: "Ativos", value: "active" },
+                { label: "Inativos", value: "inactive" },
+                { label: "Todos", value: "all" },
+              ]}
+              containerProps={{ className: styles.filterField }}
+            />
+          }
+          action={
+            <Button
+              leftIcon={<PlusCircle size={18} />}
+              onClick={() => navigate({ to: "/exercises/create" })}
+            >
+              Novo exercício
+            </Button>
+          }
         />
-
-        <div className={styles.topBarActions}>
-          <SelectField
-            label="Status"
-            id="exerciseStatusFilter"
-            value={statusFilter}
-            onChange={(e) => {
-              setStatusFilter(e.target.value as ExerciseStatusFilter);
-              setPage(0);
-            }}
-            options={[
-              { label: "Ativos", value: "active" },
-              { label: "Inativos", value: "inactive" },
-              { label: "Todos", value: "all" },
-            ]}
-            containerProps={{ className: styles.filterField }}
-          />
-          <Button
-            leftIcon={<PlusCircle size={18} />}
-            onClick={() => navigate({ to: "/exercises/create" })}
-          >
-            Novo exercício
-          </Button>
-        </div>
       </div>
 
       <section className={styles.tableSection}>
         <div className={styles.sectionHeader}>
           <h3 className={styles.sectionTitle}>Lista principal</h3>
           <p className={styles.sectionDescription}>
-            {data?.totalElements ?? 0} exercício(s) retornado(s) pelo endpoint.
+            {exercises.length} exercício(s) exibido(s) nesta página.
           </p>
         </div>
 
@@ -268,5 +274,3 @@ export const ExercisesPage = () => {
     </div>
   );
 };
-
-

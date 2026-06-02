@@ -28,6 +28,10 @@
   flex-wrap: wrap;
 }
 
+.searchField {
+  width: 100%;
+}
+
 .filterField {
   min-width: 180px;
 }

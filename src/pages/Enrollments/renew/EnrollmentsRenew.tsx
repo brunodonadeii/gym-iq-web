@@ -176,7 +176,7 @@ export const EnrollmentsRenew = () => {
   const navigate = useNavigate();
   const { data: enrollments, isLoading: isLoadingEnrollments } =
     useGetEnrollments({ size: 100, sort: "createdAt,desc" });
-  const { data: plans, isLoading: isLoadingPlans } = useGetPlans("active", {
+  const { data: plans, isLoading: isLoadingPlans } = useGetPlans("active", "", {
     size: 100,
     sort: "name,asc",
   });

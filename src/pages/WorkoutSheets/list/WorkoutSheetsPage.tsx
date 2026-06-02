@@ -2,6 +2,7 @@ import { Autocomplete } from "@/components/Autocomplete/Autocomplete";
 import { Button } from "@/components/Button/Button";
 import { ConfirmDialog } from "@/components/ConfirmDialog/ConfirmDialog";
 import { Dropdown } from "@/components/Dropdown/Dropdown";
+import { ListToolbar } from "@/components/ListToolbar/ListToolbar";
 import { Pagination } from "@/components/Pagination/Pagination";
 import { SelectField } from "@/components/SelectField/SelectField";
 import {
@@ -19,10 +20,7 @@ import { useDeleteWorkoutSheet } from "@/mutations/useDeleteWorkoutSheet";
 import type { WorkoutSheet } from "@/pages/WorkoutSheets/types";
 import { useGetInstructors } from "@/queries/useGetInstructors";
 import { useGetStudentOptions } from "@/queries/useGetStudentOptions";
-import {
-  fetchWorkoutSheets,
-  useGetWorkoutSheets,
-} from "@/queries/useGetWorkoutSheets";
+import { fetchWorkoutSheets, useGetWorkoutSheets } from "@/queries/useGetWorkoutSheets";
 import { auth } from "@/utils/auth";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
@@ -32,6 +30,7 @@ import { toast } from "sonner";
 import styles from "./WorkoutSheetsPage.module.css";
 
 type WorkoutSheetFilterMode = "all" | "student" | "instructor";
+type WorkoutSheetStatusFilter = "all" | "active" | "inactive";
 
 const sheetColumns = [
   { width: "20%" },
@@ -53,8 +52,7 @@ const formatDate = (value?: string | null) =>
       })
     : "-";
 
-const getWorkoutSheetId = (sheet: WorkoutSheet) =>
-  String(sheet.workoutSheetId);
+const getWorkoutSheetId = (sheet: WorkoutSheet) => String(sheet.workoutSheetId);
 
 const resolveStudentName = (sheet: WorkoutSheet) =>
   sheet.student?.name ?? sheet.studentName ?? `Aluno #${sheet.studentId}`;
@@ -76,7 +74,8 @@ export const WorkoutSheetsPage = () => {
   const [studentSearch, setStudentSearch] = useState("");
   const [instructorId, setInstructorId] = useState("");
   const [instructorSearch, setInstructorSearch] = useState("");
-  const [onlyActive, setOnlyActive] = useState("false");
+  const [statusFilter, setStatusFilter] =
+    useState<WorkoutSheetStatusFilter>("all");
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
   const [sheetToDelete, setSheetToDelete] = useState<WorkoutSheet | null>(null);
@@ -86,10 +85,15 @@ export const WorkoutSheetsPage = () => {
   const { data: studentOptions, isFetching: isFetchingStudents } =
     useGetStudentOptions(debouncedStudentSearch, filterMode === "student");
   const { data: instructors, isFetching: isFetchingInstructors } =
-    useGetInstructors(debouncedInstructorSearch, "ACTIVE", {
-      size: 20,
-      sort: "user.name,asc",
-    }, !isInstructor);
+    useGetInstructors(
+      debouncedInstructorSearch,
+      "ACTIVE",
+      {
+        size: 20,
+        sort: "user.name,asc",
+      },
+      !isInstructor,
+    );
 
   const query = useMemo(
     () =>
@@ -97,12 +101,12 @@ export const WorkoutSheetsPage = () => {
         ? ({
             mode: "student",
             studentId,
-            onlyActive: onlyActive === "true",
+            onlyActive: statusFilter === "active",
           } as const)
         : filterMode === "instructor"
           ? ({ mode: "instructor", instructorId } as const)
           : ({ mode: "all" } as const),
-    [filterMode, instructorId, onlyActive, studentId],
+    [filterMode, instructorId, statusFilter, studentId],
   );
 
   const enabled =
@@ -120,7 +124,13 @@ export const WorkoutSheetsPage = () => {
   const { mutate: deleteWorkoutSheet, isPending: isDeleting } =
     useDeleteWorkoutSheet();
   const tableLoading = isLoading;
-  const sheets = enabled ? (data?.content ?? []) : [];
+  const sheets = (enabled ? (data?.content ?? []) : []).filter((sheet) =>
+    statusFilter === "active"
+      ? sheet.active
+      : statusFilter === "inactive"
+        ? !sheet.active
+        : true,
+  );
 
   useEffect(() => {
     if (!enabled || !data || data.last) return;
@@ -179,31 +189,9 @@ export const WorkoutSheetsPage = () => {
   return (
     <div className={styles.page}>
       <div className={styles.topBar}>
-        <div className={styles.topBarActions}>
-          <SelectField
-            label="Visão"
-            id="workoutSheetFilterMode"
-            value={filterMode}
-            onChange={(e) => {
-              setFilterMode(e.target.value as WorkoutSheetFilterMode);
-              setStudentId("");
-              setStudentSearch("");
-              setInstructorId("");
-              setInstructorSearch("");
-              setPage(0);
-            }}
-            options={[
-              { label: "Todas", value: "all" },
-              { label: "Por aluno", value: "student" },
-              ...(!isInstructor
-                ? [{ label: "Por instrutor", value: "instructor" as const }]
-                : []),
-            ]}
-            containerProps={{ className: styles.filterField }}
-          />
-
-          {filterMode === "student" && (
-            <>
+        <ListToolbar
+          search={
+            filterMode === "student" ? (
               <Autocomplete
                 label="Aluno"
                 id="workoutSheetStudentFilter"
@@ -228,64 +216,89 @@ export const WorkoutSheetsPage = () => {
                 placeholder="Digite nome, CPF ou e-mail"
                 containerClassName={styles.filterFieldLarge}
               />
+            ) : filterMode === "instructor" ? (
+              <Autocomplete
+                label="Instrutor"
+                id="workoutSheetInstructorFilter"
+                search={instructorSearch}
+                onSearchChange={(value) => {
+                  setInstructorSearch(value);
+                  setInstructorId("");
+                  setPage(0);
+                }}
+                onSelect={(option) => {
+                  setInstructorSearch(option.label);
+                  setInstructorId(option.value);
+                  setPage(0);
+                }}
+                onClear={() => {
+                  setInstructorSearch("");
+                  setInstructorId("");
+                  setPage(0);
+                }}
+                options={instructorOptions}
+                loading={isFetchingInstructors}
+                placeholder="Digite nome, CREF ou e-mail"
+                containerClassName={styles.filterFieldLarge}
+              />
+            ) : undefined
+          }
+          filters={
+            <>
               <SelectField
-                label="Status"
-                id="workoutSheetOnlyActive"
-                value={onlyActive}
+                label="Visão"
+                id="workoutSheetFilterMode"
+                value={filterMode}
                 onChange={(e) => {
-                  setOnlyActive(e.target.value);
+                  setFilterMode(e.target.value as WorkoutSheetFilterMode);
+                  setStudentId("");
+                  setStudentSearch("");
+                  setInstructorId("");
+                  setInstructorSearch("");
                   setPage(0);
                 }}
                 options={[
-                  { label: "Todas", value: "false" },
-                  { label: "Somente ativas", value: "true" },
+                  { label: "Todas", value: "all" },
+                  { label: "Por aluno", value: "student" },
+                  ...(!isInstructor
+                    ? [{ label: "Por instrutor", value: "instructor" as const }]
+                    : []),
+                ]}
+                containerProps={{ className: styles.filterField }}
+              />
+              <SelectField
+                label="Status"
+                id="workoutSheetStatusFilter"
+                value={statusFilter}
+                onChange={(e) => {
+                  setStatusFilter(e.target.value as WorkoutSheetStatusFilter);
+                  setPage(0);
+                }}
+                options={[
+                  { label: "Todas", value: "all" },
+                  { label: "Ativas", value: "active" },
+                  { label: "Inativas", value: "inactive" },
                 ]}
                 containerProps={{ className: styles.filterField }}
               />
             </>
-          )}
-
-          {filterMode === "instructor" && (
-            <Autocomplete
-              label="Instrutor"
-              id="workoutSheetInstructorFilter"
-              search={instructorSearch}
-              onSearchChange={(value) => {
-                setInstructorSearch(value);
-                setInstructorId("");
-                setPage(0);
-              }}
-              onSelect={(option) => {
-                setInstructorSearch(option.label);
-                setInstructorId(option.value);
-                setPage(0);
-              }}
-              onClear={() => {
-                setInstructorSearch("");
-                setInstructorId("");
-                setPage(0);
-              }}
-              options={instructorOptions}
-              loading={isFetchingInstructors}
-              placeholder="Digite nome, CREF ou e-mail"
-              containerClassName={styles.filterFieldLarge}
-            />
-          )}
-        </div>
-
-        <Button
-          leftIcon={<PlusCircle size={18} />}
-          onClick={() => navigate({ to: "/workout-sheets/create" })}
-        >
-          Nova ficha
-        </Button>
+          }
+          action={
+            <Button
+              leftIcon={<PlusCircle size={18} />}
+              onClick={() => navigate({ to: "/workout-sheets/create" })}
+            >
+              Nova ficha
+            </Button>
+          }
+        />
       </div>
 
       <section className={styles.tableSection}>
         <div className={styles.sectionHeader}>
           <h3 className={styles.sectionTitle}>Lista principal</h3>
           <p className={styles.sectionDescription}>
-            {data?.totalElements ?? 0} ficha(s) retornada(s) pelo endpoint.
+            {sheets.length} ficha(s) exibida(s) nesta página.
           </p>
         </div>
 
@@ -406,4 +419,3 @@ export const WorkoutSheetsPage = () => {
     </div>
   );
 };
-

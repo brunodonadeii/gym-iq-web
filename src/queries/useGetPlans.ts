@@ -73,16 +73,65 @@ async function fetchInactivePlans(
   );
 }
 
+const matchesSearch = (plan: Plan, search: string) => {
+  const normalizedSearch = search.trim().toLowerCase();
+
+  if (!normalizedSearch) {
+    return true;
+  }
+
+  return [plan.name, plan.description]
+    .filter(Boolean)
+    .some((value) => String(value).toLowerCase().includes(normalizedSearch));
+};
+
+async function fetchAllPlansForSearch(mode: PlansQueryMode): Promise<Plan[]> {
+  const pageSize = 100;
+  const plans: Plan[] = [];
+  let currentPage = 0;
+  let last = false;
+
+  while (!last) {
+    const response = await fetchPlans(mode === "active" ? "active" : "all", {
+      page: currentPage,
+      size: pageSize,
+      sort: "name,asc",
+    });
+
+    plans.push(...response.content);
+    last = response.last;
+    currentPage += 1;
+  }
+
+  return mode === "inactive" ? plans.filter((plan) => !plan.active) : plans;
+}
+
+async function searchPlans(
+  mode: PlansQueryMode,
+  search: string,
+  pagination: PageRequest,
+): Promise<PageResponse<Plan>> {
+  const plans = await fetchAllPlansForSearch(mode);
+
+  return paginatePlans(
+    plans.filter((plan) => matchesSearch(plan, search)),
+    pagination,
+  );
+}
+
 export function useGetPlans(
   mode: PlansQueryMode = "active",
+  search = "",
   pagination: PageRequest = DEFAULT_PLANS_PAGE,
 ) {
   return useQuery({
-    queryKey: ["plans", mode, pagination],
+    queryKey: ["plans", mode, search, pagination],
     queryFn: () =>
-      mode === "inactive"
-        ? fetchInactivePlans(pagination)
-        : fetchPlans(mode, pagination),
+      search.trim()
+        ? searchPlans(mode, search, pagination)
+        : mode === "inactive"
+          ? fetchInactivePlans(pagination)
+          : fetchPlans(mode, pagination),
     placeholderData: keepPreviousData,
     staleTime: 5 * 60 * 1000,
     gcTime: 15 * 60 * 1000,

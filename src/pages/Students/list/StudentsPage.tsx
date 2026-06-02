@@ -4,6 +4,7 @@ import { Dropdown } from "@/components/Dropdown/Dropdown";
 import { ListToolbar } from "@/components/ListToolbar/ListToolbar";
 import { Pagination } from "@/components/Pagination/Pagination";
 import { SearchBar } from "@/components/SearchBar/SearchBar";
+import { SelectField } from "@/components/SelectField/SelectField";
 import {
   Table,
   TableBody,
@@ -57,10 +58,13 @@ const getSensitiveValue = (
   return maskedValue;
 };
 
+type StudentStatusFilter = "all" | "active" | "inactive";
+
 export const StudentsPage = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<StudentStatusFilter>("all");
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
   const [confirmAction, setConfirmAction] = useState<ConfirmAction | null>(
@@ -82,6 +86,13 @@ export const StudentsPage = () => {
   const { mutate: anonymizeStudent, isPending: isAnonymizingStudent } =
     useAnonymizeStudent();
   const students = data?.content ?? [];
+  const visibleStudents = students.filter((student) =>
+    statusFilter === "active"
+      ? student.active
+      : statusFilter === "inactive"
+        ? !student.active
+        : true,
+  );
   const tableLoading = isLoading;
 
   const handleDeactivateStudent = (studentId: string) => {
@@ -180,6 +191,23 @@ export const StudentsPage = () => {
               }}
             />
           }
+          filters={
+            <SelectField
+              label="Status"
+              id="studentStatusFilter"
+              value={statusFilter}
+              onChange={(e) => {
+                setStatusFilter(e.target.value as StudentStatusFilter);
+                setPage(0);
+              }}
+              options={[
+                { label: "Todos", value: "all" },
+                { label: "Ativos", value: "active" },
+                { label: "Inativos", value: "inactive" },
+              ]}
+              containerProps={{ className: styles.filterField }}
+            />
+          }
           action={
             <Button
               leftIcon={<UserPlus size={18} />}
@@ -196,7 +224,7 @@ export const StudentsPage = () => {
           <div>
             <h3 className={styles.sectionTitle}>Lista principal</h3>
             <p className={styles.sectionDescription}>
-              {data?.totalElements ?? 0} aluno(s) encontrado(s).
+              {visibleStudents.length} aluno(s) exibido(s) nesta página.
             </p>
           </div>
         </div>
@@ -218,7 +246,7 @@ export const StudentsPage = () => {
               {tableLoading && <TableSkeletonRows columns={6} />}
 
               {!tableLoading &&
-                students.map((student) => {
+                visibleStudents.map((student) => {
                   const anonymized = isAnonymizedStudent(student);
 
                   return (
@@ -317,7 +345,7 @@ export const StudentsPage = () => {
                   );
                 })}
 
-              {!tableLoading && students.length === 0 && (
+              {!tableLoading && visibleStudents.length === 0 && (
                 <TableEmptyState
                   colSpan={6}
                   message="Nenhum aluno encontrado."

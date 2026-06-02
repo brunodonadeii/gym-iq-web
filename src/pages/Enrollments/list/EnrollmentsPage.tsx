@@ -1,7 +1,9 @@
 import { Autocomplete } from "@/components/Autocomplete/Autocomplete";
 import { Button } from "@/components/Button/Button";
 import { Dropdown, type DropdownItem } from "@/components/Dropdown/Dropdown";
+import { ListToolbar } from "@/components/ListToolbar/ListToolbar";
 import { Pagination } from "@/components/Pagination/Pagination";
+import { SelectField } from "@/components/SelectField/SelectField";
 import { Skeleton } from "@/components/Skeleton/Skeleton";
 import {
   Table,
@@ -109,6 +111,7 @@ export const EnrollmentsPage = () => {
   const [selectedStudentName, setSelectedStudentName] = useState("");
   const [selectedStudentEmail, setSelectedStudentEmail] = useState("");
   const [studentSearch, setStudentSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"all" | EnrollmentStatus>("all");
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
   const debouncedStudentSearch = useDebouncedValue(studentSearch);
@@ -124,7 +127,7 @@ export const EnrollmentsPage = () => {
   });
   const { data: studentOptions, isFetching: isFetchingStudentOptions } =
     useGetStudentOptions(debouncedStudentSearch);
-  const { data: plans } = useGetPlans("active", {
+  const { data: plans } = useGetPlans("active", "", {
     size: 100,
     sort: "name,asc",
   });
@@ -146,9 +149,13 @@ export const EnrollmentsPage = () => {
   const { data: activeEnrollment, isLoading: isLoadingActiveEnrollment } =
     useGetActiveStudentEnrollment(selectedStudentId, studentFilterEnabled);
 
-  const enrollments = studentFilterEnabled
+  const baseEnrollments = studentFilterEnabled
     ? (filteredEnrollments?.content ?? [])
     : (allEnrollments?.content ?? []);
+
+  const enrollments = baseEnrollments.filter((enrollment) =>
+    statusFilter === "all" ? true : enrollment.status === statusFilter,
+  );
 
   const currentPage = studentFilterEnabled
     ? filteredEnrollments
@@ -261,56 +268,70 @@ export const EnrollmentsPage = () => {
   return (
     <div className={styles.page}>
       <div className={styles.topBar}>
-        <div className={styles.topBarContent}>
-          <strong className={styles.topBarTitle}>Filtro por aluno</strong>
-          <span className={styles.topBarSubtitle}>
-            Escolha um aluno para ver histórico e matrícula ativa, ou mantenha a
-            visão geral.
-          </span>
-        </div>
+        <ListToolbar
+          search={
+            <Autocomplete
+              label="Aluno"
+              id="studentFilter"
+              search={studentSearch}
+              onSearchChange={(value) => {
+                setStudentSearch(value);
+                setSelectedStudentId("");
+                setSelectedStudentName("");
+                setSelectedStudentEmail("");
+                setPage(0);
+              }}
+              onSelect={(option) => {
+                const selectedOption = studentOptions?.find(
+                  (student) => String(student.studentId) === option.value,
+                );
 
-        <div className={styles.topBarActions}>
-          <Autocomplete
-            label="Aluno"
-            id="studentFilter"
-            search={studentSearch}
-            onSearchChange={(value) => {
-              setStudentSearch(value);
-              setSelectedStudentId("");
-              setSelectedStudentName("");
-              setSelectedStudentEmail("");
-              setPage(0);
-            }}
-            onSelect={(option) => {
-              const selectedOption = studentOptions?.find(
-                (student) => String(student.studentId) === option.value,
-              );
-
-              setSelectedStudentId(option.value);
-              setSelectedStudentName(selectedOption?.name ?? option.label);
-              setSelectedStudentEmail(selectedOption?.email ?? "");
-              setStudentSearch(option.label);
-              setPage(0);
-            }}
-            onClear={() => {
-              setStudentSearch("");
-              setSelectedStudentId("");
-              setSelectedStudentName("");
-              setSelectedStudentEmail("");
-              setPage(0);
-            }}
-            options={autocompleteStudentOptions}
-            loading={isFetchingStudentOptions}
-            placeholder="Buscar por nome, CPF ou e-mail"
-            containerClassName={styles.filterField}
-          />
-          <Button
-            leftIcon={<PlusCircle size={18} />}
-            onClick={() => navigate({ to: "/enrollments/create" })}
-          >
-            Nova matrícula
-          </Button>
-        </div>
+                setSelectedStudentId(option.value);
+                setSelectedStudentName(selectedOption?.name ?? option.label);
+                setSelectedStudentEmail(selectedOption?.email ?? "");
+                setStudentSearch(option.label);
+                setPage(0);
+              }}
+              onClear={() => {
+                setStudentSearch("");
+                setSelectedStudentId("");
+                setSelectedStudentName("");
+                setSelectedStudentEmail("");
+                setPage(0);
+              }}
+              options={autocompleteStudentOptions}
+              loading={isFetchingStudentOptions}
+              placeholder="Buscar por nome, CPF ou e-mail"
+              containerClassName={styles.filterFieldLarge}
+            />
+          }
+          filters={
+            <SelectField
+              label="Status"
+              id="enrollmentStatusFilter"
+              value={statusFilter}
+              onChange={(event) => {
+                setStatusFilter(event.target.value as "all" | EnrollmentStatus);
+                setPage(0);
+              }}
+              options={[
+                { label: "Todos", value: "all" },
+                { label: "Acesso ativo", value: "ACTIVE" },
+                { label: "Acesso suspenso", value: "SUSPENDED" },
+                { label: "Cancelada", value: "CANCELED" },
+              ]}
+              containerProps={{ className: styles.filterField }}
+            />
+          }
+          action={
+            <Button
+              leftIcon={<PlusCircle size={18} />}
+              onClick={() => navigate({ to: "/enrollments/create" })}
+            >
+              Nova matrícula
+            </Button>
+          }
+        />
       </div>
 
       {studentFilterEnabled && (
@@ -332,7 +353,7 @@ export const EnrollmentsPage = () => {
               {isLoadingStudentEnrollments ? (
                 <Skeleton width="132px" height="16px" />
               ) : (
-                `${currentPage?.totalElements ?? 0} matrícula(s)`
+                `${enrollments.length} matrícula(s)`
               )}
             </div>
           </div>
@@ -376,8 +397,8 @@ export const EnrollmentsPage = () => {
             <h3 className={styles.sectionTitle}>Lista principal</h3>
             <p className={styles.sectionDescription}>
               Consulte aluno, plano, vigência, status de acesso e data de
-              criação em uma visão única. Total encontrado:{" "}
-              {currentPage?.totalElements ?? 0}.
+              criação em uma visão única. Exibindo {enrollments.length} registro(s)
+              nesta página.
             </p>
           </div>
         </div>

@@ -24,6 +24,10 @@
   width: 100%;
 }
 
+.filterField {
+  min-width: 180px;
+}
+
 .tableSection {
   overflow: hidden;
 }

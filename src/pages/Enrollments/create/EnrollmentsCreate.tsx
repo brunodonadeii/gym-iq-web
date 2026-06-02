@@ -30,7 +30,7 @@ export const EnrollmentsCreate = () => {
   const { mutate, isPending } = useCreateEnrollment();
   const { data: studentOptions, isFetching: isFetchingStudentOptions } =
     useGetStudentOptions(debouncedStudentSearch);
-  const { data: plans, isLoading: isLoadingPlans } = useGetPlans("active", {
+  const { data: plans, isLoading: isLoadingPlans } = useGetPlans("active", "", {
     size: 100,
     sort: "name,asc",
   });

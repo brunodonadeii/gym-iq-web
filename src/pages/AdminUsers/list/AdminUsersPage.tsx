@@ -4,6 +4,7 @@ import { Dropdown } from "@/components/Dropdown/Dropdown";
 import { ListToolbar } from "@/components/ListToolbar/ListToolbar";
 import { Pagination } from "@/components/Pagination/Pagination";
 import { SearchBar } from "@/components/SearchBar/SearchBar";
+import { SelectField } from "@/components/SelectField/SelectField";
 import {
   Table,
   TableBody,
@@ -48,11 +49,13 @@ const formatDate = (value?: string | null) =>
       })
     : "-";
 
-const getAdminUserId = (user: AdminUser) => String(user.userId ?? user.id ?? "");
+const getAdminUserId = (user: AdminUser) =>
+  String(user.userId ?? user.id ?? "");
 
 export const AdminUsersPage = () => {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
+  const [roleFilter, setRoleFilter] = useState<"all" | AdminUserRole>("all");
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
   const [userToDelete, setUserToDelete] = useState<AdminUser | null>(null);
@@ -64,7 +67,9 @@ export const AdminUsersPage = () => {
   });
   const { mutate: deleteAdminUser, isPending: isDeleting } =
     useDeleteAdminUser();
-  const users = data?.content ?? [];
+  const users = (data?.content ?? []).filter((user) =>
+    roleFilter === "all" ? true : user.role === roleFilter,
+  );
 
   const handleDelete = () => {
     if (!userToDelete) return;
@@ -82,7 +87,9 @@ export const AdminUsersPage = () => {
               <strong>{e?.erro ?? e?.error ?? "Erro"}</strong>
               <br />
               <span>
-                {e?.mensagem ?? e?.message ?? "Não foi possível remover este usuário."}
+                {e?.mensagem ??
+                  e?.message ??
+                  "Não foi possível remover este usuário."}
               </span>
             </div>,
           );
@@ -107,6 +114,23 @@ export const AdminUsersPage = () => {
               }}
             />
           }
+          filters={
+            <SelectField
+              label="Perfil"
+              id="adminUserRoleFilter"
+              value={roleFilter}
+              onChange={(e) => {
+                setRoleFilter(e.target.value as "all" | AdminUserRole);
+                setPage(0);
+              }}
+              options={[
+                { label: "Todos", value: "all" },
+                { label: "Administrador", value: "ADMIN" },
+                { label: "Recepção", value: "RECEPTION" },
+              ]}
+              containerProps={{ className: styles.filterField }}
+            />
+          }
           action={
             <Button
               leftIcon={<PlusCircle size={18} />}
@@ -122,7 +146,7 @@ export const AdminUsersPage = () => {
         <div className={styles.sectionHeader}>
           <h3 className={styles.sectionTitle}>Usuários administrativos</h3>
           <p className={styles.sectionDescription}>
-            {data?.totalElements ?? 0} usuário(s) interno(s) encontrado(s).
+            {users.length} usuário(s) interno(s) exibido(s) nesta página.
           </p>
         </div>
 

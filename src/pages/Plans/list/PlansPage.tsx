@@ -1,9 +1,10 @@
 import { Button } from "@/components/Button/Button";
 import { ConfirmDialog } from "@/components/ConfirmDialog/ConfirmDialog";
 import { Dropdown, type DropdownItem } from "@/components/Dropdown/Dropdown";
+import { ListToolbar } from "@/components/ListToolbar/ListToolbar";
 import { Pagination } from "@/components/Pagination/Pagination";
+import { SearchBar } from "@/components/SearchBar/SearchBar";
 import { SelectField } from "@/components/SelectField/SelectField";
-import { Skeleton } from "@/components/Skeleton/Skeleton";
 import {
   Table,
   TableBody,
@@ -21,7 +22,8 @@ import type { Plan } from "@/pages/Plans/types";
 import { useGetPlans } from "@/queries/useGetPlans";
 import { auth } from "@/utils/auth";
 import { useNavigate } from "@tanstack/react-router";
-import { Ban, Pencil, RotateCcw, Trash2, UserPlus } from "lucide-react";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import { Ban, Pencil, RotateCcw, Search, Trash2, UserPlus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import styles from "./Plans.module.css";
@@ -56,13 +58,15 @@ const showMutationError = (
 export const PlansPage = () => {
   const isAdmin = auth.hasAnyRole(["ADMIN"]);
   const navigate = useNavigate();
+  const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<PlanStatusFilter>("active");
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
   const [confirmAction, setConfirmAction] = useState<ConfirmAction | null>(
     null,
   );
-  const { data, isLoading, isFetching } = useGetPlans(statusFilter, {
+  const debouncedSearch = useDebouncedValue(search);
+  const { data, isLoading, isFetching } = useGetPlans(statusFilter, debouncedSearch, {
     page,
     size,
     sort: "name,asc",
@@ -74,8 +78,6 @@ export const PlansPage = () => {
   const mutationPending = isActivating || isDeactivating || isDeleting;
   const tableLoading = isLoading || isFetching;
   const plans = data?.content ?? [];
-  const activeCount = plans.filter((plan) => plan.active).length;
-  const inactiveCount = plans.length - activeCount;
 
   const handleActivatePlan = (plan: Plan) => {
     activatePlan(
@@ -179,48 +181,47 @@ export const PlansPage = () => {
   return (
     <div className={styles.page}>
       <div className={styles.topBar}>
-        <div className={styles.topBarContent}>
-          <strong className={styles.topBarTitle}>
-            {tableLoading ? (
-              <Skeleton width="160px" height="18px" />
-            ) : (
-              `${plans.length} plano(s) exibido(s)`
-            )}
-          </strong>
-          <span className={styles.topBarSubtitle}>
-            {tableLoading ? (
-              <Skeleton width="220px" height="14px" />
-            ) : (
-              `${activeCount} ativo(s) e ${inactiveCount} inativo(s) neste recorte.`
-            )}
-          </span>
-        </div>
-
-        <div className={styles.topBarActions}>
-          <SelectField
-            label="Status"
-            id="planStatusFilter"
-            value={statusFilter}
-            onChange={(e) => {
-              setStatusFilter(e.target.value as PlanStatusFilter);
-              setPage(0);
-            }}
-            options={[
-              { label: "Ativos", value: "active" },
-              { label: "Inativos", value: "inactive" },
-              { label: "Todos", value: "all" },
-            ]}
-            containerProps={{ className: styles.filterField }}
-          />
-          {isAdmin && (
-            <Button
-              leftIcon={<UserPlus size={18} />}
-              onClick={() => navigate({ to: "/plans/create" })}
-            >
-              Novo Plano
-            </Button>
-          )}
-        </div>
+        <ListToolbar
+          search={
+            <SearchBar
+              icon={<Search size={15} />}
+              placeholder="Buscar por nome ou descrição"
+              value={search}
+              containerClassName={styles.searchField}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(0);
+              }}
+            />
+          }
+          filters={
+            <SelectField
+              label="Status"
+              id="planStatusFilter"
+              value={statusFilter}
+              onChange={(e) => {
+                setStatusFilter(e.target.value as PlanStatusFilter);
+                setPage(0);
+              }}
+              options={[
+                { label: "Ativos", value: "active" },
+                { label: "Inativos", value: "inactive" },
+                { label: "Todos", value: "all" },
+              ]}
+              containerProps={{ className: styles.filterField }}
+            />
+          }
+          action={
+            isAdmin ? (
+              <Button
+                leftIcon={<UserPlus size={18} />}
+                onClick={() => navigate({ to: "/plans/create" })}
+              >
+                Novo Plano
+              </Button>
+            ) : null
+          }
+        />
       </div>
 
       <section className={styles.tableSection}>
