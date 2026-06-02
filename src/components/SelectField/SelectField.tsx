@@ -40,7 +40,6 @@ export const SelectField = ({
   required,
   disabled,
   name,
-  ..._rest
 }: SelectFieldProps) => {
   const { className, ...containerRest } = containerProps ?? {};
   const describedBy = error || helperText ? `${id}-helper` : undefined;
