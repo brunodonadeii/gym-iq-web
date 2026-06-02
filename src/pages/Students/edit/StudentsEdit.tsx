@@ -161,7 +161,6 @@ export const StudentsEdit = () => {
           onChange={setMasked("cpf", "###.###.###-##")}
           placeholder="000.000.000-00"
           disabled
-          required
         />
         <TextField
           label="Data de nascimento"
@@ -211,6 +210,7 @@ export const StudentsEdit = () => {
             value={data.address}
             onChange={set("address")}
             placeholder="Rua, numero, bairro, cidade - UF"
+            disabled
           />
         </div>
       </fieldset>

@@ -58,12 +58,11 @@ export const Autocomplete = ({
     >
       <label className={styles.label} htmlFor={id}>
         <span>{label}</span>
-        <span
-          className={required ? styles.requiredMeta : styles.optionalMeta}
-          aria-hidden="true"
-        >
-          {required ? "Obrigatório" : "Opcional"}
-        </span>
+        {required && (
+          <span className={styles.requiredMeta} aria-hidden="true">
+            Obrigatório
+          </span>
+        )}
       </label>
 
       <div className={styles.wrapper}>
