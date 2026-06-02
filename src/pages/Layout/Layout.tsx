@@ -34,36 +34,43 @@ const sidebarItems: SidebarItem[] = [
     label: "Alunos",
     icon: <Users size={20} />,
     to: "/students",
+    roles: ["ADMIN", "RECEPTION"],
   },
   {
     label: "Planos",
     icon: <Layers size={20} />,
     to: "/plans",
+    roles: ["ADMIN", "RECEPTION"],
   },
   {
     label: "Matrículas",
     icon: <ClipboardList size={20} />,
     to: "/enrollments",
+    roles: ["ADMIN", "RECEPTION"],
   },
   {
     label: "Instrutores",
     icon: <Dumbbell size={20} />,
     to: "/instructors",
+    roles: ["ADMIN", "RECEPTION"],
   },
   {
     label: "Exercícios",
     icon: <Activity size={20} />,
     to: "/exercises",
+    roles: ["ADMIN", "INSTRUCTOR"],
   },
   {
     label: "Fichas",
     icon: <ClipboardCheck size={20} />,
     to: "/workout-sheets",
+    roles: ["ADMIN", "INSTRUCTOR"],
   },
   {
     label: "Pagamentos",
     icon: <CreditCard size={20} />,
     to: "/payments",
+    roles: ["ADMIN", "RECEPTION"],
   },
   {
     label: "Usuários",

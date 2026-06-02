@@ -19,6 +19,7 @@ import { useDeactivatePlan } from "@/mutations/useDeactivatePlan";
 import { useDeletePlan } from "@/mutations/useDeletePlan";
 import type { Plan } from "@/pages/Plans/types";
 import { useGetPlans } from "@/queries/useGetPlans";
+import { auth } from "@/utils/auth";
 import { useNavigate } from "@tanstack/react-router";
 import { Ban, Pencil, RotateCcw, Trash2, UserPlus } from "lucide-react";
 import { useState } from "react";
@@ -53,6 +54,7 @@ const showMutationError = (
 };
 
 export const PlansPage = () => {
+  const isAdmin = auth.hasAnyRole(["ADMIN"]);
   const navigate = useNavigate();
   const [statusFilter, setStatusFilter] = useState<PlanStatusFilter>("active");
   const [page, setPage] = useState(0);
@@ -127,6 +129,10 @@ export const PlansPage = () => {
   };
 
   const getPlanActions = (plan: Plan): DropdownItem[] => {
+    if (!isAdmin) {
+      return [];
+    }
+
     const actions: DropdownItem[] = [
       {
         label: "Editar",
@@ -206,12 +212,14 @@ export const PlansPage = () => {
             ]}
             containerProps={{ className: styles.filterField }}
           />
-          <Button
-            leftIcon={<UserPlus size={18} />}
-            onClick={() => navigate({ to: "/plans/create" })}
-          >
-            Novo Plano
-          </Button>
+          {isAdmin && (
+            <Button
+              leftIcon={<UserPlus size={18} />}
+              onClick={() => navigate({ to: "/plans/create" })}
+            >
+              Novo Plano
+            </Button>
+          )}
         </div>
       </div>
 
@@ -264,7 +272,7 @@ export const PlansPage = () => {
                       </span>
                     </TableCell>
                     <TableCell center>
-                      <Dropdown items={getPlanActions(plan)} />
+                      {isAdmin ? <Dropdown items={getPlanActions(plan)} /> : "-"}
                     </TableCell>
                   </TableRow>
                 ))}

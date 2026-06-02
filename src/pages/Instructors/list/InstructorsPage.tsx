@@ -20,6 +20,7 @@ import {
   type InstructorStatusFilter,
   useGetInstructors,
 } from "@/queries/useGetInstructors";
+import { auth } from "@/utils/auth";
 import { maskEmail, maskPhone } from "@/utils/sensitiveData";
 import { useNavigate } from "@tanstack/react-router";
 import {
@@ -60,6 +61,7 @@ const formatDate = (value?: string) =>
     : "Não informado";
 
 export const InstructorsPage = () => {
+  const isAdmin = auth.hasAnyRole(["ADMIN"]);
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] =
@@ -107,7 +109,7 @@ export const InstructorsPage = () => {
 
   const getInstructorActions = (instructor: Instructor): DropdownItem[] => [
     {
-      label: "Detalhes / editar",
+      label: isAdmin ? "Detalhes / editar" : "Detalhes",
       icon: <Eye size={15} />,
       onSelect: () =>
         navigate({
@@ -115,13 +117,17 @@ export const InstructorsPage = () => {
           params: { instructorId: String(instructor.instructorId) },
         }),
     },
-    {
-      label: "Inativar",
-      icon: <Trash2 size={15} />,
-      danger: true,
-      disabled: !instructor.active || isDeleting,
-      onSelect: () => handleDelete(instructor),
-    },
+    ...(isAdmin
+      ? [
+          {
+            label: "Inativar",
+            icon: <Trash2 size={15} />,
+            danger: true,
+            disabled: !instructor.active || isDeleting,
+            onSelect: () => handleDelete(instructor),
+          } satisfies DropdownItem,
+        ]
+      : []),
   ];
 
   return (
@@ -154,12 +160,14 @@ export const InstructorsPage = () => {
               setPage(0);
             }}
           />
-          <Button
-            leftIcon={<UserRoundPlus size={18} />}
-            onClick={() => navigate({ to: "/instructors/create" })}
-          >
-            Novo instrutor
-          </Button>
+          {isAdmin && (
+            <Button
+              leftIcon={<UserRoundPlus size={18} />}
+              onClick={() => navigate({ to: "/instructors/create" })}
+            >
+              Novo instrutor
+            </Button>
+          )}
         </div>
       </div>
 

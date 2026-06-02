@@ -2,7 +2,7 @@ import { Layout } from "@/pages/Layout/Layout";
 import type { UserRole } from "@/utils/auth";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
-const ADMIN_PANEL_ROLES: UserRole[] = ["ADMIN", "RECEPTION"];
+const ADMIN_PANEL_ROLES: UserRole[] = ["ADMIN", "RECEPTION", "INSTRUCTOR"];
 
 export const Route = createFileRoute("/_sidebar")({
   beforeLoad: async ({ context, location }) => {
