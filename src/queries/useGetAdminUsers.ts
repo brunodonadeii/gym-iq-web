@@ -8,7 +8,9 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 async function fetchAdminUsers(
   pagination: PageRequest,
 ): Promise<PageResponse<AdminUser>> {
-  const response = await authFetch(`users?${buildPaginationParams(pagination)}`);
+  const response = await authFetch(
+    `users?${buildPaginationParams(pagination)}`,
+  );
 
   return parseApiResponse(response, "Erro ao buscar usuarios administrativos");
 }
@@ -59,7 +61,9 @@ async function searchAdminUsers(
     users.filter((user) =>
       [user.name, user.email, user.role]
         .filter(Boolean)
-        .some((value) => String(value).toLowerCase().includes(normalizedSearch)),
+        .some((value) =>
+          String(value).toLowerCase().includes(normalizedSearch),
+        ),
     ),
     pagination,
   );
