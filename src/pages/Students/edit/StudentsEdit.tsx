@@ -92,8 +92,8 @@ export const StudentsEdit = () => {
         <div className={styles.anonymizedNotice}>
           <strong>Anonimizado</strong>
           <span>
-            Nome, contato e endereço podem aparecer mascarados conforme o retorno
-            da API.
+            Nome, contato e endereço podem aparecer mascarados conforme o
+            retorno da API.
           </span>
         </div>
       )}
@@ -161,18 +161,7 @@ export const StudentsEdit = () => {
             placeholder="00000-000"
           />
         </div>
-
-        <div className={styles.row}>
-          <TextField
-            label="Endereco completo"
-            id="address"
-            value={data.address}
-            onChange={set("address")}
-            placeholder="Rua, numero, bairro, cidade - UF"
-          />
-        </div>
       </fieldset>
     </Form>
   );
 };
-

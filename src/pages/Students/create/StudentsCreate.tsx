@@ -65,7 +65,11 @@ export const StudentsCreate = () => {
           >
             Cancelar
           </Button>
-          <Button onClick={handleSubmit} loading={isPending} disabled={!canSubmit}>
+          <Button
+            onClick={handleSubmit}
+            loading={isPending}
+            disabled={!canSubmit}
+          >
             Salvar
           </Button>
         </>
@@ -142,16 +146,6 @@ export const StudentsCreate = () => {
             placeholder="00000-000"
           />
         </div>
-
-        <div className={styles.row}>
-          <TextField
-            label="Endereço completo"
-            id="address"
-            value={data.address}
-            onChange={set("address")}
-            placeholder="Rua, número, bairro, cidade - UF"
-          />
-        </div>
       </fieldset>
 
       <label className={styles.lgpdBox}>
@@ -174,4 +168,3 @@ export const StudentsCreate = () => {
     </Form>
   );
 };
-

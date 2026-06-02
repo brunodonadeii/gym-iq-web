@@ -33,6 +33,17 @@
   background-color: var(--background-elevated);
 }
 
+.input:disabled {
+  opacity: 0.72;
+  cursor: not-allowed;
+  color: var(--text-primary);
+  background-color: color-mix(in srgb, var(--surface-alt) 88%, var(--surface));
+}
+
+.input:disabled:hover {
+  border-color: var(--border);
+}
+
 .inputError,
 .inputError:hover,
 .inputError:focus {
