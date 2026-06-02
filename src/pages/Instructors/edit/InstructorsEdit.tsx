@@ -5,6 +5,7 @@ import { useFormInputs } from "@/hooks/useFormInputs";
 import { useUpdateInstructor } from "@/mutations/useUpdateInstructor";
 import type { InstructorUpdateFormData } from "@/pages/Instructors/types";
 import { useGetInstructorById } from "@/queries/useGetInstructorById";
+import { auth } from "@/utils/auth";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -29,6 +30,7 @@ const formatDate = (value?: string) =>
     : "Não informado";
 
 export const InstructorsEdit = () => {
+  const isAdmin = auth.hasAnyRole(["ADMIN"]);
   const params = useParams({ strict: false });
   const instructorId = params.instructorId;
   const navigate = useNavigate();
@@ -84,15 +86,17 @@ export const InstructorsEdit = () => {
             onClick={() => navigate({ to: "/instructors" })}
             disabled={isPending}
           >
-            Cancelar
+            {isAdmin ? "Cancelar" : "Voltar"}
           </Button>
-          <Button
-            onClick={handleSubmit}
-            loading={isPending}
-            disabled={!canSubmit}
-          >
-            Salvar
-          </Button>
+          {isAdmin && (
+            <Button
+              onClick={handleSubmit}
+              loading={isPending}
+              disabled={!canSubmit}
+            >
+              Salvar
+            </Button>
+          )}
         </>
       }
     >
@@ -127,6 +131,7 @@ export const InstructorsEdit = () => {
           id="name"
           value={data.name}
           onChange={set("name")}
+          disabled={!isAdmin}
           required
         />
       </div>
@@ -138,6 +143,7 @@ export const InstructorsEdit = () => {
           id="email"
           value={data.email}
           onChange={set("email")}
+          disabled={!isAdmin}
           required
         />
       </div>
@@ -149,6 +155,7 @@ export const InstructorsEdit = () => {
           value={data.cref}
           onChange={set("cref")}
           placeholder="123456-G/SP"
+          disabled={!isAdmin}
           required
         />
         <TextField
@@ -157,6 +164,7 @@ export const InstructorsEdit = () => {
           value={data.phone}
           onChange={setMasked("phone", "(##) #####-####")}
           placeholder="(11) 99999-9999"
+          disabled={!isAdmin}
           required
         />
       </div>
@@ -168,6 +176,7 @@ export const InstructorsEdit = () => {
           value={data.specialty}
           onChange={set("specialty")}
           placeholder="Hipertrofia"
+          disabled={!isAdmin}
         />
       </div>
 
@@ -175,6 +184,7 @@ export const InstructorsEdit = () => {
         <input
           type="checkbox"
           checked={data.lgpdAccepted}
+          disabled={!isAdmin}
           onChange={(event) =>
             setData((prev) => ({
               ...prev,

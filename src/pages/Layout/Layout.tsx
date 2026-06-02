@@ -54,11 +54,13 @@ const sidebarItems: SidebarItem[] = [
     label: "Exercícios",
     icon: <Activity size={20} />,
     to: "/exercises",
+    roles: ["ADMIN"],
   },
   {
     label: "Fichas",
     icon: <ClipboardCheck size={20} />,
     to: "/workout-sheets",
+    roles: ["ADMIN"],
   },
   {
     label: "Pagamentos",

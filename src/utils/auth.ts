@@ -120,7 +120,8 @@ export const auth = {
 
 export const getDefaultPathByRole = (role: UserRole | null) => {
   if (role === "STUDENT") return "/student";
-  if (role === "ADMIN" || role === "RECEPTION") return "/dashboard";
+  if (role === "ADMIN") return "/dashboard";
+  if (role === "RECEPTION") return "/students";
 
   return "/unauthorized";
 };
