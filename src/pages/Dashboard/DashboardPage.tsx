@@ -1,4 +1,4 @@
-import { TextField } from "@/components/TextField/TextField";
+import { DateRangePicker } from "@/components/DateRangePicker/DateRangePicker";
 import { AccessBlocked } from "@/pages/Dashboard/components/AccessBlocked";
 import {
   EnrollmentStatusChart,
@@ -40,26 +40,16 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 import styles from "./DashboardPage.module.css";
-
-const getCurrentMonthDateRange = () => {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth();
-
-  const startDate = new Date(year, month, 1).toISOString().slice(0, 10);
-  const endDate = new Date(year, month + 1, 0).toISOString().slice(0, 10);
-
-  return { startDate, endDate };
-};
+import { getDateRangePresetValue } from "@/components/DateRangePicker/dateRangeUtils";
 
 export const DashboardPage = () => {
   const isAdmin = auth.hasAnyRole(["ADMIN"]);
   const [openAlertsPage, setOpenAlertsPage] = useState(0);
   const [openAlertsSize, setOpenAlertsSize] = useState(10);
   const [{ startDate: financialStartDate, endDate: financialEndDate }, setFinancialRange] =
-    useState(getCurrentMonthDateRange);
+    useState(() => getDateRangePresetValue("thisMonth"));
   const [{ startDate: operationsStartDate, endDate: operationsEndDate }, setOperationsRange] =
-    useState(getCurrentMonthDateRange);
+    useState(() => getDateRangePresetValue("thisMonth"));
 
   const retention = useGetRetentionDashboard(isAdmin);
   const financial = useGetFinancialDashboard(isAdmin, {
@@ -262,31 +252,15 @@ export const DashboardPage = () => {
         error={financial.error}
         action={
           <div className={styles.sectionFilters}>
-            <TextField
-              label="Início"
-              id="financialStartDate"
-              type="date"
-              value={financialStartDate}
-              onChange={(event) =>
-                setFinancialRange((prev) => ({
-                  ...prev,
-                  startDate: event.target.value,
-                }))
-              }
-              containerProps={{ className: styles.sectionFilterField }}
-            />
-            <TextField
-              label="Fim"
-              id="financialEndDate"
-              type="date"
-              value={financialEndDate}
-              onChange={(event) =>
-                setFinancialRange((prev) => ({
-                  ...prev,
-                  endDate: event.target.value,
-                }))
-              }
-              containerProps={{ className: styles.sectionFilterField }}
+            <DateRangePicker
+              id="financialDateRange"
+              label="Período"
+              value={{
+                startDate: financialStartDate,
+                endDate: financialEndDate,
+              }}
+              onChange={(value) => setFinancialRange(value)}
+              className={styles.sectionFilterField}
             />
           </div>
         }
@@ -341,31 +315,15 @@ export const DashboardPage = () => {
         error={operations.error}
         action={
           <div className={styles.sectionFilters}>
-            <TextField
-              label="Início"
-              id="operationsStartDate"
-              type="date"
-              value={operationsStartDate}
-              onChange={(event) =>
-                setOperationsRange((prev) => ({
-                  ...prev,
-                  startDate: event.target.value,
-                }))
-              }
-              containerProps={{ className: styles.sectionFilterField }}
-            />
-            <TextField
-              label="Fim"
-              id="operationsEndDate"
-              type="date"
-              value={operationsEndDate}
-              onChange={(event) =>
-                setOperationsRange((prev) => ({
-                  ...prev,
-                  endDate: event.target.value,
-                }))
-              }
-              containerProps={{ className: styles.sectionFilterField }}
+            <DateRangePicker
+              id="operationsDateRange"
+              label="Período"
+              value={{
+                startDate: operationsStartDate,
+                endDate: operationsEndDate,
+              }}
+              onChange={(value) => setOperationsRange(value)}
+              className={styles.sectionFilterField}
             />
           </div>
         }

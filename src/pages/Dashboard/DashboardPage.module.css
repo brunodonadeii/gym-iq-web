@@ -172,14 +172,11 @@
 }
 
 .sectionFilters {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(180px, 1fr));
-  gap: 12px;
-  width: min(100%, 420px);
+  width: min(100%, 360px);
 }
 
 .sectionFilterField {
-  min-width: 0;
+  width: 100%;
 }
 
 .sectionTitle {
@@ -522,7 +519,6 @@
 
   .sectionFilters {
     width: 100%;
-    grid-template-columns: 1fr;
   }
 
   .chartHeader {
