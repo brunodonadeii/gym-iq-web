@@ -24,10 +24,10 @@ export const ForgotPasswordPage = () => {
     } catch (error) {
       const apiError = normalizeApiError(
         error,
-        "Nao foi possivel solicitar a redefinicao de senha.",
+            "Não foi possível solicitar a redefinição de senha.",
       );
 
-      showApiError(apiError, "Nao foi possivel solicitar a redefinicao de senha.");
+          showApiError(apiError, "Não foi possível solicitar a redefinição de senha.");
     } finally {
       setIsSubmitting(false);
     }

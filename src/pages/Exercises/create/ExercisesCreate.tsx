@@ -41,7 +41,7 @@ export const ExercisesCreate = () => {
       { data },
       {
         onSuccess: () => {
-          toast.success("Exercicio criado com sucesso!");
+        toast.success("Exercício criado com sucesso!");
           navigate({ to: "/exercises" });
         },
         onError: (e) => {
@@ -59,8 +59,8 @@ export const ExercisesCreate = () => {
 
   return (
     <Form
-      title="Dados do exercicio"
-      description="Cadastre as informacoes essenciais para reutilizar o exercicio nas fichas."
+      title="Dados do exercício"
+      description="Cadastre as informações essenciais para reutilizar o exercício nas fichas."
       actions={
         <>
           <Button
@@ -103,7 +103,7 @@ export const ExercisesCreate = () => {
 
       <div className={styles.row}>
         <TextField
-          label="Descricao"
+          label="Descrição"
           id="description"
           value={data.description}
           onChange={set("description")}

@@ -27,17 +27,17 @@ export const WorkoutSheetCard = ({
           <p className={styles.itemTitle}>{sheet.name}</p>
           <p className={styles.itemDescription}>
             {sheet.goal ?? "Sem objetivo informado"} | Instrutor:{" "}
-            {sheet.instructorName ?? sheet.instructor?.name ?? "Nao informado"}
+            {sheet.instructorName ?? sheet.instructor?.name ?? "Não informado"}
           </p>
         </div>
         <span className={styles.badge}>
-          {sheet.exercises?.length ?? 0} exercicio(s)
+          {sheet.exercises?.length ?? 0} exercício(s)
         </span>
       </div>
 
       <div className={styles.sheetActions}>
         <Button variant="ghost" leftIcon={<ChevronDown size={16} />} onClick={onToggle}>
-          {expanded ? "Ocultar exercicios" : "Ver exercicios"}
+          {expanded ? "Ocultar exercícios" : "Ver exercícios"}
         </Button>
         <Button
           variant="secondary"
@@ -75,7 +75,7 @@ export const WorkoutSheetCard = ({
             ))
           ) : (
             <div className={styles.empty}>
-              Esta ficha ainda nao possui exercicios listados.
+              Esta ficha ainda não possui exercícios listados.
             </div>
           )}
         </div>

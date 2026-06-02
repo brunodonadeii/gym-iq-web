@@ -96,8 +96,8 @@ export const StudentsEdit = () => {
       title="Dados pessoais"
       description={
         anonymized
-          ? "Aluno anonimizado. O historico foi preservado e os dados pessoais foram removidos."
-          : "Informacoes base para identificar o aluno e iniciar o acesso."
+          ? "Aluno anonimizado. O histórico foi preservado e os dados pessoais foram removidos."
+          : "Informações base para identificar o aluno e iniciar o acesso."
       }
       loading={isLoading}
       actions={
@@ -118,7 +118,7 @@ export const StudentsEdit = () => {
         <div className={styles.anonymizedNotice}>
           <strong>Anonimizado</strong>
           <span>
-            Nome, contato e endereco podem aparecer mascarados conforme o
+            Nome, contato e endereço podem aparecer mascarados conforme o
             retorno da API.
           </span>
         </div>
@@ -193,7 +193,7 @@ export const StudentsEdit = () => {
       </div>
 
       <fieldset className={styles.fieldset}>
-        <legend className={styles.legend}>Endereco</legend>
+        <legend className={styles.legend}>Endereço</legend>
         <div className={styles.row}>
           <TextField
             label="CEP"
@@ -206,7 +206,7 @@ export const StudentsEdit = () => {
 
         <div className={styles.row}>
           <TextField
-            label="Endereco completo"
+            label="Endereço completo"
             id="address"
             value={data.address}
             onChange={set("address")}

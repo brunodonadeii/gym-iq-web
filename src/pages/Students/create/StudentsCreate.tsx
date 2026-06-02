@@ -86,7 +86,7 @@ export const StudentsCreate = () => {
   return (
     <Form
       title="Dados pessoais"
-      description="Informacoes base para identificar o aluno e iniciar o acesso."
+      description="Informações base para identificar o aluno e iniciar o acesso."
       actions={
         <>
           <Button
@@ -186,7 +186,7 @@ export const StudentsCreate = () => {
       </div>
 
       <fieldset className={styles.fieldset}>
-        <legend className={styles.legend}>Endereco</legend>
+        <legend className={styles.legend}>Endereço</legend>
         <div className={styles.row}>
           <TextField
             label="CEP"

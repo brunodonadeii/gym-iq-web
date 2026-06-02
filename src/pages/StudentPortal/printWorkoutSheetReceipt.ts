@@ -33,7 +33,7 @@ export const printWorkoutSheetReceipt = (sheet: WorkoutSheet) => {
             `,
           )
           .join("")
-      : `<div class="empty">Nenhum exercicio listado.</div>`;
+      : `<div class="empty">Nenhum exercício listado.</div>`;
 
   printWindow.document.write(`
     <html>
@@ -138,17 +138,17 @@ export const printWorkoutSheetReceipt = (sheet: WorkoutSheet) => {
 
           <section class="section">
             <span class="label">Instrutor</span>
-            <div class="value">${sheet.instructorName ?? sheet.instructor?.name ?? "Nao informado"}</div>
+            <div class="value">${sheet.instructorName ?? sheet.instructor?.name ?? "Não informado"}</div>
           </section>
 
           <section class="section">
             <span class="label">Periodo</span>
-            <div class="value">Inicio: ${formatDate(sheet.startDate)}</div>
+            <div class="value">Início: ${formatDate(sheet.startDate)}</div>
             <div class="value">Fim: ${formatDate(sheet.endDate)}</div>
           </section>
 
           <section class="section">
-            <span class="label">Exercicios</span>
+            <span class="label">Exercícios</span>
             ${exercisesMarkup}
           </section>
 

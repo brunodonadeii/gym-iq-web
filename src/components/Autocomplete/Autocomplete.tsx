@@ -62,7 +62,7 @@ export const Autocomplete = ({
           className={required ? styles.requiredMeta : styles.optionalMeta}
           aria-hidden="true"
         >
-          {required ? "Obrigatorio" : "Opcional"}
+          {required ? "Obrigatório" : "Opcional"}
         </span>
       </label>
 
@@ -94,7 +94,7 @@ export const Autocomplete = ({
               onClear();
               setOpen(false);
             }}
-            aria-label="Limpar selecao"
+            aria-label="Limpar seleção"
           >
             <X size={15} />
           </button>

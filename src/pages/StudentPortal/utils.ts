@@ -20,7 +20,7 @@ export const formatDate = (value?: string | null) =>
         month: "2-digit",
         year: "numeric",
       })
-    : "Nao informado";
+    : "Não informado";
 
 export const formatDateTime = (value?: string | null) =>
   value
@@ -31,7 +31,7 @@ export const formatDateTime = (value?: string | null) =>
         hour: "2-digit",
         minute: "2-digit",
       })
-    : "Nao informado";
+    : "Não informado";
 
 export const formatCurrency = (value?: number) =>
   new Intl.NumberFormat("pt-BR", {
@@ -43,7 +43,7 @@ export const isRecurringEnrollment = (endDate?: string | null) =>
   endDate === null || endDate === undefined || endDate === "";
 
 export const formatEnrollmentEndDate = (endDate?: string | null) =>
-  isRecurringEnrollment(endDate) ? "Matricula recorrente" : formatDate(endDate);
+  isRecurringEnrollment(endDate) ? "Matrícula recorrente" : formatDate(endDate);
 
 export const formatExerciseMeta = (
   sets?: number | string,

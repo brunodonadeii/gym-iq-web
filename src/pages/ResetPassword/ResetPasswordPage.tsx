@@ -36,7 +36,7 @@ export const ResetPasswordPage = () => {
     }
 
     if (newPassword !== confirmPassword) {
-      setConfirmPasswordError("As senhas nao coincidem.");
+      setConfirmPasswordError("As senhas não coincidem.");
       hasError = true;
     } else {
       setConfirmPasswordError("");
@@ -69,9 +69,9 @@ export const ResetPasswordPage = () => {
     } catch (error) {
       const apiError = normalizeApiError(
         error,
-        "Nao foi possivel redefinir a senha.",
+            "Não foi possível redefinir a senha.",
       );
-      showApiError(apiError, "Nao foi possivel redefinir a senha.");
+          showApiError(apiError, "Não foi possível redefinir a senha.");
     } finally {
       setIsSubmitting(false);
     }

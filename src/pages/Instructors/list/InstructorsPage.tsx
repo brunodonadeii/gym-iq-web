@@ -59,7 +59,7 @@ const formatDate = (value?: string) =>
         month: "2-digit",
         year: "numeric",
       })
-    : "Nao informado";
+    : "Não informado";
 
 export const InstructorsPage = () => {
   const isAdmin = auth.hasAnyRole(["ADMIN"]);
@@ -97,7 +97,7 @@ export const InstructorsPage = () => {
               <strong>{e?.erro ?? e?.error ?? "Erro"}</strong>
               <br />
               <span>
-                {e?.mensagem ?? e?.message ?? "Nao foi possivel inativar o instrutor."}
+                {e?.mensagem ?? e?.message ?? "Não foi possível inativar o instrutor."}
               </span>
             </div>,
           );
@@ -190,7 +190,7 @@ export const InstructorsPage = () => {
                 <TableHeaderCell>E-mail</TableHeaderCell>
                 <TableHeaderCell>Especialidade</TableHeaderCell>
                 <TableHeaderCell center>Status</TableHeaderCell>
-                <TableHeaderCell center>Acoes</TableHeaderCell>
+                <TableHeaderCell center>Ações</TableHeaderCell>
               </TableRow>
             </TableHead>
 

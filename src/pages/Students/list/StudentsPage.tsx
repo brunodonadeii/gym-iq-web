@@ -210,7 +210,7 @@ export const StudentsPage = () => {
                 <TableHeaderCell>Telefone</TableHeaderCell>
                 <TableHeaderCell>Email</TableHeaderCell>
                 <TableHeaderCell center>Status</TableHeaderCell>
-                <TableHeaderCell center>Acoes</TableHeaderCell>
+                <TableHeaderCell center>Ações</TableHeaderCell>
               </TableRow>
             </TableHead>
 
@@ -348,9 +348,9 @@ export const StudentsPage = () => {
         }
         description={
           confirmAction?.type === "anonymize"
-            ? `Os dados pessoais de ${confirmAction.studentName} serao removidos e o historico sera preservado. Esta acao exige que o aluno ja esteja inativo.`
+            ? `Os dados pessoais de ${confirmAction.studentName} serão removidos e o histórico será preservado. Esta ação exige que o aluno já esteja inativo.`
             : confirmAction
-              ? `${confirmAction.studentName} perdera o acesso ativo, mas o historico sera preservado.`
+              ? `${confirmAction.studentName} perderá o acesso ativo, mas o histórico será preservado.`
               : ""
         }
         confirmLabel={

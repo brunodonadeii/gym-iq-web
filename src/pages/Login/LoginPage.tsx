@@ -58,12 +58,12 @@ export const LoginPage = () => {
     } catch (error) {
       const apiError = normalizeApiError(
         error,
-        "Nao foi possivel entrar. Confira seu e-mail e senha e tente novamente.",
+            "Não foi possível entrar. Confira seu e-mail e senha e tente novamente.",
       );
 
       showApiError(
         apiError,
-        "Nao foi possivel entrar. Confira seu e-mail e senha e tente novamente.",
+            "Não foi possível entrar. Confira seu e-mail e senha e tente novamente.",
       );
     } finally {
       setIsSubmitting(false);

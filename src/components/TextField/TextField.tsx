@@ -42,7 +42,7 @@ export const TextField = ({
           className={required ? styles.requiredMeta : styles.optionalMeta}
           aria-hidden="true"
         >
-          {required ? "Obrigatorio" : "Opcional"}
+          {required ? "Obrigatório" : "Opcional"}
         </span>
       </label>
 

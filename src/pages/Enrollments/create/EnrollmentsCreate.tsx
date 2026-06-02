@@ -70,7 +70,7 @@ export const EnrollmentsCreate = () => {
 
     mutate(data, {
       onSuccess: () => {
-        toast.success("Matricula criada com sucesso!");
+        toast.success("Matrícula criada com sucesso!");
         navigate({ to: "/enrollments" });
       },
       onError: (e) => {
@@ -87,8 +87,8 @@ export const EnrollmentsCreate = () => {
 
   return (
     <Form
-      title="Dados da matricula"
-      description="Selecione o aluno, o plano e defina a data inicial quando precisar agendar a vigencia."
+      title="Dados da matrícula"
+      description="Selecione o aluno, o plano e defina a data inicial quando precisar agendar a vigência."
       loading={loadingDependencies}
       actions={
         <>
@@ -158,7 +158,7 @@ export const EnrollmentsCreate = () => {
 
       <div className={styles.row}>
         <TextField
-          label="Data de inicio"
+          label="Data de início"
           id="startDate"
           type="date"
           value={data.startDate}

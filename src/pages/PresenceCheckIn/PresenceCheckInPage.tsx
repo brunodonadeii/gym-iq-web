@@ -55,7 +55,7 @@ export const PresenceCheckInPage = () => {
         onError: (error) => {
           const apiError = normalizeApiError(
             error,
-            "Nao foi possivel registrar o check-in.",
+            "Não foi possível registrar o check-in.",
           );
           setErrorMessage(apiError.mensagem ?? apiError.message);
         },
@@ -145,7 +145,7 @@ export const PresenceCheckInPage = () => {
             <div className={`${styles.status} ${styles.statusError}`}>
               <strong className={styles.statusTitle}>
                 <AlertCircle size={28} />
-                Check-in nao registrado
+                Check-in não registrado
               </strong>
               <p className={styles.statusText}>{errorMessage}</p>
             </div>

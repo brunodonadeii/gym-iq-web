@@ -58,7 +58,7 @@ const ExercisesEditForm = ({
       { id: String(exerciseId), data },
       {
         onSuccess: () => {
-          toast.success("Exercicio editado com sucesso!");
+        toast.success("Exercício editado com sucesso!");
           navigate({ to: "/exercises" });
         },
         onError: (e) => {
@@ -76,8 +76,8 @@ const ExercisesEditForm = ({
 
   return (
     <Form
-      title="Dados do exercicio"
-      description="Atualize as informacoes usadas nas fichas de treino."
+      title="Dados do exercício"
+      description="Atualize as informações usadas nas fichas de treino."
       loading={loading}
       actions={
         <>
@@ -120,7 +120,7 @@ const ExercisesEditForm = ({
 
       <div className={styles.row}>
         <TextField
-          label="Descricao"
+          label="Descrição"
           id="description"
           value={data.description}
           onChange={set("description")}
