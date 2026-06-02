@@ -35,6 +35,7 @@ export function useGetInstructors(
   search: string,
   status: InstructorStatusFilter = "ACTIVE",
   pagination: PageRequest = DEFAULT_INSTRUCTORS_PAGE,
+  enabled = true,
 ) {
   return useQuery({
     queryKey: [
@@ -47,6 +48,7 @@ export function useGetInstructors(
       },
     ],
     queryFn: () => fetchInstructors(search, status, pagination),
+    enabled,
     placeholderData: keepPreviousData,
     staleTime: 5 * 60 * 1000,
     gcTime: 15 * 60 * 1000,

@@ -23,6 +23,7 @@ import {
   fetchWorkoutSheets,
   useGetWorkoutSheets,
 } from "@/queries/useGetWorkoutSheets";
+import { auth } from "@/utils/auth";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { Eye, PlusCircle, Trash2 } from "lucide-react";
@@ -67,6 +68,7 @@ const resolveInstructorName = (sheet: WorkoutSheet) =>
   `Instrutor #${sheet.instructorId}`;
 
 export const WorkoutSheetsPage = () => {
+  const isInstructor = auth.hasAnyRole(["INSTRUCTOR"]);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [filterMode, setFilterMode] = useState<WorkoutSheetFilterMode>("all");
@@ -87,7 +89,7 @@ export const WorkoutSheetsPage = () => {
     useGetInstructors(debouncedInstructorSearch, "ACTIVE", {
       size: 20,
       sort: "user.name,asc",
-    });
+    }, !isInstructor);
 
   const query = useMemo(
     () =>
@@ -193,7 +195,9 @@ export const WorkoutSheetsPage = () => {
             options={[
               { label: "Todas", value: "all" },
               { label: "Por aluno", value: "student" },
-              { label: "Por instrutor", value: "instructor" },
+              ...(!isInstructor
+                ? [{ label: "Por instrutor", value: "instructor" as const }]
+                : []),
             ]}
             containerProps={{ className: styles.filterField }}
           />

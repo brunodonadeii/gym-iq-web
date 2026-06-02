@@ -72,15 +72,15 @@ const validate = (data: WorkoutSheetFormData) => {
     const current: Partial<Record<ExerciseField, string>> = {};
 
     if (!exercise.exerciseId) {
-      current.exerciseId = "Selecione o exercício.";
+      current.exerciseId = "Selecione o exercicio.";
     }
 
     if (!exercise.sets || Number(exercise.sets) <= 0) {
-      current.sets = "Informe um número de séries maior que zero.";
+      current.sets = "Informe um numero de series maior que zero.";
     }
 
     if (!exercise.repetitions.trim()) {
-      current.repetitions = "Informe as repetições.";
+      current.repetitions = "Informe as repeticoes.";
     }
 
     if (!exercise.executionOrder || Number(exercise.executionOrder) <= 0) {
@@ -265,7 +265,7 @@ export const WorkoutSheetsCreate = () => {
   return (
     <Form
       title="Dados da ficha"
-      description="Vincule aluno, instrutor, período de vigência e exercícios da ficha."
+      description="Vincule aluno, instrutor, periodo de vigencia e exercicios da ficha."
       loading={false}
       actions={
         <>
@@ -357,7 +357,7 @@ export const WorkoutSheetsCreate = () => {
 
       <div className={styles.row}>
         <TextField
-          label="Data de início"
+          label="Data de inicio"
           id="startDate"
           type="date"
           value={data.startDate}
@@ -374,7 +374,7 @@ export const WorkoutSheetsCreate = () => {
 
       <div className={styles.row}>
         <TextField
-          label="Observações da ficha"
+          label="Observacoes da ficha"
           id="notes"
           value={data.notes}
           onChange={set("notes")}
@@ -385,19 +385,11 @@ export const WorkoutSheetsCreate = () => {
       <section className={styles.exercisesSection}>
         <div className={styles.exercisesHeader}>
           <div>
-            <h3 className={styles.exercisesTitle}>Exercícios</h3>
+            <h3 className={styles.exercisesTitle}>Exercicios</h3>
             <p className={styles.exercisesDescription}>
-              Monte a ficha com todos os exercícios antes de salvar.
+              Monte a ficha com todos os exercicios antes de salvar.
             </p>
           </div>
-          <Button
-            variant="secondary"
-            leftIcon={<PlusCircle size={18} />}
-            onClick={addExercise}
-            disabled={isPending}
-          >
-            Adicionar exercício
-          </Button>
         </div>
 
         <div className={styles.exerciseList}>
@@ -407,7 +399,7 @@ export const WorkoutSheetsCreate = () => {
             return (
               <div className={styles.exerciseCard} key={index}>
                 <div className={styles.exerciseCardHeader}>
-                  <strong>Exercício {index + 1}</strong>
+                  <strong>Exercicio {index + 1}</strong>
                   {data.exercises.length > 1 && (
                     <Button
                       variant="ghost"
@@ -422,7 +414,7 @@ export const WorkoutSheetsCreate = () => {
 
                 <div className={styles.row}>
                   <Autocomplete
-                    label="Exercício"
+                    label="Exercicio"
                     id={`exercise-${index}-exerciseId`}
                     search={exerciseSearches[index] ?? ""}
                     onSearchChange={(value) => {
@@ -456,12 +448,12 @@ export const WorkoutSheetsCreate = () => {
                     loading={
                       activeExerciseIndex === index && isFetchingExercises
                     }
-                    placeholder="Digite o nome do exercício"
+                    placeholder="Digite o nome do exercicio"
                     error={currentErrors.exerciseId}
                     required
                   />
                   <TextField
-                    label="Séries"
+                    label="Series"
                     id={`exercise-${index}-sets`}
                     type="number"
                     value={exercise.sets}
@@ -475,7 +467,7 @@ export const WorkoutSheetsCreate = () => {
 
                 <div className={styles.row}>
                   <TextField
-                    label="Repetições"
+                    label="Repeticoes"
                     id={`exercise-${index}-repetitions`}
                     value={exercise.repetitions}
                     onChange={(event) =>
@@ -486,18 +478,6 @@ export const WorkoutSheetsCreate = () => {
                     required
                   />
                   <TextField
-                    label="Carga em kg"
-                    id={`exercise-${index}-loadKg`}
-                    type="number"
-                    value={exercise.loadKg}
-                    onChange={(event) =>
-                      updateExercise(index, "loadKg", event.target.value)
-                    }
-                  />
-                </div>
-
-                <div className={styles.row}>
-                  <TextField
                     label="Descanso em segundos"
                     id={`exercise-${index}-restSeconds`}
                     type="number"
@@ -506,6 +486,9 @@ export const WorkoutSheetsCreate = () => {
                       updateExercise(index, "restSeconds", event.target.value)
                     }
                   />
+                </div>
+
+                <div className={styles.row}>
                   <TextField
                     label="Ordem"
                     id={`exercise-${index}-executionOrder`}
@@ -521,11 +504,8 @@ export const WorkoutSheetsCreate = () => {
                     error={currentErrors.executionOrder}
                     required
                   />
-                </div>
-
-                <div className={styles.row}>
                   <TextField
-                    label="Observações do exercício"
+                    label="Observacoes do exercicio"
                     id={`exercise-${index}-notes`}
                     value={exercise.notes}
                     onChange={(event) =>
@@ -538,8 +518,18 @@ export const WorkoutSheetsCreate = () => {
             );
           })}
         </div>
+
+        <div className={styles.addExerciseRow}>
+          <Button
+            variant="secondary"
+            leftIcon={<PlusCircle size={18} />}
+            onClick={addExercise}
+            disabled={isPending}
+          >
+            Adicionar exercicio
+          </Button>
+        </div>
       </section>
     </Form>
   );
 };
-

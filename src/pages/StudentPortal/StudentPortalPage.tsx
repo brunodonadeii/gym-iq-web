@@ -1,7 +1,5 @@
 import { Button } from "@/components/Button/Button";
 import { Skeleton } from "@/components/Skeleton/Skeleton";
-import type { EnrollmentStatus } from "@/pages/Enrollments/types";
-import type { PaymentStatus } from "@/pages/Payments/types";
 import { useGetMyActiveEnrollment } from "@/queries/useGetMyActiveEnrollment";
 import { useGetMyEnrollments } from "@/queries/useGetMyEnrollments";
 import { useGetMyPayments } from "@/queries/useGetMyPayments";
@@ -10,67 +8,22 @@ import { useGetMyWorkoutSheets } from "@/queries/useGetMyWorkoutSheets";
 import { useGetStudentMe } from "@/queries/useGetStudentMe";
 import { clearAuthStorage } from "@/utils/auth";
 import { useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
+import { WorkoutSheetCard } from "./components/WorkoutSheetCard";
 import styles from "./StudentPortalPage.module.css";
-
-const enrollmentStatusLabels: Record<EnrollmentStatus, string> = {
-  ACTIVE: "Ativa",
-  SUSPENDED: "Suspensa",
-  CANCELED: "Cancelada",
-};
-
-const paymentStatusLabels: Record<PaymentStatus, string> = {
-  PENDING: "Pendente",
-  PAID: "Pago",
-  OVERDUE: "Atrasado",
-};
-
-const formatDate = (value?: string | null) =>
-  value
-    ? new Date(value).toLocaleDateString("pt-BR", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      })
-    : "Não informado";
-
-const formatDateTime = (value?: string | null) =>
-  value
-    ? new Date(value).toLocaleString("pt-BR", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      })
-    : "Não informado";
-
-const formatCurrency = (value?: number) =>
-  new Intl.NumberFormat("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  }).format(value ?? 0);
-
-const getPaymentStatusClassName = (status: PaymentStatus) => {
-  if (status === "PAID") return `${styles.badge} ${styles.successBadge}`;
-  if (status === "OVERDUE") return `${styles.badge} ${styles.dangerBadge}`;
-
-  return `${styles.badge} ${styles.warningBadge}`;
-};
-
-const getEnrollmentStatusClassName = (status?: EnrollmentStatus) => {
-  if (status === "ACTIVE") return `${styles.badge} ${styles.successBadge}`;
-  if (status === "CANCELED") return `${styles.badge} ${styles.dangerBadge}`;
-
-  return `${styles.badge} ${styles.warningBadge}`;
-};
-
-const isRecurringEnrollment = (endDate?: string | null) =>
-  endDate === null || endDate === undefined || endDate === "";
-
-const formatEnrollmentEndDate = (endDate?: string | null) =>
-  isRecurringEnrollment(endDate) ? "Matricula recorrente" : formatDate(endDate);
+import {
+  enrollmentStatusLabels,
+  formatCurrency,
+  formatDate,
+  formatDateTime,
+  formatEnrollmentEndDate,
+  getEnrollmentStatusClassName,
+  getPaymentStatusClassName,
+  paymentStatusLabels,
+} from "./utils";
 
 export const StudentPortalPage = () => {
+  const [expandedSheetId, setExpandedSheetId] = useState<number | null>(null);
   const navigate = useNavigate();
   const { data: student, isLoading: isLoadingStudent } = useGetStudentMe();
   const { data: activeEnrollment, isLoading: isLoadingActiveEnrollment } =
@@ -93,16 +46,16 @@ export const StudentPortalPage = () => {
       <div className={styles.container}>
         <header className={styles.header}>
           <div>
-            <span className={styles.eyebrow}>Área do aluno</span>
+            <span className={styles.eyebrow}>Area do aluno</span>
             <h1 className={styles.title}>
               {isLoadingStudent ? (
                 <Skeleton width="280px" height="3rem" />
               ) : (
-                `Olá, ${student?.name ?? "aluno"}`
+                `Ola, ${student?.name ?? "aluno"}`
               )}
             </h1>
             <p className={styles.subtitle}>
-              Acompanhe sua matrícula, pagamentos, presenças e fichas de treino.
+              Acompanhe sua matricula, pagamentos, presencas e fichas de treino.
             </p>
           </div>
 
@@ -123,15 +76,15 @@ export const StudentPortalPage = () => {
               <div className={styles.details}>
                 <div className={styles.detail}>
                   <span>Email</span>
-                  <strong>{student?.email ?? "Não informado"}</strong>
+                  <strong>{student?.email ?? "Nao informado"}</strong>
                 </div>
                 <div className={styles.detail}>
                   <span>CPF</span>
-                  <strong>{student?.cpf ?? "Não informado"}</strong>
+                  <strong>{student?.cpf ?? "Nao informado"}</strong>
                 </div>
                 <div className={styles.detail}>
                   <span>Telefone</span>
-                  <strong>{student?.phone ?? "Não informado"}</strong>
+                  <strong>{student?.phone ?? "Nao informado"}</strong>
                 </div>
                 <div className={styles.detail}>
                   <span>Status</span>
@@ -143,9 +96,14 @@ export const StudentPortalPage = () => {
 
           <article className={styles.card}>
             <div className={styles.cardHeader}>
-              <h2 className={styles.cardTitle}>Matrícula ativa</h2>
+              <h2 className={styles.cardTitle}>Matricula ativa</h2>
               {activeEnrollment?.status && (
-                <span className={getEnrollmentStatusClassName(activeEnrollment.status)}>
+                <span
+                  className={getEnrollmentStatusClassName(
+                    activeEnrollment.status,
+                    styles,
+                  )}
+                >
                   {enrollmentStatusLabels[activeEnrollment.status]}
                 </span>
               )}
@@ -164,12 +122,14 @@ export const StudentPortalPage = () => {
                   </strong>
                 </div>
                 <div className={styles.detail}>
-                  <span>Início</span>
+                  <span>Inicio</span>
                   <strong>{formatDate(activeEnrollment.startDate)}</strong>
                 </div>
                 <div className={styles.detail}>
                   <span>Fim</span>
-                  <strong>{formatEnrollmentEndDate(activeEnrollment.endDate)}</strong>
+                  <strong>
+                    {formatEnrollmentEndDate(activeEnrollment.endDate)}
+                  </strong>
                 </div>
                 <div className={styles.detail}>
                   <span>Criada em</span>
@@ -178,7 +138,7 @@ export const StudentPortalPage = () => {
               </div>
             ) : (
               <div className={styles.empty}>
-                Nenhuma matrícula ativa encontrada.
+                Nenhuma matricula ativa encontrada.
               </div>
             )}
           </article>
@@ -203,7 +163,9 @@ export const StudentPortalPage = () => {
                         Vencimento: {formatDate(payment.dueDate)}
                       </p>
                     </div>
-                    <span className={getPaymentStatusClassName(payment.status)}>
+                    <span
+                      className={getPaymentStatusClassName(payment.status, styles)}
+                    >
                       {paymentStatusLabels[payment.status]}
                     </span>
                   </div>
@@ -215,7 +177,7 @@ export const StudentPortalPage = () => {
           </article>
 
           <article className={styles.card}>
-            <h2 className={styles.cardTitle}>Últimas presenças</h2>
+            <h2 className={styles.cardTitle}>Ultimas presencas</h2>
 
             {isLoadingPresences ? (
               <Skeleton height="180px" radius="18px" />
@@ -228,16 +190,14 @@ export const StudentPortalPage = () => {
                         {formatDateTime(presence.checkInAt)}
                       </p>
                       <p className={styles.itemDescription}>
-                        Saída: {formatDateTime(presence.checkOutAt)}
+                        Saida: {formatDateTime(presence.checkOutAt)}
                       </p>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className={styles.empty}>
-                Nenhuma presença encontrada.
-              </div>
+              <div className={styles.empty}>Nenhuma presenca encontrada.</div>
             )}
           </article>
 
@@ -249,20 +209,18 @@ export const StudentPortalPage = () => {
             ) : workoutSheets?.content.length ? (
               <div className={styles.list}>
                 {workoutSheets.content.map((sheet) => (
-                  <div className={styles.listItem} key={sheet.workoutSheetId}>
-                    <div>
-                      <p className={styles.itemTitle}>{sheet.name}</p>
-                      <p className={styles.itemDescription}>
-                        {sheet.goal ?? "Sem objetivo informado"} | Instrutor:{" "}
-                        {sheet.instructorName ??
-                          sheet.instructor?.name ??
-                          "Não informado"}
-                      </p>
-                    </div>
-                    <span className={styles.badge}>
-                      {sheet.exercises?.length ?? 0} exercício(s)
-                    </span>
-                  </div>
+                  <WorkoutSheetCard
+                    key={sheet.workoutSheetId}
+                    sheet={sheet}
+                    expanded={expandedSheetId === sheet.workoutSheetId}
+                    onToggle={() =>
+                      setExpandedSheetId((current) =>
+                        current === sheet.workoutSheetId
+                          ? null
+                          : sheet.workoutSheetId,
+                      )
+                    }
+                  />
                 ))}
               </div>
             ) : (
@@ -271,9 +229,7 @@ export const StudentPortalPage = () => {
           </article>
 
           <article className={`${styles.card} ${styles.wide}`}>
-            <h2 className={styles.cardTitle}>
-              Histórico de matrículas
-            </h2>
+            <h2 className={styles.cardTitle}>Historico de matriculas</h2>
 
             {isLoadingEnrollments ? (
               <Skeleton height="160px" radius="18px" />
@@ -291,20 +247,23 @@ export const StudentPortalPage = () => {
                           `Plano #${enrollment.planId}`}
                       </p>
                       <p className={styles.itemDescription}>
-                        {formatDate(enrollment.startDate)} até{" "}
+                        {formatDate(enrollment.startDate)} ate{" "}
                         {formatEnrollmentEndDate(enrollment.endDate)}
                       </p>
                     </div>
-                    <span className={getEnrollmentStatusClassName(enrollment.status)}>
+                    <span
+                      className={getEnrollmentStatusClassName(
+                        enrollment.status,
+                        styles,
+                      )}
+                    >
                       {enrollmentStatusLabels[enrollment.status]}
                     </span>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className={styles.empty}>
-                Nenhuma matrícula encontrada.
-              </div>
+              <div className={styles.empty}>Nenhuma matricula encontrada.</div>
             )}
           </article>
         </section>
