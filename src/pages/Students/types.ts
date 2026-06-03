@@ -40,5 +40,20 @@ export type StudentOption = {
   label: string;
 };
 
+const ANONYMIZED_SENTINELS = new Set([
+  "ANONYMIZED",
+  "CPF ANONYMIZED",
+  "EMAIL ANONYMIZED",
+  "PHONE ANONYMIZED",
+  "ADDRESS ANONYMIZED",
+]);
+
+const hasAnonymizedSentinel = (value?: string | null) =>
+  value ? ANONYMIZED_SENTINELS.has(value.trim().toUpperCase()) : false;
+
 export const isAnonymizedStudent = (student?: Student | null) =>
-  student?.phone === "ANONYMIZED" || student?.birthDate === "1900-01-01";
+  hasAnonymizedSentinel(student?.phone) ||
+  hasAnonymizedSentinel(student?.cpf) ||
+  hasAnonymizedSentinel(student?.email) ||
+  hasAnonymizedSentinel(student?.address) ||
+  student?.birthDate === "1900-01-01";
