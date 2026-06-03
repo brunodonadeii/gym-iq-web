@@ -11,7 +11,9 @@ import type {
 } from "@/pages/WorkoutSheets/types";
 import { useGetExercises } from "@/queries/useGetExercises";
 import { useGetInstructors } from "@/queries/useGetInstructors";
+import { useGetMyInstructor } from "@/queries/useGetMyInstructor";
 import { useGetStudentOptions } from "@/queries/useGetStudentOptions";
+import { auth } from "@/utils/auth";
 import { useNavigate } from "@tanstack/react-router";
 import { PlusCircle, Trash2 } from "lucide-react";
 import { useState } from "react";
@@ -116,6 +118,7 @@ const focusFirstError = (errors: FormErrors) => {
 };
 
 export const WorkoutSheetsCreate = () => {
+  const isInstructor = auth.hasAnyRole(["INSTRUCTOR"]);
   const [data, setData] = useState<WorkoutSheetFormData>(EMPTY_FORM);
   const [errors, setErrors] = useState<FormErrors>({});
   const [studentSearch, setStudentSearch] = useState("");
@@ -132,11 +135,13 @@ export const WorkoutSheetsCreate = () => {
   const { mutate, isPending } = useCreateWorkoutSheet();
   const { data: studentOptions, isFetching: isFetchingStudents } =
     useGetStudentOptions(debouncedStudentSearch);
+  const { data: me, isLoading: isLoadingMyInstructor } =
+    useGetMyInstructor(isInstructor);
   const { data: instructors, isFetching: isFetchingInstructors } =
     useGetInstructors(debouncedInstructorSearch, "ACTIVE", {
       size: 20,
       sort: "user.name,asc",
-    });
+    }, !isInstructor);
   const { data: exercises, isFetching: isFetchingExercises } = useGetExercises(
     "active",
     debouncedExerciseSearch,
@@ -166,6 +171,14 @@ export const WorkoutSheetsCreate = () => {
       value: String(exercise.exerciseId),
       description: exercise.muscleGroup,
     })) ?? [];
+  const effectiveInstructorId = isInstructor
+    ? String(me?.instructorId ?? "")
+    : data.instructorId;
+  const effectiveInstructorName = isInstructor ? (me?.name ?? "") : instructorSearch;
+  const effectiveData: WorkoutSheetFormData = {
+    ...data,
+    instructorId: effectiveInstructorId,
+  };
 
   const clearError = (
     field: SheetField | ExerciseField,
@@ -234,7 +247,7 @@ export const WorkoutSheetsCreate = () => {
   };
 
   const handleSubmit = () => {
-    const nextErrors = validate(data);
+    const nextErrors = validate(effectiveData);
     setErrors(nextErrors);
 
     if (Object.keys(nextErrors).length > 0) {
@@ -243,7 +256,7 @@ export const WorkoutSheetsCreate = () => {
     }
 
     mutate(
-      { data },
+      { data: effectiveData },
       {
         onSuccess: () => {
           toast.success("Ficha criada com sucesso!");
@@ -276,7 +289,11 @@ export const WorkoutSheetsCreate = () => {
           >
             Cancelar
           </Button>
-          <Button onClick={handleSubmit} loading={isPending}>
+          <Button
+            onClick={handleSubmit}
+            loading={isPending}
+            disabled={isInstructor && !effectiveInstructorId}
+          >
             Salvar
           </Button>
         </>
@@ -307,30 +324,45 @@ export const WorkoutSheetsCreate = () => {
           error={errors.studentId}
           required
         />
-        <Autocomplete
-          label="Instrutor"
-          id="instructorId"
-          search={instructorSearch}
-          onSearchChange={(value) => {
-            setInstructorSearch(value);
-            setData((prev) => ({ ...prev, instructorId: "" }));
-            clearError("instructorId");
-          }}
-          onSelect={(option) => {
-            setInstructorSearch(option.label);
-            setData((prev) => ({ ...prev, instructorId: option.value }));
-            clearError("instructorId");
-          }}
-          onClear={() => {
-            setInstructorSearch("");
-            setData((prev) => ({ ...prev, instructorId: "" }));
-          }}
-          options={instructorOptions}
-          loading={isFetchingInstructors}
-          placeholder="Digite nome, CREF ou e-mail"
-          error={errors.instructorId}
-          required
-        />
+        {isInstructor ? (
+          <TextField
+            label="Instrutor"
+            id="instructorId"
+            value={effectiveInstructorName}
+            onChange={() => undefined}
+            helperText={me?.email ?? undefined}
+            error={errors.instructorId}
+            placeholder={isLoadingMyInstructor ? "Carregando..." : ""}
+            required
+            readOnly
+            disabled
+          />
+        ) : (
+          <Autocomplete
+            label="Instrutor"
+            id="instructorId"
+            search={instructorSearch}
+            onSearchChange={(value) => {
+              setInstructorSearch(value);
+              setData((prev) => ({ ...prev, instructorId: "" }));
+              clearError("instructorId");
+            }}
+            onSelect={(option) => {
+              setInstructorSearch(option.label);
+              setData((prev) => ({ ...prev, instructorId: option.value }));
+              clearError("instructorId");
+            }}
+            onClear={() => {
+              setInstructorSearch("");
+              setData((prev) => ({ ...prev, instructorId: "" }));
+            }}
+            options={instructorOptions}
+            loading={isFetchingInstructors}
+            placeholder="Digite nome, CREF ou e-mail"
+            error={errors.instructorId}
+            required
+          />
+        )}
       </div>
 
       <div className={styles.row}>

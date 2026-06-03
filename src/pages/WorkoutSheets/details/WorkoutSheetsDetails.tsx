@@ -28,6 +28,7 @@ import type {
 } from "@/pages/WorkoutSheets/types";
 import { useGetExercises } from "@/queries/useGetExercises";
 import { useGetInstructors } from "@/queries/useGetInstructors";
+import { useGetMyInstructor } from "@/queries/useGetMyInstructor";
 import { useGetStudentOptions } from "@/queries/useGetStudentOptions";
 import { useGetWorkoutSheetById } from "@/queries/useGetWorkoutSheetById";
 import { useGetWorkoutSheetExercises } from "@/queries/useGetWorkoutSheetExercises";
@@ -36,6 +37,7 @@ import { Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import type { ApiError } from "@/utils/apiError";
+import { auth } from "@/utils/auth";
 import styles from "./WorkoutSheetsDetails.module.css";
 
 const EMPTY_SHEET_FORM: WorkoutSheetFormData = {
@@ -116,6 +118,7 @@ const WorkoutSheetsDetailsContent = ({
   isLoadingDetails,
   workoutSheetId,
 }: WorkoutSheetsDetailsContentProps) => {
+  const isInstructor = auth.hasAnyRole(["INSTRUCTOR"]);
   const navigate = useNavigate();
   const [sheetForm, setSheetForm] = useState<WorkoutSheetFormData>(() =>
     details ? mapWorkoutSheetToForm(details) : EMPTY_SHEET_FORM,
@@ -139,11 +142,12 @@ const WorkoutSheetsDetailsContent = ({
   const { set: setExerciseField } = useFormInputs(setExerciseForm);
   const { data: studentOptions, isFetching: isFetchingStudents } =
     useGetStudentOptions(debouncedStudentSearch);
+  const { data: me } = useGetMyInstructor(isInstructor);
   const { data: instructors, isFetching: isFetchingInstructors } =
     useGetInstructors(debouncedInstructorSearch, "ACTIVE", {
       size: 20,
       sort: "user.name,asc",
-    });
+    }, !isInstructor);
   const { data: exercises, isFetching: isFetchingExercises } = useGetExercises(
     "active",
     debouncedExerciseSearch,
@@ -194,6 +198,10 @@ const WorkoutSheetsDetailsContent = ({
       value: String(exercise.exerciseId),
       description: exercise.muscleGroup,
     })) ?? [];
+  const effectiveInstructorId = isInstructor
+    ? String(me?.instructorId ?? "")
+    : sheetForm.instructorId;
+  const effectiveInstructorName = isInstructor ? (me?.name ?? "") : instructorSearch;
 
   const resetExerciseForm = () => {
     setExerciseForm(EMPTY_EXERCISE_FORM);
@@ -220,6 +228,7 @@ const WorkoutSheetsDetailsContent = ({
         id: String(workoutSheetId),
         data: {
           ...sheetForm,
+          instructorId: effectiveInstructorId,
           exercises: existingExercises,
         },
       },
@@ -373,29 +382,41 @@ const WorkoutSheetsDetailsContent = ({
               loading={isFetchingStudents}
               placeholder="Digite nome, CPF ou e-mail"
             />
-            <Autocomplete
-              label="Instrutor"
-              id="instructorId"
-              search={instructorSearch}
-              onSearchChange={(value) => {
-                setInstructorSearch(value);
-                setSheetForm((prev) => ({ ...prev, instructorId: "" }));
-              }}
-              onSelect={(option) => {
-                setInstructorSearch(option.label);
-                setSheetForm((prev) => ({
-                  ...prev,
-                  instructorId: option.value,
-                }));
-              }}
-              onClear={() => {
-                setInstructorSearch("");
-                setSheetForm((prev) => ({ ...prev, instructorId: "" }));
-              }}
-              options={instructorOptions}
-              loading={isFetchingInstructors}
-              placeholder="Digite nome, CREF ou e-mail"
-            />
+            {isInstructor ? (
+              <TextField
+                label="Instrutor"
+                id="instructorId"
+                value={effectiveInstructorName}
+                onChange={() => undefined}
+                helperText={me?.email ?? undefined}
+                readOnly
+                disabled
+              />
+            ) : (
+              <Autocomplete
+                label="Instrutor"
+                id="instructorId"
+                search={instructorSearch}
+                onSearchChange={(value) => {
+                  setInstructorSearch(value);
+                  setSheetForm((prev) => ({ ...prev, instructorId: "" }));
+                }}
+                onSelect={(option) => {
+                  setInstructorSearch(option.label);
+                  setSheetForm((prev) => ({
+                    ...prev,
+                    instructorId: option.value,
+                  }));
+                }}
+                onClear={() => {
+                  setInstructorSearch("");
+                  setSheetForm((prev) => ({ ...prev, instructorId: "" }));
+                }}
+                options={instructorOptions}
+                loading={isFetchingInstructors}
+                placeholder="Digite nome, CREF ou e-mail"
+              />
+            )}
             <TextField
               label="Nome da ficha"
               id="name"
@@ -446,7 +467,7 @@ const WorkoutSheetsDetailsContent = ({
             loading={isUpdatingSheet}
             disabled={
               !sheetForm.studentId ||
-              !sheetForm.instructorId ||
+              !effectiveInstructorId ||
               !sheetForm.name ||
               (sheetForm.exercises.length === 0 && exerciseRows.length === 0)
             }
