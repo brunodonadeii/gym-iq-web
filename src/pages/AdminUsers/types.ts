@@ -1,8 +1,8 @@
 export type AdminUserRole = "ADMIN" | "RECEPTION";
 
 export type AdminUser = {
-  userId?: number;
-  id?: number;
+  userId?: string;
+  id?: string;
   name: string;
   email: string;
   role: AdminUserRole;

@@ -10,7 +10,11 @@ export type LoginRequest = {
 export type AuthResponse = {
   token: string;
   type: string;
+  userId: string;
+  name: string;
+  email: string;
   role?: string;
+  lgpdAccepted?: boolean;
 };
 
 export type ForgotPasswordRequest = {

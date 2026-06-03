@@ -1,6 +1,6 @@
 export type Instructor = {
   instructorId: number;
-  userId: number;
+  userId: string;
   name: string;
   email: string;
   cref: string;

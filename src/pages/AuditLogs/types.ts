@@ -2,7 +2,7 @@ import type { PageResponse } from "@/types/pagination";
 
 export type AuditLog = {
   auditLogId?: number;
-  actorUserId?: number | string | null;
+  actorUserId?: string | null;
   actorEmail?: string | null;
   actorRole?: string | null;
   action?: string | null;
