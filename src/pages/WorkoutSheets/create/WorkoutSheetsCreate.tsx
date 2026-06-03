@@ -320,7 +320,7 @@ export const WorkoutSheetsCreate = () => {
           }}
           options={autocompleteStudentOptions}
           loading={isFetchingStudents}
-          placeholder="Digite nome, CPF ou e-mail"
+          placeholder="Digite o nome ou o CPF/e-mail completos"
           error={errors.studentId}
           required
         />
@@ -358,7 +358,7 @@ export const WorkoutSheetsCreate = () => {
             }}
             options={instructorOptions}
             loading={isFetchingInstructors}
-            placeholder="Digite nome, CREF ou e-mail"
+            placeholder="Digite nome, CREF ou e-mail completo"
             error={errors.instructorId}
             required
           />

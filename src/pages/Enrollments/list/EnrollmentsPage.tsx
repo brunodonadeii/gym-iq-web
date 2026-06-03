@@ -301,7 +301,7 @@ export const EnrollmentsPage = () => {
               }}
               options={autocompleteStudentOptions}
               loading={isFetchingStudentOptions}
-              placeholder="Buscar por nome, CPF ou e-mail"
+              placeholder="Buscar por nome ou por CPF/e-mail completos"
               containerClassName={styles.filterFieldLarge}
             />
           }

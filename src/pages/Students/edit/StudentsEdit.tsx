@@ -37,10 +37,10 @@ export const StudentsEdit = () => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setData({
       name: details.name,
-      email: details.email,
-      cpf: details.cpf,
-      birthDate: details.birthDate,
-      phone: details.phone,
+      email: details.email ?? "",
+      cpf: details.cpf ?? "",
+      birthDate: details.birthDate ?? "",
+      phone: details.phone ?? "",
       zipCode: details.zipCode ?? "",
       address: details.address ?? "",
     });

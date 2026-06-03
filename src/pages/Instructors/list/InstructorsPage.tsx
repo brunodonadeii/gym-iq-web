@@ -136,7 +136,7 @@ export const InstructorsPage = () => {
           search={
             <SearchBar
               icon={<Search size={15} />}
-              placeholder="Buscar por nome, CREF ou e-mail"
+              placeholder="Buscar por nome, CREF ou e-mail completo"
               containerClassName={styles.searchField}
               onChange={(e) => {
                 setSearch(e.target.value);

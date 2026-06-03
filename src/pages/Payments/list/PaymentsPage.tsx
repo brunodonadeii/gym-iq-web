@@ -373,7 +373,7 @@ export const PaymentsPage = () => {
                 setPage(0);
               }}
               loading={isFetchingStudents}
-              placeholder="Digite nome, CPF ou e-mail"
+              placeholder="Digite o nome ou o CPF/e-mail completos"
               emptyMessage="Nenhum aluno encontrado."
               containerClassName={styles.filterFieldLarge}
             />

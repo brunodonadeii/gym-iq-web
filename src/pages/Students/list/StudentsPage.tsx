@@ -215,7 +215,7 @@ export const StudentsPage = () => {
           search={
             <SearchBar
               icon={<Search size={15} />}
-              placeholder="Buscar por nome, CPF ou email"
+              placeholder="Buscar por nome ou por CPF/e-mail completos"
               containerClassName={styles.searchField}
               onChange={(e) => {
                 setSearch(e.target.value);

@@ -10,8 +10,8 @@ export type StudentBaseFormData = {
 
 export type Student = {
   active: boolean;
-  address: string | null;
-  birthDate: string;
+  address?: string | null;
+  birthDate?: string | null;
   cpf: string;
   createdAt: string;
   email: string;
@@ -20,7 +20,7 @@ export type Student = {
   phone: string;
   studentId: number;
   userId: string;
-  zipCode: string | null;
+  zipCode?: string | null;
 };
 
 export type StudentUpdateFormData = StudentBaseFormData;
