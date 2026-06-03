@@ -1,6 +1,7 @@
 import { Button } from "@/components/Button/Button";
 import { Form } from "@/components/Form/Form";
 import { TextField } from "@/components/TextField/TextField";
+import { SpecialtySelector } from "@/pages/Instructors/components/SpecialtySelector";
 import { useFormInputs } from "@/hooks/useFormInputs";
 import { useCreateInstructor } from "@/mutations/useCreateInstructor";
 import type { InstructorCreateFormData } from "@/pages/Instructors/types";
@@ -167,12 +168,14 @@ export const InstructorsCreate = () => {
       </div>
 
       <div className={styles.row}>
-        <TextField
-          label="Especialidade"
-          id="specialty"
+        <SpecialtySelector
           value={data.specialty}
-          onChange={set("specialty")}
-          placeholder="Musculacao"
+          onChange={(value) =>
+            setData((prev) => ({
+              ...prev,
+              specialty: value,
+            }))
+          }
         />
       </div>
 

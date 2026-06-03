@@ -3,6 +3,7 @@ import { Form } from "@/components/Form/Form";
 import { TextField } from "@/components/TextField/TextField";
 import { useFormInputs } from "@/hooks/useFormInputs";
 import { useUpdateInstructor } from "@/mutations/useUpdateInstructor";
+import { SpecialtySelector } from "@/pages/Instructors/components/SpecialtySelector";
 import type { InstructorUpdateFormData } from "@/pages/Instructors/types";
 import { useGetInstructorById } from "@/queries/useGetInstructorById";
 import { auth } from "@/utils/auth";
@@ -190,12 +191,14 @@ export const InstructorsEdit = () => {
       </div>
 
       <div className={styles.row}>
-        <TextField
-          label="Especialidade"
-          id="specialty"
+        <SpecialtySelector
           value={data.specialty}
-          onChange={set("specialty")}
-          placeholder="Hipertrofia"
+          onChange={(value) =>
+            setData((prev) => ({
+              ...prev,
+              specialty: value,
+            }))
+          }
           disabled={!isAdmin}
         />
       </div>
