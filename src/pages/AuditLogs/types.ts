@@ -7,7 +7,7 @@ export type AuditLog = {
   actorRole?: string | null;
   action?: string | null;
   resourceType?: string | null;
-  resourceId?: number | string | null;
+  resourceId?: string | null;
   description?: string | null;
   ipAddress?: string | null;
   createdAt?: string | null;
