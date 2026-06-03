@@ -1,6 +1,11 @@
 const onlyDigits = (value?: string | null) => (value ?? "").replace(/\D/g, "");
+const isAlreadyMasked = (value?: string | null) => (value ?? "").includes("*");
 
 export const maskCpf = (value?: string | null) => {
+  if (isAlreadyMasked(value)) {
+    return value ?? "-";
+  }
+
   const digits = onlyDigits(value);
 
   if (digits.length !== 11) {
@@ -11,6 +16,10 @@ export const maskCpf = (value?: string | null) => {
 };
 
 export const maskPhone = (value?: string | null) => {
+  if (isAlreadyMasked(value)) {
+    return value ?? "-";
+  }
+
   const digits = onlyDigits(value);
 
   if (digits.length < 10) {
@@ -30,6 +39,10 @@ export const maskPhone = (value?: string | null) => {
 export const maskEmail = (value?: string | null) => {
   if (!value) {
     return "-";
+  }
+
+  if (isAlreadyMasked(value)) {
+    return value;
   }
 
   const [localPart, domain] = value.split("@");
