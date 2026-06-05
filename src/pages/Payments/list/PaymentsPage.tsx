@@ -143,6 +143,13 @@ export const PaymentsPage = () => {
           ? ({ mode: "overdue" } as const)
           : ({ mode: "all" } as const);
 
+  const effectiveStatusFilter =
+    filterMode === "overdue"
+      ? "OVERDUE"
+      : statusFilter === "all"
+        ? undefined
+        : statusFilter;
+
   const filterEnabled =
     filterMode === "student"
       ? studentId !== ""
@@ -157,7 +164,7 @@ export const PaymentsPage = () => {
   } = useGetPayments(
     {
       ...paymentsQuery,
-      ...(statusFilter === "all" ? {} : { status: statusFilter }),
+      ...(effectiveStatusFilter ? { status: effectiveStatusFilter } : {}),
     },
     filterEnabled,
     {
