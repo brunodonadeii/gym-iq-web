@@ -1,4 +1,4 @@
-export type Exercise = {
+﻿export type Exercise = {
   exerciseId: number;
   name: string;
   muscleGroup: string;
@@ -13,3 +13,4 @@ export type ExerciseFormData = {
   muscleGroup: string;
   description: string;
 };
+

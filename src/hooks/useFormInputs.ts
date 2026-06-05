@@ -1,4 +1,4 @@
-import { mask } from "@/utils/mask";
+﻿import { mask } from "@/utils/mask";
 
 export function useFormInputs<T>(
   setData: React.Dispatch<React.SetStateAction<T>>,
@@ -17,3 +17,4 @@ export function useFormInputs<T>(
 
   return { set, setMasked };
 }
+

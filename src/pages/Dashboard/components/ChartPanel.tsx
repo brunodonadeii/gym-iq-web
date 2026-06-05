@@ -1,4 +1,4 @@
-import { Skeleton } from "@/components/Skeleton/Skeleton";
+﻿import { Skeleton } from "@/components/Skeleton/Skeleton";
 import type { ReactNode } from "react";
 import { formatNumber } from "../utils";
 import styles from "../DashboardPage.module.css";
@@ -83,3 +83,5 @@ export const ChartLegend = ({
     ))}
   </div>
 );
+
+

@@ -1,4 +1,4 @@
-import type { Exercise } from "@/pages/Exercises/types";
+﻿import type { Exercise } from "@/pages/Exercises/types";
 import { authFetch } from "@/services/api";
 import type { PageRequest, PageResponse } from "@/types/pagination";
 import { parseApiResponse } from "@/utils/apiError";
@@ -26,7 +26,7 @@ export async function fetchExercises(
       : "exercises";
   const response = await authFetch(`${baseUrl}?${query}`);
 
-  return parseApiResponse(response, "Erro ao buscar exercicios");
+  return parseApiResponse(response, "Erro ao buscar exercícios");
 }
 
 export function useGetExercises(
@@ -43,3 +43,4 @@ export function useGetExercises(
     refetchOnWindowFocus: false,
   });
 }
+

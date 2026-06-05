@@ -1,4 +1,4 @@
-export type UserRole = "ADMIN" | "RECEPTION" | "INSTRUCTOR" | "STUDENT";
+﻿export type UserRole = "ADMIN" | "RECEPTION" | "INSTRUCTOR" | "STUDENT";
 
 type JwtPayload = {
   exp?: number;
@@ -126,3 +126,4 @@ export const getDefaultPathByRole = (role: UserRole | null) => {
 
   return "/unauthorized";
 };
+

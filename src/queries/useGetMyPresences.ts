@@ -1,4 +1,4 @@
-import type { Presence } from "@/pages/Presences/types";
+﻿import type { Presence } from "@/pages/Presences/types";
 import { authFetch } from "@/services/api";
 import type { PageRequest, PageResponse } from "@/types/pagination";
 import { parseApiResponse } from "@/utils/apiError";
@@ -18,7 +18,7 @@ async function fetchMyPresences(
     `presences/me?${buildPaginationParams(pagination)}`,
   );
 
-  return parseApiResponse(response, "Erro ao buscar minhas presencas");
+  return parseApiResponse(response, "Erro ao buscar minhas presenças");
 }
 
 export function useGetMyPresences(
@@ -30,3 +30,4 @@ export function useGetMyPresences(
     staleTime: 60 * 1000,
   });
 }
+

@@ -1,4 +1,4 @@
-import type {
+﻿import type {
   PresenceCheckInResponse,
   SelfCheckInPayload,
 } from "@/pages/PresenceCheckIn/types";
@@ -30,3 +30,4 @@ export function useSelfCheckIn() {
     mutationFn: selfCheckIn,
   });
 }
+

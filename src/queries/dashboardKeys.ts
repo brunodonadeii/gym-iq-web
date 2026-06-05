@@ -1,4 +1,4 @@
-import type { PageRequest } from "@/types/pagination";
+﻿import type { PageRequest } from "@/types/pagination";
 
 export const dashboardKeys = {
   all: ["dashboard"] as const,
@@ -16,3 +16,4 @@ export const retentionAlertKeys = {
       ? ([...retentionAlertKeys.all, "open", pagination] as const)
       : ([...retentionAlertKeys.all, "open"] as const),
 };
+

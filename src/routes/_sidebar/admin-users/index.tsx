@@ -1,4 +1,4 @@
-import { AdminUsersPage } from "@/pages/AdminUsers/list/AdminUsersPage";
+﻿import { AdminUsersPage } from "@/pages/AdminUsers/list/AdminUsersPage";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_sidebar/admin-users/")({
@@ -8,3 +8,5 @@ export const Route = createFileRoute("/_sidebar/admin-users/")({
     headline: "Usuários administrativos",
   },
 });
+
+

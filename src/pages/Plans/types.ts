@@ -1,4 +1,4 @@
-export type Plan = {
+﻿export type Plan = {
   planId: number;
   name: string;
   description: string;
@@ -14,3 +14,4 @@ export type PlanFormData = {
   monthlyPrice: number;
   durationMonths: number;
 };
+

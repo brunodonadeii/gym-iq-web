@@ -1,4 +1,4 @@
-import { Skeleton } from "@/components/Skeleton/Skeleton";
+﻿import { Skeleton } from "@/components/Skeleton/Skeleton";
 import { Search, X } from "lucide-react";
 import { useState } from "react";
 import styles from "./Autocomplete.module.css";

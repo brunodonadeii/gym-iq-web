@@ -1,4 +1,4 @@
-import { PlansCreate } from "@/pages/Plans/create/PlansCreate";
+﻿import { PlansCreate } from "@/pages/Plans/create/PlansCreate";
 import { requireRoles } from "@/routes/guards";
 import { createFileRoute } from "@tanstack/react-router";
 
@@ -12,3 +12,4 @@ export const Route = createFileRoute("/_sidebar/plans/create")({
     headline: "Crie um novo plano",
   },
 });
+

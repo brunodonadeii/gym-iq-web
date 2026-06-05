@@ -1,4 +1,4 @@
-import type {
+﻿import type {
   Instructor,
   InstructorUpdateFormData,
 } from "@/pages/Instructors/types";
@@ -51,3 +51,4 @@ export function useUpdateInstructor() {
     },
   });
 }
+

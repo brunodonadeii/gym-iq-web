@@ -1,4 +1,4 @@
-import type { QueryClient } from "@tanstack/react-query";
+﻿import type { QueryClient } from "@tanstack/react-query";
 
 export async function invalidateStudentRelatedQueries(
   queryClient: QueryClient,
@@ -26,3 +26,4 @@ export async function invalidateStudentRelatedQueries(
       : []),
   ]);
 }
+

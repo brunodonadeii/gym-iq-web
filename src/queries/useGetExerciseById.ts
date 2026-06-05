@@ -1,4 +1,4 @@
-import type { Exercise } from "@/pages/Exercises/types";
+﻿import type { Exercise } from "@/pages/Exercises/types";
 import { authFetch } from "@/services/api";
 import { useQuery } from "@tanstack/react-query";
 
@@ -21,3 +21,5 @@ export function useGetExerciseById(id?: string) {
     refetchOnWindowFocus: false,
   });
 }
+
+

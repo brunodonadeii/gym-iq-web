@@ -1,4 +1,4 @@
-import { EnrollmentsRenew } from "@/pages/Enrollments/renew/EnrollmentsRenew";
+﻿import { EnrollmentsRenew } from "@/pages/Enrollments/renew/EnrollmentsRenew";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_sidebar/enrollments/$enrollmentId")({
@@ -8,3 +8,5 @@ export const Route = createFileRoute("/_sidebar/enrollments/$enrollmentId")({
     headline: "Renove uma matrícula",
   },
 });
+
+

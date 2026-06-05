@@ -1,4 +1,4 @@
-import type { Payment, PaymentPayFormData } from "@/pages/Payments/types";
+﻿import type { Payment, PaymentPayFormData } from "@/pages/Payments/types";
 import { authFetch } from "@/services/api";
 import type { ApiError } from "@/utils/apiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -51,3 +51,4 @@ export function usePayPayment() {
     },
   });
 }
+

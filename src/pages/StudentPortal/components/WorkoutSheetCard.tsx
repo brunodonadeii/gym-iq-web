@@ -1,4 +1,4 @@
-import { Button } from "@/components/Button/Button";
+﻿import { Button } from "@/components/Button/Button";
 import type { WorkoutSheet } from "@/pages/WorkoutSheets/types";
 import { ChevronDown, Printer } from "lucide-react";
 import { printWorkoutSheetReceipt } from "../printWorkoutSheetReceipt";
@@ -25,11 +25,11 @@ export const WorkoutSheetCard = ({
           <p className={styles.itemTitle}>{sheet.name}</p>
           <p className={styles.itemDescription}>
             {sheet.goal ?? "Sem objetivo informado"} | Instrutor:{" "}
-            {sheet.instructorName ?? sheet.instructor?.name ?? "NÃ£o informado"}
+            {sheet.instructorName ?? sheet.instructor?.name ?? "Não informado"}
           </p>
         </div>
         <span className={styles.badge}>
-          {sheet.exercises?.length ?? 0} exercÃ­cio(s)
+          {sheet.exercises?.length ?? 0} exercício(s)
         </span>
       </div>
 
@@ -39,7 +39,7 @@ export const WorkoutSheetCard = ({
           leftIcon={<ChevronDown size={16} />}
           onClick={onToggle}
         >
-          {expanded ? "Ocultar exercÃ­cios" : "Ver exercÃ­cios"}
+          {expanded ? "Ocultar exercícios" : "Ver exercícios"}
         </Button>
         <Button
           variant="secondary"
@@ -87,7 +87,7 @@ export const WorkoutSheetCard = ({
             ))
           ) : (
             <div className={styles.empty}>
-              Esta ficha ainda nÃ£o possui exercÃ­cios listados.
+              Esta ficha ainda não possui exercícios listados.
             </div>
           )}
         </div>
@@ -95,3 +95,5 @@ export const WorkoutSheetCard = ({
     </div>
   );
 };
+
+

@@ -1,4 +1,4 @@
-import type { Instructor } from "@/pages/Instructors/types";
+﻿import type { Instructor } from "@/pages/Instructors/types";
 import { authFetch } from "@/services/api";
 import type { PageRequest, PageResponse } from "@/types/pagination";
 import { buildPaginationParams } from "@/utils/pagination";
@@ -55,3 +55,4 @@ export function useGetInstructors(
     refetchOnWindowFocus: false,
   });
 }
+

@@ -1,4 +1,4 @@
-import type { Instructor } from "@/pages/Instructors/types";
+﻿import type { Instructor } from "@/pages/Instructors/types";
 import { authFetch } from "@/services/api";
 import { useQuery } from "@tanstack/react-query";
 
@@ -22,3 +22,4 @@ export function useGetMyInstructor(enabled = true) {
     refetchOnWindowFocus: false,
   });
 }
+

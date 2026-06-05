@@ -1,4 +1,4 @@
-import type {
+﻿import type {
   AdminUser,
   AdminUserUpdateFormData,
 } from "@/pages/AdminUsers/types";
@@ -37,3 +37,4 @@ export function useUpdateAdminUser() {
     },
   });
 }
+

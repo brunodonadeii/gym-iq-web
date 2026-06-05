@@ -1,4 +1,4 @@
-import type { CSSProperties, HTMLAttributes } from "react";
+﻿import type { CSSProperties, HTMLAttributes } from "react";
 import styles from "./Skeleton.module.css";
 
 type SkeletonProps = HTMLAttributes<HTMLDivElement> & {
@@ -31,3 +31,4 @@ export const Skeleton = ({
     />
   );
 };
+

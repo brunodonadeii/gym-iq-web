@@ -1,4 +1,4 @@
-import { Pagination } from "@/components/Pagination/Pagination";
+﻿import { Pagination } from "@/components/Pagination/Pagination";
 import {
   Table,
   TableBody,
@@ -131,3 +131,5 @@ export const OpenRetentionAlertsTable = ({
     />
   </div>
 );
+
+

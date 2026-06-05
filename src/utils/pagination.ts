@@ -1,4 +1,4 @@
-import type { PageRequest } from "@/types/pagination";
+﻿import type { PageRequest } from "@/types/pagination";
 
 export const DEFAULT_PAGE_SIZE = 10;
 
@@ -23,3 +23,4 @@ export function buildPaginationParams(
 
   return params.toString();
 }
+

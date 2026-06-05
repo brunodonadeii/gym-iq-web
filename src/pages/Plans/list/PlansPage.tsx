@@ -1,4 +1,4 @@
-import { Button } from "@/components/Button/Button";
+﻿import { Button } from "@/components/Button/Button";
 import { ConfirmDialog } from "@/components/ConfirmDialog/ConfirmDialog";
 import { Dropdown, type DropdownItem } from "@/components/Dropdown/Dropdown";
 import { ListToolbar } from "@/components/ListToolbar/ListToolbar";
@@ -48,9 +48,9 @@ const showMutationError = (
 ) => {
   toast.error(
     <div>
-      <strong>{error?.erro ?? error?.error ?? "Erro"}</strong>
+      <strong>{error?.error ?? "Erro"}</strong>
       <br />
-      <span>{error?.mensagem ?? error?.message ?? fallback}</span>
+      <span>{error?.message ?? fallback}</span>
     </div>,
   );
 };
@@ -324,3 +324,5 @@ export const PlansPage = () => {
     </div>
   );
 };
+
+

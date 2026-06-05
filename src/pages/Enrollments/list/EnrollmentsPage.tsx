@@ -1,4 +1,4 @@
-import { Autocomplete } from "@/components/Autocomplete/Autocomplete";
+﻿import { Autocomplete } from "@/components/Autocomplete/Autocomplete";
 import { Button } from "@/components/Button/Button";
 import { Dropdown, type DropdownItem } from "@/components/Dropdown/Dropdown";
 import { ListToolbar } from "@/components/ListToolbar/ListToolbar";
@@ -190,9 +190,9 @@ export const EnrollmentsPage = () => {
         onError: (e) => {
           toast.error(
             <div>
-              <strong>{e?.erro ?? e?.error ?? "Erro"}</strong>
+              <strong>{e?.error ?? "Erro"}</strong>
               <br />
-              <span>{e?.mensagem ?? e?.message ?? "Erro inesperado"}</span>
+              <span>{e?.message ?? "Erro inesperado"}</span>
             </div>,
           );
         },
@@ -479,3 +479,5 @@ export const EnrollmentsPage = () => {
     </div>
   );
 };
+
+

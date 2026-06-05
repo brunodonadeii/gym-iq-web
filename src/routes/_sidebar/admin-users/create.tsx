@@ -1,4 +1,4 @@
-import { AdminUsersCreate } from "@/pages/AdminUsers/create/AdminUsersCreate";
+﻿import { AdminUsersCreate } from "@/pages/AdminUsers/create/AdminUsersCreate";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_sidebar/admin-users/create")({
@@ -15,3 +15,5 @@ export const Route = createFileRoute("/_sidebar/admin-users/create")({
     headline: "Cadastre um usuário administrativo",
   },
 });
+
+

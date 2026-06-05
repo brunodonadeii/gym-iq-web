@@ -1,4 +1,4 @@
-import type { Plan } from "@/pages/Plans/types";
+﻿import type { Plan } from "@/pages/Plans/types";
 import { authFetch } from "@/services/api";
 import type { PageRequest, PageResponse } from "@/types/pagination";
 import { parseApiResponse } from "@/utils/apiError";
@@ -138,3 +138,4 @@ export function useGetPlans(
     refetchOnWindowFocus: false,
   });
 }
+

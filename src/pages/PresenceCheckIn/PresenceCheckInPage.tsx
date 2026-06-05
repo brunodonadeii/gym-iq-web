@@ -1,4 +1,4 @@
-import { Button } from "@/components/Button/Button";
+﻿import { Button } from "@/components/Button/Button";
 import { TextField } from "@/components/TextField/TextField";
 import { useSelfCheckIn } from "@/mutations/useSelfCheckIn";
 import type {
@@ -57,7 +57,7 @@ export const PresenceCheckInPage = () => {
             error,
             "Não foi possível registrar o check-in.",
           );
-          setErrorMessage(apiError.mensagem ?? apiError.message);
+          setErrorMessage(apiError.message);
         },
       },
     );
@@ -155,3 +155,5 @@ export const PresenceCheckInPage = () => {
     </main>
   );
 };
+
+

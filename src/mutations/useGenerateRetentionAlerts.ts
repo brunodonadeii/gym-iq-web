@@ -1,4 +1,4 @@
-import { authFetch } from "@/services/api";
+﻿import { authFetch } from "@/services/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { dashboardKeys, retentionAlertKeys } from "@/queries/dashboardKeys";
 import type { ApiError } from "@/utils/apiError";
@@ -36,3 +36,4 @@ export function useGenerateRetentionAlerts() {
     },
   });
 }
+

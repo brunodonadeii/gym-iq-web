@@ -1,4 +1,4 @@
-import type {
+﻿import type {
   AuditLog,
   AuditLogApiResponse,
   AuditLogFilters,
@@ -89,3 +89,4 @@ export function useGetAuditLogs(filters: AuditLogFilters, pagination: PageReques
     refetchOnWindowFocus: false,
   });
 }
+

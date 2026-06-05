@@ -1,4 +1,4 @@
-import type { Enrollment } from "@/pages/Enrollments/types";
+﻿import type { Enrollment } from "@/pages/Enrollments/types";
 import type { Student } from "@/pages/Students/types";
 
 export type PaymentStatus = "PENDING" | "PAID" | "OVERDUE";
@@ -49,3 +49,4 @@ export type PaymentPayFormData = {
   paymentMethod: PaymentMethod;
   notes: string;
 };
+

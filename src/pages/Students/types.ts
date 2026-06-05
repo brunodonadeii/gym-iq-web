@@ -1,4 +1,4 @@
-export type StudentBaseFormData = {
+﻿export type StudentBaseFormData = {
   name: string;
   email: string;
   cpf: string;
@@ -57,3 +57,4 @@ export const isAnonymizedStudent = (student?: Student | null) =>
   hasAnonymizedSentinel(student?.email) ||
   hasAnonymizedSentinel(student?.address) ||
   student?.birthDate === "1900-01-01";
+

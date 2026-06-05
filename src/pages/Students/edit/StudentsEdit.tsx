@@ -1,4 +1,4 @@
-import { Button } from "@/components/Button/Button";
+﻿import { Button } from "@/components/Button/Button";
 import { Form } from "@/components/Form/Form";
 import { TextField } from "@/components/TextField/TextField";
 import { useFormInputs } from "@/hooks/useFormInputs";
@@ -81,9 +81,9 @@ export const StudentsEdit = () => {
         onError: (e) => {
           toast.error(
             <div>
-              <strong>{e?.erro ?? e?.error ?? "Erro"}</strong>
+              <strong>{e?.error ?? "Erro"}</strong>
               <br />
-              <span>{e?.mensagem ?? e?.message ?? "Erro inesperado"}</span>
+              <span>{e?.message ?? "Erro inesperado"}</span>
             </div>,
           );
         },
@@ -96,8 +96,8 @@ export const StudentsEdit = () => {
       title="Dados pessoais"
       description={
         anonymized
-          ? "Cadastro removido. O historico foi preservado e os dados pessoais foram excluidos."
-          : "Informacoes base para identificar o aluno e iniciar o acesso."
+          ? "Cadastro removido. O histórico foi preservado e os dados pessoais foram excluídos."
+          : "Informações base para identificar o aluno e iniciar o acesso."
       }
       loading={isLoading}
       actions={
@@ -118,7 +118,7 @@ export const StudentsEdit = () => {
         <div className={styles.anonymizedNotice}>
           <strong>Cadastro removido</strong>
           <span>
-            Nome, contato e endereco podem aparecer mascarados conforme o retorno da API.
+            Nome, contato e endereço podem aparecer mascarados conforme o retorno da API.
           </span>
         </div>
       )}
@@ -191,7 +191,7 @@ export const StudentsEdit = () => {
       </div>
 
       <fieldset className={styles.fieldset}>
-        <legend className={styles.legend}>Endereco</legend>
+        <legend className={styles.legend}>Endereço</legend>
         <div className={styles.row}>
           <TextField
             label="CEP"
@@ -204,11 +204,11 @@ export const StudentsEdit = () => {
 
         <div className={styles.row}>
           <TextField
-            label="Endereco completo"
+            label="Endereço completo"
             id="address"
             value={data.address}
             onChange={set("address")}
-            placeholder="Rua, numero, bairro, cidade - UF"
+            placeholder="Rua, número, bairro, cidade - UF"
             disabled
           />
         </div>
@@ -216,3 +216,5 @@ export const StudentsEdit = () => {
     </Form>
   );
 };
+
+

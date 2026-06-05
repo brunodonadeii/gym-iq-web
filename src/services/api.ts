@@ -1,4 +1,4 @@
-import { auth, clearAuthStorage } from "@/utils/auth";
+﻿import { auth, clearAuthStorage } from "@/utils/auth";
 import { normalizeApiError } from "@/utils/apiError";
 import { buildApiUrl } from "@/services/apiUrl";
 
@@ -20,11 +20,11 @@ export async function authFetch(url: string, options: RequestInit = {}) {
     redirectToLogin();
     throw normalizeApiError(
       {
-        erro: "Sessao expirada",
-        mensagem: "Sessao expirada. Faca login novamente.",
+        error: "Sessão expirada",
+        message: "Sessão expirada. Faça login novamente.",
         status: 401,
       },
-      "Sessao expirada. Faca login novamente.",
+      "Sessão expirada. Faça login novamente.",
     );
   }
 
@@ -48,3 +48,5 @@ export async function authFetch(url: string, options: RequestInit = {}) {
 
   return response;
 }
+
+

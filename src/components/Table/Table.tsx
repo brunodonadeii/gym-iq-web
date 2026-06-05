@@ -1,4 +1,4 @@
-import type {
+﻿import type {
   CSSProperties,
   HTMLAttributes,
   ReactNode,
@@ -162,3 +162,4 @@ export const TableSkeletonRows = ({
     </>
   );
 };
+

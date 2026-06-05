@@ -1,4 +1,4 @@
-import type { Enrollment } from "@/pages/Enrollments/types";
+﻿import type { Enrollment } from "@/pages/Enrollments/types";
 import { authFetch } from "@/services/api";
 import type { PageRequest, PageResponse } from "@/types/pagination";
 import { buildPaginationParams } from "@/utils/pagination";
@@ -40,3 +40,5 @@ export function useGetStudentEnrollments(
     refetchOnWindowFocus: false,
   });
 }
+
+

@@ -1,4 +1,4 @@
-export type SelfCheckInFormData = {
+﻿export type SelfCheckInFormData = {
   identifier: string;
   password: string;
 };
@@ -17,3 +17,4 @@ export type PresenceCheckInResponse = {
   notes?: string | null;
   createdAt: string;
 };
+

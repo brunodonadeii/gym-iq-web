@@ -1,4 +1,4 @@
-import { Button } from "@/components/Button/Button";
+﻿import { Button } from "@/components/Button/Button";
 import { Dropdown, type DropdownItem } from "@/components/Dropdown/Dropdown";
 import { ListToolbar } from "@/components/ListToolbar/ListToolbar";
 import { Pagination } from "@/components/Pagination/Pagination";
@@ -91,10 +91,10 @@ export const InstructorsPage = () => {
         onError: (e) => {
           toast.error(
             <div>
-              <strong>{e?.erro ?? e?.error ?? "Erro"}</strong>
+              <strong>{e?.error ?? "Erro"}</strong>
               <br />
               <span>
-                {e?.mensagem ?? e?.message ?? "Não foi possível inativar o instrutor."}
+                {e?.message ?? "Não foi possível inativar o instrutor."}
               </span>
             </div>,
           );
@@ -253,3 +253,5 @@ export const InstructorsPage = () => {
     </div>
   );
 };
+
+

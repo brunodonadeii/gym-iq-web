@@ -1,4 +1,4 @@
-import type { FinancialDashboard } from "@/pages/Dashboard/types";
+﻿import type { FinancialDashboard } from "@/pages/Dashboard/types";
 import { authFetch } from "@/services/api";
 import { parseApiResponse } from "@/utils/apiError";
 import { buildPaginationParams } from "@/utils/pagination";
@@ -40,3 +40,4 @@ export function useGetFinancialDashboard(
     refetchOnWindowFocus: false,
   });
 }
+

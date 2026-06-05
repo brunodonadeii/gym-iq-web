@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+﻿import type { ButtonHTMLAttributes, ReactNode } from "react";
 import { LoaderCircle } from "lucide-react";
 
 import styles from "./Button.module.css";
@@ -51,3 +51,4 @@ export const Button = ({
     </button>
   );
 };
+

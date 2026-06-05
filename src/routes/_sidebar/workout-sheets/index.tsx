@@ -1,4 +1,4 @@
-import { WorkoutSheetsPage } from "@/pages/WorkoutSheets/list/WorkoutSheetsPage";
+﻿import { WorkoutSheetsPage } from "@/pages/WorkoutSheets/list/WorkoutSheetsPage";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_sidebar/workout-sheets/")({
@@ -8,3 +8,4 @@ export const Route = createFileRoute("/_sidebar/workout-sheets/")({
     headline: "Listagem de fichas",
   },
 });
+

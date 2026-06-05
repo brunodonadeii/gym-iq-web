@@ -1,4 +1,4 @@
-export type Presence = {
+﻿export type Presence = {
   presenceId: string;
   studentId: string;
   studentName: string;
@@ -8,3 +8,4 @@ export type Presence = {
   notes?: string | null;
   createdAt: string;
 };
+

@@ -1,4 +1,4 @@
-export type WorkoutSheet = {
+﻿export type WorkoutSheet = {
   workoutSheetId: string;
   studentId: string;
   studentName: string;
@@ -61,3 +61,4 @@ export type WorkoutSheetExerciseFormData = {
   executionOrder: string;
   notes: string;
 };
+

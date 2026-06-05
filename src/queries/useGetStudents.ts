@@ -1,4 +1,4 @@
-import type { Student } from "@/pages/Students/types";
+﻿import type { Student } from "@/pages/Students/types";
 import { authFetch } from "@/services/api";
 import { parseApiResponse } from "@/utils/apiError";
 import type { PageRequest, PageResponse } from "@/types/pagination";
@@ -38,5 +38,6 @@ export function useGetStudents(
     refetchOnWindowFocus: false,
   });
 }
+
 
 

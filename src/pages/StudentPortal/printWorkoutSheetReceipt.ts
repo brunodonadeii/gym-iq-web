@@ -1,4 +1,4 @@
-import type { WorkoutSheet } from "@/pages/WorkoutSheets/types";
+﻿import type { WorkoutSheet } from "@/pages/WorkoutSheets/types";
 import {
   formatDate,
   formatExerciseMeta,
@@ -42,7 +42,7 @@ export const printWorkoutSheetReceipt = (sheet: WorkoutSheet) => {
           `,
         )
         .join("")
-    : `<div class="empty">Nenhum exercÃ­cio listado.</div>`;
+    : `<div class="empty">Nenhum exercício listado.</div>`;
 
   printWindow.document.write(`
     <html>
@@ -157,17 +157,17 @@ export const printWorkoutSheetReceipt = (sheet: WorkoutSheet) => {
 
           <section class="section">
             <span class="label">Instrutor</span>
-            <div class="value">${sheet.instructorName ?? sheet.instructor?.name ?? "NÃ£o informado"}</div>
+            <div class="value">${sheet.instructorName ?? sheet.instructor?.name ?? "Não informado"}</div>
           </section>
 
           <section class="section">
-            <span class="label">Periodo</span>
-            <div class="value">InÃ­cio: ${formatDate(sheet.startDate)}</div>
+            <span class="label">Período</span>
+            <div class="value">Início: ${formatDate(sheet.startDate)}</div>
             <div class="value">Fim: ${formatDate(sheet.endDate)}</div>
           </section>
 
           <section class="section">
-            <span class="label">ExercÃ­cios</span>
+            <span class="label">Exercícios</span>
             ${exercisesMarkup}
           </section>
 
@@ -182,3 +182,5 @@ export const printWorkoutSheetReceipt = (sheet: WorkoutSheet) => {
   printWindow.focus();
   printWindow.print();
 };
+
+

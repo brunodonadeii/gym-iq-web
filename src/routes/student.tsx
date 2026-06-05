@@ -1,4 +1,4 @@
-import { StudentPortalPage } from "@/pages/StudentPortal/StudentPortalPage";
+﻿import { StudentPortalPage } from "@/pages/StudentPortal/StudentPortalPage";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/student")({
@@ -20,3 +20,4 @@ export const Route = createFileRoute("/student")({
   },
   component: StudentPortalPage,
 });
+

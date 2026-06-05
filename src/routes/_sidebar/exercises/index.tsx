@@ -1,4 +1,4 @@
-import { ExercisesPage } from "@/pages/Exercises/list/ExercisesPage";
+﻿import { ExercisesPage } from "@/pages/Exercises/list/ExercisesPage";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_sidebar/exercises/")({
@@ -8,3 +8,5 @@ export const Route = createFileRoute("/_sidebar/exercises/")({
     headline: "Listagem de exercícios",
   },
 });
+
+

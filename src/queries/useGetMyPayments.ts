@@ -1,4 +1,4 @@
-import type { Payment } from "@/pages/Payments/types";
+﻿import type { Payment } from "@/pages/Payments/types";
 import { authFetch } from "@/services/api";
 import type { PageRequest, PageResponse } from "@/types/pagination";
 import { parseApiResponse } from "@/utils/apiError";
@@ -30,3 +30,4 @@ export function useGetMyPayments(
     staleTime: 2 * 60 * 1000,
   });
 }
+

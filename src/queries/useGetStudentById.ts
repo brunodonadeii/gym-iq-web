@@ -1,4 +1,4 @@
-import type { Student } from "@/pages/Students/types";
+﻿import type { Student } from "@/pages/Students/types";
 import { authFetch } from "@/services/api";
 import { useQuery } from "@tanstack/react-query";
 
@@ -22,3 +22,4 @@ export function useGetStudentById(id: string) {
     refetchOnWindowFocus: false,
   });
 }
+

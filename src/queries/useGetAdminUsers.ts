@@ -1,4 +1,4 @@
-import type { AdminUser } from "@/pages/AdminUsers/types";
+﻿import type { AdminUser } from "@/pages/AdminUsers/types";
 import { authFetch } from "@/services/api";
 import type { PageRequest, PageResponse } from "@/types/pagination";
 import { parseApiResponse } from "@/utils/apiError";
@@ -12,7 +12,7 @@ async function fetchAdminUsers(
     `users?${buildPaginationParams(pagination)}`,
   );
 
-  return parseApiResponse(response, "Erro ao buscar usuarios administrativos");
+  return parseApiResponse(response, "Erro ao buscar usuários administrativos");
 }
 
 const paginateUsers = (
@@ -82,3 +82,4 @@ export function useGetAdminUsers(search: string, pagination: PageRequest) {
     refetchOnWindowFocus: false,
   });
 }
+

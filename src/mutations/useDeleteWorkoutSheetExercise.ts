@@ -1,4 +1,4 @@
-import { authFetch } from "@/services/api";
+﻿import { authFetch } from "@/services/api";
 import type { ApiError } from "@/utils/apiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -35,3 +35,4 @@ export function useDeleteWorkoutSheetExercise() {
     },
   });
 }
+

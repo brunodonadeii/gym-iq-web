@@ -1,4 +1,4 @@
-import type { Student } from "@/pages/Students/types";
+﻿import type { Student } from "@/pages/Students/types";
 import { authFetch } from "@/services/api";
 import type { ApiError } from "@/utils/apiError";
 import { useMutation } from "@tanstack/react-query";
@@ -22,3 +22,4 @@ export function useDeleteMyStudentPersonalData() {
     mutationFn: deleteMyStudentPersonalData,
   });
 }
+

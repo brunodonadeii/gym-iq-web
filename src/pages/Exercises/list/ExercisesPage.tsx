@@ -1,4 +1,4 @@
-import { Button } from "@/components/Button/Button";
+﻿import { Button } from "@/components/Button/Button";
 import { ConfirmDialog } from "@/components/ConfirmDialog/ConfirmDialog";
 import { Dropdown } from "@/components/Dropdown/Dropdown";
 import { ListToolbar } from "@/components/ListToolbar/ListToolbar";
@@ -104,9 +104,9 @@ export const ExercisesPage = () => {
         onError: (e) => {
           toast.error(
             <div>
-              <strong>{e?.erro ?? e?.error ?? "Erro"}</strong>
+              <strong>{e?.error ?? "Erro"}</strong>
               <br />
-              <span>{e?.mensagem ?? e?.message ?? "Erro inesperado"}</span>
+              <span>{e?.message ?? "Erro inesperado"}</span>
             </div>,
           );
         },
@@ -274,3 +274,5 @@ export const ExercisesPage = () => {
     </div>
   );
 };
+
+

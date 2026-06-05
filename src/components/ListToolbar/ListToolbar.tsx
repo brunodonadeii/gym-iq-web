@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+﻿import type { ReactNode } from "react";
 import styles from "./ListToolbar.module.css";
 
 type ListToolbarProps = {
@@ -20,3 +20,4 @@ export const ListToolbar = ({ search, filters, action }: ListToolbarProps) => {
     </div>
   );
 };
+

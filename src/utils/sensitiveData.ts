@@ -1,4 +1,4 @@
-const onlyDigits = (value?: string | null) => (value ?? "").replace(/\D/g, "");
+﻿const onlyDigits = (value?: string | null) => (value ?? "").replace(/\D/g, "");
 const isAlreadyMasked = (value?: string | null) => (value ?? "").includes("*");
 
 export const maskCpf = (value?: string | null) => {
@@ -57,3 +57,4 @@ export const maskEmail = (value?: string | null) => {
 
   return `${visibleStart}${maskedMiddle}${visibleEnd}@${domain}`;
 };
+

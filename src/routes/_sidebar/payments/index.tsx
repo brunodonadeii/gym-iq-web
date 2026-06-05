@@ -1,4 +1,4 @@
-import { PaymentsPage } from "@/pages/Payments/list/PaymentsPage";
+﻿import { PaymentsPage } from "@/pages/Payments/list/PaymentsPage";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_sidebar/payments/")({
@@ -8,3 +8,4 @@ export const Route = createFileRoute("/_sidebar/payments/")({
     headline: "Listagem de pagamentos",
   },
 });
+

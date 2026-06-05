@@ -1,4 +1,4 @@
-import { Button } from "@/components/Button/Button";
+﻿import { Button } from "@/components/Button/Button";
 import { Pagination } from "@/components/Pagination/Pagination";
 import {
   Table,
@@ -138,7 +138,8 @@ export const AuditLogsPage = () => {
         <div className={styles.topBarContent}>
           <strong className={styles.topBarTitle}>Filtros de auditoria</strong>
           <span className={styles.topBarSubtitle}>
-            Filtre pelo que aconteceu, por quem executou e qual registro foi afetado.
+            Filtre pelo que aconteceu, por quem executou e qual registro foi
+            afetado.
           </span>
         </div>
 
@@ -287,3 +288,5 @@ export const AuditLogsPage = () => {
     </div>
   );
 };
+
+

@@ -1,4 +1,4 @@
-import type { Payment } from "@/pages/Payments/types";
+﻿import type { Payment } from "@/pages/Payments/types";
 import { authFetch } from "@/services/api";
 import { useQuery } from "@tanstack/react-query";
 
@@ -19,3 +19,4 @@ export function useGetPaymentById(id: string, enabled = true) {
     enabled,
   });
 }
+

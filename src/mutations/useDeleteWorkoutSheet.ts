@@ -1,12 +1,6 @@
-import { authFetch } from "@/services/api";
+﻿import { authFetch } from "@/services/api";
+import type { ApiError } from "@/utils/apiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-interface ApiError {
-  erro: string;
-  error: string;
-  message: string;
-  mensagem: string;
-}
 
 type DeleteWorkoutSheetData = {
   id: string;
@@ -35,3 +29,4 @@ export function useDeleteWorkoutSheet() {
     },
   });
 }
+

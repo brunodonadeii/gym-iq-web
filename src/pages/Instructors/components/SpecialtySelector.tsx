@@ -1,4 +1,4 @@
-import {
+﻿import {
   INSTRUCTOR_SPECIALTY_OPTIONS,
   parseInstructorSpecialties,
   stringifyInstructorSpecialties,
@@ -66,3 +66,5 @@ export const SpecialtySelector = ({
     </div>
   );
 };
+
+

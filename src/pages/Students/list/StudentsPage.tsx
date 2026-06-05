@@ -1,4 +1,4 @@
-import { Button } from "@/components/Button/Button";
+﻿import { Button } from "@/components/Button/Button";
 import { ConfirmDialog } from "@/components/ConfirmDialog/ConfirmDialog";
 import { Dropdown } from "@/components/Dropdown/Dropdown";
 import { ListToolbar } from "@/components/ListToolbar/ListToolbar";
@@ -112,10 +112,10 @@ export const StudentsPage = () => {
         onError: (e) => {
           toast.error(
             <div>
-              <strong>{e?.erro ?? e?.error ?? "Erro"}</strong>
+              <strong>{e?.error ?? "Erro"}</strong>
               <br />
               <span>
-                {e?.mensagem ?? e?.message ?? "Nao foi possivel inativar o aluno."}
+                {e?.message ?? "N�o foi poss�vel inativar o aluno."}
               </span>
             </div>,
           );
@@ -133,20 +133,11 @@ export const StudentsPage = () => {
           setConfirmAction(null);
         },
         onError: (e) => {
-          const message =
-            e?.mensagem ??
-            e?.message ??
-            "Nao foi possivel excluir os dados do aluno.";
-
           toast.error(
             <div>
-              <strong>{e?.erro ?? e?.error ?? "Erro"}</strong>
+              <strong>{e?.error ?? "Erro"}</strong>
               <br />
-              <span>
-                {/ativo/i.test(message)
-                  ? "O aluno precisa estar inativo antes da exclusao."
-                  : message}
-              </span>
+              <span>{e?.message ?? "N�o foi poss�vel excluir os dados do aluno."}</span>
             </div>,
           );
         },
@@ -164,11 +155,9 @@ export const StudentsPage = () => {
         onError: (e) => {
           toast.error(
             <div>
-              <strong>{e?.erro ?? e?.error ?? "Erro"}</strong>
+              <strong>{e?.error ?? "Erro"}</strong>
               <br />
-              <span>
-                {e?.mensagem ?? e?.message ?? "Nao foi possivel ativar o aluno."}
-              </span>
+              <span>{e?.message ?? "N�o foi poss�vel ativar o aluno."}</span>
             </div>,
           );
         },
@@ -252,7 +241,7 @@ export const StudentsPage = () => {
           <div>
             <h3 className={styles.sectionTitle}>Lista principal</h3>
             <p className={styles.sectionDescription}>
-              {visibleStudents.length} aluno(s) exibido(s) nesta pagina.
+              {visibleStudents.length} aluno(s) exibido(s) nesta p�gina.
             </p>
           </div>
         </div>
@@ -264,7 +253,7 @@ export const StudentsPage = () => {
                 <TableHeaderCell>Nome</TableHeaderCell>
                 <TableHeaderCell>Criado em</TableHeaderCell>
                 <TableHeaderCell center>Status</TableHeaderCell>
-                <TableHeaderCell center>Acoes</TableHeaderCell>
+                <TableHeaderCell center>A��es</TableHeaderCell>
               </TableRow>
             </TableHead>
 
@@ -392,9 +381,9 @@ export const StudentsPage = () => {
         }
         description={
           confirmAction?.type === "delete"
-            ? `Os dados pessoais de ${confirmAction.studentName} serao removidos e o historico sera preservado. Esta acao exige que o aluno ja esteja inativo.`
+            ? `Os dados pessoais de ${confirmAction.studentName} ser�o removidos e o hist�rico ser� preservado. Esta a��o exige que o aluno j� esteja inativo e n�o ser� conclu�da se houver pagamentos pendentes ou atrasados.`
             : confirmAction
-              ? `${confirmAction.studentName} perdera o acesso ativo, mas o historico sera preservado.`
+              ? `${confirmAction.studentName} perder� o acesso ativo, mas o hist�rico ser� preservado.`
               : ""
         }
         confirmLabel={
@@ -407,3 +396,6 @@ export const StudentsPage = () => {
     </div>
   );
 };
+
+
+

@@ -1,4 +1,4 @@
-import { ForgotPasswordPage } from "@/pages/ForgotPassword/ForgotPasswordPage";
+﻿import { ForgotPasswordPage } from "@/pages/ForgotPassword/ForgotPasswordPage";
 import { getDefaultPathByRole } from "@/utils/auth";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
@@ -12,3 +12,4 @@ export const Route = createFileRoute("/forgot-password")({
   },
   component: ForgotPasswordPage,
 });
+

@@ -1,4 +1,4 @@
-import { ExercisesCreate } from "@/pages/Exercises/create/ExercisesCreate";
+﻿import { ExercisesCreate } from "@/pages/Exercises/create/ExercisesCreate";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_sidebar/exercises/create")({
@@ -8,3 +8,5 @@ export const Route = createFileRoute("/_sidebar/exercises/create")({
     headline: "Adicionar novo exercício",
   },
 });
+
+

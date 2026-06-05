@@ -1,4 +1,4 @@
-import { WorkoutSheetsDetails } from "@/pages/WorkoutSheets/details/WorkoutSheetsDetails";
+﻿import { WorkoutSheetsDetails } from "@/pages/WorkoutSheets/details/WorkoutSheetsDetails";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute(
@@ -10,3 +10,4 @@ export const Route = createFileRoute(
     headline: "Detalhes da ficha",
   },
 });
+

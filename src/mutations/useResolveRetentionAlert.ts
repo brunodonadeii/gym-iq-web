@@ -1,4 +1,4 @@
-import type { RetentionAlert } from "@/pages/Dashboard/types";
+﻿import type { RetentionAlert } from "@/pages/Dashboard/types";
 import { authFetch } from "@/services/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { dashboardKeys, retentionAlertKeys } from "@/queries/dashboardKeys";
@@ -34,3 +34,4 @@ export function useResolveRetentionAlert() {
     },
   });
 }
+

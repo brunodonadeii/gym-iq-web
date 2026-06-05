@@ -1,4 +1,4 @@
-// hooks/useTheme.ts
+﻿// hooks/useTheme.ts
 import { useEffect, useState } from "react";
 
 type Theme = "dark" | "light";
@@ -17,3 +17,4 @@ export const useTheme = () => {
 
   return { theme, toggle };
 };
+

@@ -1,4 +1,4 @@
-import { WorkoutSheetsCreate } from "@/pages/WorkoutSheets/create/WorkoutSheetsCreate";
+﻿import { WorkoutSheetsCreate } from "@/pages/WorkoutSheets/create/WorkoutSheetsCreate";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_sidebar/workout-sheets/create")({
@@ -8,3 +8,4 @@ export const Route = createFileRoute("/_sidebar/workout-sheets/create")({
     headline: "Adicionar nova ficha",
   },
 });
+

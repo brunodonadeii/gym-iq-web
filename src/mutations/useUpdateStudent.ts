@@ -1,4 +1,4 @@
-import { invalidateStudentRelatedQueries } from "@/mutations/studentQueryInvalidation";
+﻿import { invalidateStudentRelatedQueries } from "@/mutations/studentQueryInvalidation";
 import type { Student, StudentUpdateFormData } from "@/pages/Students/types";
 import { authFetch } from "@/services/api";
 import type { ApiError } from "@/utils/apiError";
@@ -38,3 +38,4 @@ export function useUpdateStudent() {
     },
   });
 }
+

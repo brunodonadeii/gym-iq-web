@@ -1,4 +1,4 @@
-import { StudentsCreate } from "@/pages/Students/create/StudentsCreate";
+﻿import { StudentsCreate } from "@/pages/Students/create/StudentsCreate";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_sidebar/students/create")({
@@ -8,3 +8,4 @@ export const Route = createFileRoute("/_sidebar/students/create")({
     headline: "Adicionar novo aluno",
   },
 });
+

@@ -1,4 +1,4 @@
-import { Button } from "@/components/Button/Button";
+﻿import { Button } from "@/components/Button/Button";
 import { ConfirmDialog } from "@/components/ConfirmDialog/ConfirmDialog";
 import { Dropdown } from "@/components/Dropdown/Dropdown";
 import { ListToolbar } from "@/components/ListToolbar/ListToolbar";
@@ -47,8 +47,7 @@ const formatDate = (value?: string | null) =>
       })
     : "-";
 
-const getAdminUserId = (user: AdminUser) =>
-  String(user.userId ?? user.id ?? "");
+const getAdminUserId = (user: AdminUser) => String(user.userId ?? user.id ?? "");
 
 export const AdminUsersPage = () => {
   const navigate = useNavigate();
@@ -82,13 +81,9 @@ export const AdminUsersPage = () => {
         onError: (e) => {
           toast.error(
             <div>
-              <strong>{e?.erro ?? e?.error ?? "Erro"}</strong>
+              <strong>{e?.error ?? "Erro"}</strong>
               <br />
-              <span>
-                {e?.mensagem ??
-                  e?.message ??
-                  "Não foi possível remover este usuário."}
-              </span>
+              <span>{e?.message ?? "Não foi possível remover este usuário."}</span>
             </div>,
           );
         },
@@ -255,3 +250,5 @@ export const AdminUsersPage = () => {
     </div>
   );
 };
+
+

@@ -1,4 +1,4 @@
-import { AdminUsersEdit } from "@/pages/AdminUsers/edit/AdminUsersEdit";
+﻿import { AdminUsersEdit } from "@/pages/AdminUsers/edit/AdminUsersEdit";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_sidebar/admin-users/$userId")({
@@ -8,3 +8,5 @@ export const Route = createFileRoute("/_sidebar/admin-users/$userId")({
     headline: "Editar usuário administrativo",
   },
 });
+
+

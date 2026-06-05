@@ -1,4 +1,4 @@
-import type { Enrollment } from "@/pages/Enrollments/types";
+﻿import type { Enrollment } from "@/pages/Enrollments/types";
 import { authFetch } from "@/services/api";
 import type { PageRequest, PageResponse } from "@/types/pagination";
 import { parseApiResponse } from "@/utils/apiError";
@@ -18,7 +18,7 @@ async function fetchMyEnrollments(
     `enrollments/me?${buildPaginationParams(pagination)}`,
   );
 
-  return parseApiResponse(response, "Erro ao buscar minhas matriculas");
+  return parseApiResponse(response, "Erro ao buscar minhas matrículas");
 }
 
 export function useGetMyEnrollments(
@@ -30,3 +30,4 @@ export function useGetMyEnrollments(
     staleTime: 2 * 60 * 1000,
   });
 }
+

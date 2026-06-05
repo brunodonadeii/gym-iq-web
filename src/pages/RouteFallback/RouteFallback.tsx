@@ -1,4 +1,4 @@
-import { Button } from "@/components/Button/Button";
+﻿import { Button } from "@/components/Button/Button";
 import { Link } from "@tanstack/react-router";
 import type { ErrorComponentProps } from "@tanstack/react-router";
 import styles from "./RouteFallback.module.css";
@@ -53,3 +53,5 @@ export const GlobalNotFoundFallback = () => {
     </main>
   );
 };
+
+

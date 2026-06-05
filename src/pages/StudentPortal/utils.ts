@@ -1,4 +1,4 @@
-import type { EnrollmentStatus } from "@/pages/Enrollments/types";
+﻿import type { EnrollmentStatus } from "@/pages/Enrollments/types";
 import type { PaymentStatus } from "@/pages/Payments/types";
 import type { WorkoutSheetExercise } from "@/pages/WorkoutSheets/types";
 
@@ -103,3 +103,5 @@ export const getEnrollmentStatusClassName = (
 
   return `${styles.badge} ${styles.warningBadge}`;
 };
+
+

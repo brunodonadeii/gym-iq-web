@@ -1,4 +1,4 @@
-import type { Plan } from "@/pages/Plans/types";
+﻿import type { Plan } from "@/pages/Plans/types";
 import { authFetch } from "@/services/api";
 import type { ApiError } from "@/utils/apiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -30,3 +30,4 @@ export function useDeactivatePlan() {
     },
   });
 }
+

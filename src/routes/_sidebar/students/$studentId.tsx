@@ -1,4 +1,4 @@
-import { StudentsEdit } from "@/pages/Students/edit/StudentsEdit";
+﻿import { StudentsEdit } from "@/pages/Students/edit/StudentsEdit";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_sidebar/students/$studentId")({
@@ -8,3 +8,4 @@ export const Route = createFileRoute("/_sidebar/students/$studentId")({
     headline: "Editar aluno",
   },
 });
+

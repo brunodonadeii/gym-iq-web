@@ -1,4 +1,4 @@
-import { EnrollmentsCreate } from "@/pages/Enrollments/create/EnrollmentsCreate";
+﻿import { EnrollmentsCreate } from "@/pages/Enrollments/create/EnrollmentsCreate";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_sidebar/enrollments/create")({
@@ -8,3 +8,5 @@ export const Route = createFileRoute("/_sidebar/enrollments/create")({
     headline: "Crie uma nova matrícula",
   },
 });
+
+

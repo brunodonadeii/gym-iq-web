@@ -1,4 +1,4 @@
-import { PlansPage } from "@/pages/Plans/list/PlansPage";
+﻿import { PlansPage } from "@/pages/Plans/list/PlansPage";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_sidebar/plans/")({
@@ -8,3 +8,4 @@ export const Route = createFileRoute("/_sidebar/plans/")({
     headline: "Listagem de Planos",
   },
 });
+

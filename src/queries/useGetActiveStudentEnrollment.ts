@@ -1,4 +1,4 @@
-import type { Enrollment } from "@/pages/Enrollments/types";
+﻿import type { Enrollment } from "@/pages/Enrollments/types";
 import { authFetch } from "@/services/api";
 import { useQuery } from "@tanstack/react-query";
 
@@ -31,3 +31,5 @@ export function useGetActiveStudentEnrollment(
     refetchOnWindowFocus: false,
   });
 }
+
+

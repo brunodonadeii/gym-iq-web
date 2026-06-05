@@ -1,4 +1,4 @@
-export {};
+﻿export {};
 
 declare module "@tanstack/react-router" {
   interface StaticDataRouteOption {
@@ -6,3 +6,4 @@ declare module "@tanstack/react-router" {
     headline?: string;
   }
 }
+

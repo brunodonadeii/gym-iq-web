@@ -1,4 +1,4 @@
-import type { InputHTMLAttributes, ReactNode } from "react";
+﻿import type { InputHTMLAttributes, ReactNode } from "react";
 import styles from "./SearchBar.module.css";
 
 type SearchBarProps = InputHTMLAttributes<HTMLInputElement> & {
@@ -18,3 +18,4 @@ export const SearchBar = ({
     </div>
   );
 };
+

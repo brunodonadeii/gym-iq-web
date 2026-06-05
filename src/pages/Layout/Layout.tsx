@@ -1,4 +1,4 @@
-import { Header } from "@/components/Header/Header";
+﻿import { Header } from "@/components/Header/Header";
 import { Sidebar } from "@/components/Sidebar/Sidebar";
 import { auth, type UserRole } from "@/utils/auth";
 import { Outlet } from "@tanstack/react-router";
@@ -105,3 +105,5 @@ export function Layout() {
     </div>
   );
 }
+
+

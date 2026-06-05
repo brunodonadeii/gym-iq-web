@@ -1,11 +1,10 @@
-import { toast } from "sonner";
+﻿import { toast } from "sonner";
 
 export type ApiError = Error & {
   status?: number;
   statusCode?: number;
-  erro?: string;
   error?: string;
-  mensagem?: string;
+  fields?: Record<string, string>;
   message: string;
   path?: string;
   timestamp?: string;
@@ -13,7 +12,7 @@ export type ApiError = Error & {
 };
 
 const DEFAULT_ERROR_TITLE = "Erro";
-const DEFAULT_ERROR_MESSAGE = "Nao foi possivel concluir a operacao.";
+const DEFAULT_ERROR_MESSAGE = "Não foi possível concluir a operação.";
 
 type ApiErrorInput = {
   status?: number;
@@ -21,6 +20,7 @@ type ApiErrorInput = {
   message?: string;
   path?: string;
   timestamp?: string;
+  fields?: Record<string, string>;
   details?: unknown;
 };
 
@@ -42,12 +42,31 @@ const getObjectNumber = (value: unknown, key: string) => {
   return typeof result === "number" ? result : undefined;
 };
 
+const getObjectRecord = (value: unknown, key: string) => {
+  if (!value || typeof value !== "object" || !(key in value)) {
+    return undefined;
+  }
+
+  const result = (value as Record<string, unknown>)[key];
+
+  if (!result || typeof result !== "object" || Array.isArray(result)) {
+    return undefined;
+  }
+
+  const entries = Object.entries(result).filter(
+    (entry): entry is [string, string] => typeof entry[1] === "string",
+  );
+
+  return entries.length ? Object.fromEntries(entries) : undefined;
+};
+
 const createApiError = ({
   status,
   title,
   message,
   path,
   timestamp,
+  fields,
   details,
 }: ApiErrorInput) => {
   const normalizedTitle = title ?? DEFAULT_ERROR_TITLE;
@@ -57,12 +76,11 @@ const createApiError = ({
   apiError.name = "ApiError";
   apiError.status = status;
   apiError.statusCode = status;
-  apiError.erro = normalizedTitle;
   apiError.error = normalizedTitle;
-  apiError.mensagem = normalizedMessage;
   apiError.message = normalizedMessage;
   apiError.path = path;
   apiError.timestamp = timestamp;
+  apiError.fields = fields;
   apiError.details = details;
 
   return apiError;
@@ -95,11 +113,11 @@ export function normalizeApiError(
 
     return createApiError({
       status: apiError.status ?? apiError.statusCode,
-      title:
-        apiError.erro ?? apiError.error ?? error.name ?? DEFAULT_ERROR_TITLE,
-      message: apiError.mensagem ?? error.message ?? fallbackMessage,
+      title: apiError.error ?? error.name ?? DEFAULT_ERROR_TITLE,
+      message: error.message ?? fallbackMessage,
       path: apiError.path,
       timestamp: apiError.timestamp,
+      fields: apiError.fields,
       details: apiError.details ?? error,
     });
   }
@@ -112,14 +130,8 @@ export function normalizeApiError(
   }
 
   if (error && typeof error === "object") {
-    const title =
-      getObjectValue(error, "erro") ??
-      getObjectValue(error, "error") ??
-      DEFAULT_ERROR_TITLE;
-    const message =
-      getObjectValue(error, "mensagem") ??
-      getObjectValue(error, "message") ??
-      fallbackMessage;
+    const title = getObjectValue(error, "error") ?? DEFAULT_ERROR_TITLE;
+    const message = getObjectValue(error, "message") ?? fallbackMessage;
     const status =
       getObjectNumber(error, "status") ?? getObjectNumber(error, "statusCode");
 
@@ -129,6 +141,7 @@ export function normalizeApiError(
       message,
       path: getObjectValue(error, "path"),
       timestamp: getObjectValue(error, "timestamp"),
+      fields: getObjectRecord(error, "fields"),
       details: error,
     });
   }
@@ -190,11 +203,13 @@ export function showApiError(
 
   toast.error(
     <div>
-      <strong>{apiError.erro ?? DEFAULT_ERROR_TITLE}</strong>
+      <strong>{apiError.error ?? DEFAULT_ERROR_TITLE}</strong>
       <br />
-      <span>{apiError.mensagem ?? fallbackMessage}</span>
+      <span>{apiError.message ?? fallbackMessage}</span>
     </div>,
   );
 
   return apiError;
 }
+
+

@@ -1,4 +1,4 @@
-import type { Enrollment, EnrollmentCreateFormData } from "@/pages/Enrollments/types";
+﻿import type { Enrollment, EnrollmentCreateFormData } from "@/pages/Enrollments/types";
 import { authFetch } from "@/services/api";
 import type { ApiError } from "@/utils/apiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -40,3 +40,4 @@ export function useCreateEnrollment() {
     },
   });
 }
+

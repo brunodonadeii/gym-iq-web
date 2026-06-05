@@ -1,4 +1,4 @@
-import { Button } from "@/components/Button/Button";
+﻿import { Button } from "@/components/Button/Button";
 import { Form } from "@/components/Form/Form";
 import { TextField } from "@/components/TextField/TextField";
 import { useFormInputs } from "@/hooks/useFormInputs";
@@ -74,9 +74,9 @@ export const StudentsCreate = () => {
       onError: (e) => {
         toast.error(
           <div>
-            <strong>{e?.erro ?? e?.error ?? "Erro"}</strong>
+            <strong>{e?.error ?? "Erro"}</strong>
             <br />
-            <span>{e?.mensagem ?? e?.message ?? "Erro inesperado"}</span>
+            <span>{e?.message ?? "Erro inesperado"}</span>
           </div>,
         );
       },
@@ -223,3 +223,5 @@ export const StudentsCreate = () => {
     </Form>
   );
 };
+
+

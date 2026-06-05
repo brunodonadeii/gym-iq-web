@@ -1,4 +1,4 @@
-import { LoginPage } from "@/pages/Login/LoginPage";
+﻿import { LoginPage } from "@/pages/Login/LoginPage";
 import { getDefaultPathByRole } from "@/utils/auth";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
@@ -15,3 +15,4 @@ export const Route = createFileRoute("/login")({
   }),
   component: LoginPage,
 });
+

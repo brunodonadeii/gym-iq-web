@@ -1,4 +1,4 @@
-import { Skeleton } from "@/components/Skeleton/Skeleton";
+﻿import { Skeleton } from "@/components/Skeleton/Skeleton";
 import type { ReactNode } from "react";
 import styles from "./Form.module.css";
 
@@ -49,3 +49,4 @@ export const Form = ({
     </div>
   );
 };
+

@@ -1,4 +1,4 @@
-import { Skeleton } from "@/components/Skeleton/Skeleton";
+﻿import { Skeleton } from "@/components/Skeleton/Skeleton";
 import type { ReactNode } from "react";
 import styles from "../DashboardPage.module.css";
 
@@ -30,3 +30,4 @@ export const MetricCard = ({
     </div>
   </article>
 );
+

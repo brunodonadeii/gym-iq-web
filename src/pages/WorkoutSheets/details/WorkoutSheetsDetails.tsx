@@ -1,4 +1,4 @@
-import { Autocomplete } from "@/components/Autocomplete/Autocomplete";
+﻿import { Autocomplete } from "@/components/Autocomplete/Autocomplete";
 import { Button } from "@/components/Button/Button";
 import { Dropdown } from "@/components/Dropdown/Dropdown";
 import { Pagination } from "@/components/Pagination/Pagination";
@@ -242,9 +242,9 @@ const WorkoutSheetsDetailsContent = ({
         onError: (e) => {
           toast.error(
             <div>
-              <strong>{e?.erro ?? e?.error ?? "Erro"}</strong>
+              <strong>{e?.error ?? "Erro"}</strong>
               <br />
-              <span>{e?.mensagem ?? e?.message ?? "Erro inesperado"}</span>
+              <span>{e?.message ?? "Erro inesperado"}</span>
             </div>,
           );
         },
@@ -295,9 +295,9 @@ const WorkoutSheetsDetailsContent = ({
       onError: (e: ApiError) => {
         toast.error(
           <div>
-            <strong>{e?.erro ?? e?.error ?? "Erro"}</strong>
+            <strong>{e?.error ?? "Erro"}</strong>
             <br />
-            <span>{e?.mensagem ?? e?.message ?? "Erro inesperado"}</span>
+            <span>{e?.message ?? "Erro inesperado"}</span>
           </div>,
         );
       },
@@ -340,9 +340,9 @@ const WorkoutSheetsDetailsContent = ({
         onError: (e) => {
           toast.error(
             <div>
-              <strong>{e?.erro ?? e?.error ?? "Erro"}</strong>
+              <strong>{e?.error ?? "Erro"}</strong>
               <br />
-              <span>{e?.mensagem ?? e?.message ?? "Erro inesperado"}</span>
+              <span>{e?.message ?? "Erro inesperado"}</span>
             </div>,
           );
         },
@@ -455,7 +455,7 @@ const WorkoutSheetsDetailsContent = ({
               onChange={setSheetField("endDate")}
             />
             <TextField
-              label="Observacoes"
+              label="Observações"
               id="notes"
               value={sheetForm.notes}
               onChange={setSheetField("notes")}
@@ -567,7 +567,7 @@ const WorkoutSheetsDetailsContent = ({
             onChange={setExerciseField("executionOrder")}
           />
           <TextField
-            label="Observacoes do exercicio"
+            label="Observações do exercício"
             id="notes"
             value={exerciseForm.notes}
             onChange={setExerciseField("notes")}
@@ -604,7 +604,7 @@ const WorkoutSheetsDetailsContent = ({
                 <TableHeaderCell>Series</TableHeaderCell>
                 <TableHeaderCell>Repeticoes</TableHeaderCell>
                 <TableHeaderCell>Descanso</TableHeaderCell>
-                <TableHeaderCell>Observacoes</TableHeaderCell>
+                <TableHeaderCell>Observações</TableHeaderCell>
                 <TableHeaderCell center>Acoes</TableHeaderCell>
               </TableRow>
             </TableHead>
@@ -698,3 +698,4 @@ export const WorkoutSheetsDetails = () => {
     />
   );
 };
+

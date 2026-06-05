@@ -1,4 +1,4 @@
-import { EnrollmentsPage } from "@/pages/Enrollments/list/EnrollmentsPage";
+﻿import { EnrollmentsPage } from "@/pages/Enrollments/list/EnrollmentsPage";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_sidebar/enrollments/")({
@@ -8,3 +8,5 @@ export const Route = createFileRoute("/_sidebar/enrollments/")({
     headline: "Listagem de matrículas",
   },
 });
+
+

@@ -1,4 +1,4 @@
-import { InstructorsCreate } from "@/pages/Instructors/create/InstructorsCreate";
+﻿import { InstructorsCreate } from "@/pages/Instructors/create/InstructorsCreate";
 import { requireRoles } from "@/routes/guards";
 import { createFileRoute } from "@tanstack/react-router";
 
@@ -12,3 +12,4 @@ export const Route = createFileRoute("/_sidebar/instructors/create")({
     headline: "Adicionar novo instrutor",
   },
 });
+

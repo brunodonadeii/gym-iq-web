@@ -1,4 +1,4 @@
-import type {
+﻿import type {
   Instructor,
   InstructorCreateFormData,
 } from "@/pages/Instructors/types";
@@ -40,3 +40,4 @@ export function useCreateInstructor() {
     },
   });
 }
+

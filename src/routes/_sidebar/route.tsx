@@ -1,4 +1,4 @@
-import { Layout } from "@/pages/Layout/Layout";
+﻿import { Layout } from "@/pages/Layout/Layout";
 import type { UserRole } from "@/utils/auth";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
@@ -23,3 +23,4 @@ export const Route = createFileRoute("/_sidebar")({
   },
   component: Layout,
 });
+

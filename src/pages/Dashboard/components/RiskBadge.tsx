@@ -1,4 +1,4 @@
-import type { RetentionRiskLevel } from "@/pages/Dashboard/types";
+﻿import type { RetentionRiskLevel } from "@/pages/Dashboard/types";
 import { riskDescriptions, riskLabels } from "../constants";
 import styles from "../DashboardPage.module.css";
 
@@ -10,3 +10,4 @@ export const RiskBadge = ({ level }: { level: RetentionRiskLevel }) => (
     {riskLabels[level] ?? level}
   </span>
 );
+

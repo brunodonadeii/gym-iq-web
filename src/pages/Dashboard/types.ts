@@ -1,4 +1,4 @@
-export type RetentionRiskLevel = "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
+﻿export type RetentionRiskLevel = "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
 
 export type RetentionAlertStatus = "OPEN" | "RESOLVED";
 
@@ -57,3 +57,4 @@ export type OperationsDashboard = {
   churnRate: number;
   generatedAt: string;
 };
+

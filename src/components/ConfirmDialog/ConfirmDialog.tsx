@@ -1,4 +1,4 @@
-import { Button } from "@/components/Button/Button";
+﻿import { Button } from "@/components/Button/Button";
 import { AlertTriangle, X } from "lucide-react";
 import styles from "./ConfirmDialog.module.css";
 
@@ -70,3 +70,4 @@ export const ConfirmDialog = ({
     </div>
   );
 };
+

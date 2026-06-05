@@ -1,4 +1,4 @@
-import { AuditLogsPage } from "@/pages/AuditLogs/list/AuditLogsPage";
+﻿import { AuditLogsPage } from "@/pages/AuditLogs/list/AuditLogsPage";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_sidebar/audit-logs/")({
@@ -8,3 +8,4 @@ export const Route = createFileRoute("/_sidebar/audit-logs/")({
     headline: "Logs de auditoria",
   },
 });
+

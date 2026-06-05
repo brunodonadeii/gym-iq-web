@@ -1,7 +1,11 @@
+﻿type DashboardErrorDetails = {
+  error?: string;
+  message?: string;
+};
+
 export class DashboardRequestError extends Error {
   status: number;
-  erro?: string;
-  mensagem?: string;
+  error?: string;
 
   constructor(message: string, status: number, details?: unknown) {
     super(message);
@@ -9,10 +13,8 @@ export class DashboardRequestError extends Error {
     this.status = status;
 
     if (details && typeof details === "object") {
-      const apiDetails = details as { erro?: string; mensagem?: string };
-
-      this.erro = apiDetails.erro;
-      this.mensagem = apiDetails.mensagem;
+      const apiDetails = details as DashboardErrorDetails;
+      this.error = apiDetails.error;
     }
   }
 }
@@ -23,9 +25,10 @@ export async function throwDashboardRequestError(
 ): Promise<never> {
   const details = await response.json().catch(() => null);
   const message =
-    details && typeof details === "object" && "mensagem" in details
-      ? String(details.mensagem)
+    details && typeof details === "object" && "message" in details
+      ? String((details as DashboardErrorDetails).message)
       : fallbackMessage;
 
   throw new DashboardRequestError(message, response.status, details);
 }
+

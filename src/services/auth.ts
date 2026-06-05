@@ -1,4 +1,4 @@
-import { clearAuthStorage } from "@/utils/auth";
+﻿import { clearAuthStorage } from "@/utils/auth";
 import { parseApiResponse } from "@/utils/apiError";
 import { buildApiUrl } from "@/services/apiUrl";
 
@@ -81,3 +81,4 @@ export async function resetPassword(
     "Nao foi possivel redefinir a senha.",
   );
 }
+

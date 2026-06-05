@@ -1,4 +1,4 @@
-export type Instructor = {
+﻿export type Instructor = {
   instructorId: string;
   userId: string;
   name: string;
@@ -31,3 +31,4 @@ export type InstructorUpdateFormData = {
 };
 
 export type InstructorEditFormData = InstructorUpdateFormData;
+

@@ -1,4 +1,4 @@
-import { Skeleton } from "@/components/Skeleton/Skeleton";
+﻿import { Skeleton } from "@/components/Skeleton/Skeleton";
 import { AlertTriangle } from "lucide-react";
 import type { ReactNode } from "react";
 import { formatDateTime, getErrorMessage } from "../utils";
@@ -59,3 +59,5 @@ export const DashboardSection = ({
     )}
   </section>
 );
+
+

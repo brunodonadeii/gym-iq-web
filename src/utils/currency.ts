@@ -1,4 +1,4 @@
-export function parseCurrencyInput(value: string) {
+﻿export function parseCurrencyInput(value: string) {
   const digits = value.replace(/\D/g, "");
 
   if (!digits) {
@@ -14,3 +14,4 @@ export function formatCurrencyInput(value: number) {
     maximumFractionDigits: 2,
   }).format(value || 0);
 }
+

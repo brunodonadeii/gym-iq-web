@@ -1,4 +1,4 @@
-import { Skeleton } from "@/components/Skeleton/Skeleton";
+﻿import { Skeleton } from "@/components/Skeleton/Skeleton";
 import {
   GlobalErrorFallback,
   GlobalNotFoundFallback,
@@ -34,3 +34,4 @@ export const Route = createRootRouteWithContext<RouterContext>()({
   errorComponent: GlobalErrorFallback,
   notFoundComponent: GlobalNotFoundFallback,
 });
+

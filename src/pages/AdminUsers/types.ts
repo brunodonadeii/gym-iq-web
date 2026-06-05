@@ -1,4 +1,4 @@
-export type AdminUserRole = "ADMIN" | "RECEPTION";
+﻿export type AdminUserRole = "ADMIN" | "RECEPTION";
 
 export type AdminUser = {
   userId?: string;
@@ -27,3 +27,4 @@ export type AdminUserUpdateFormData = {
   role: AdminUserRole;
   lgpdAccepted: boolean;
 };
+

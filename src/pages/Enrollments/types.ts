@@ -1,4 +1,4 @@
-import type { Plan } from "@/pages/Plans/types";
+﻿import type { Plan } from "@/pages/Plans/types";
 import type { Student } from "@/pages/Students/types";
 
 export type EnrollmentStatus = "ACTIVE" | "SUSPENDED" | "CANCELED";
@@ -27,3 +27,4 @@ export type EnrollmentCreateFormData = {
 export type EnrollmentRenewFormData = {
   newPlanId: string;
 };
+

@@ -1,4 +1,4 @@
-import { Button } from "@/components/Button/Button";
+﻿import { Button } from "@/components/Button/Button";
 import { auth, clearAuthStorage, getDefaultPathByRole } from "@/utils/auth";
 import { useNavigate } from "@tanstack/react-router";
 import styles from "./UnauthorizedPage.module.css";
@@ -33,3 +33,5 @@ export const UnauthorizedPage = () => {
     </main>
   );
 };
+
+

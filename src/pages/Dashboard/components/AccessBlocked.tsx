@@ -1,4 +1,4 @@
-import { ShieldAlert } from "lucide-react";
+﻿import { ShieldAlert } from "lucide-react";
 import styles from "../DashboardPage.module.css";
 
 export const AccessBlocked = () => (
@@ -13,3 +13,5 @@ export const AccessBlocked = () => (
     </div>
   </section>
 );
+
+

@@ -1,4 +1,4 @@
-import { Button } from "@/components/Button/Button";
+﻿import { Button } from "@/components/Button/Button";
 import { Form } from "@/components/Form/Form";
 import { TextField } from "@/components/TextField/TextField";
 import { useFormInputs } from "@/hooks/useFormInputs";
@@ -48,7 +48,7 @@ export const PlansEdit = () => {
       nextErrors.monthlyPrice = "Informe um valor mensal maior que zero.";
     }
     if (!data.durationMonths || Number(data.durationMonths) <= 0) {
-      nextErrors.durationMonths = "Informe uma duracao maior que zero.";
+      nextErrors.durationMonths = "Informe uma dura��o maior que zero.";
     }
 
     setErrors(nextErrors);
@@ -68,9 +68,9 @@ export const PlansEdit = () => {
         onError: (e) => {
           toast.error(
             <div>
-              <strong>{e?.erro ?? e?.error ?? "Erro"}</strong>
+              <strong>{e?.error ?? "Erro"}</strong>
               <br />
-              <span>{e?.mensagem ?? e?.message ?? "Erro inesperado"}</span>
+              <span>{e?.message ?? "Erro inesperado"}</span>
             </div>,
           );
         },
@@ -81,7 +81,7 @@ export const PlansEdit = () => {
   return (
     <Form
       title="Dados do plano"
-      description="Informacoes base para identificar e editar um plano."
+      description="Informa��es base para identificar e editar um plano."
       loading={isLoading}
       actions={
         <>
@@ -143,7 +143,7 @@ export const PlansEdit = () => {
           required
         />
         <TextField
-          label="Duracao em meses"
+          label="Dura��o em meses"
           id="durationMonths"
           value={data.durationMonths}
           onChange={(event) => {
@@ -157,3 +157,5 @@ export const PlansEdit = () => {
     </Form>
   );
 };
+
+

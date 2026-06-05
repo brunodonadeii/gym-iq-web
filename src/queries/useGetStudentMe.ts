@@ -1,4 +1,4 @@
-import type { Student } from "@/pages/Students/types";
+﻿import type { Student } from "@/pages/Students/types";
 import { authFetch } from "@/services/api";
 import { parseApiResponse } from "@/utils/apiError";
 import { useQuery } from "@tanstack/react-query";
@@ -16,3 +16,4 @@ export function useGetStudentMe() {
     staleTime: 5 * 60 * 1000,
   });
 }
+

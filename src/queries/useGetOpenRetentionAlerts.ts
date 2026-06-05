@@ -1,4 +1,4 @@
-import type { RetentionAlert } from "@/pages/Dashboard/types";
+﻿import type { RetentionAlert } from "@/pages/Dashboard/types";
 import { authFetch } from "@/services/api";
 import type { PageRequest, PageResponse } from "@/types/pagination";
 import { buildPaginationParams } from "@/utils/pagination";
@@ -39,3 +39,5 @@ export function useGetOpenRetentionAlerts(
     refetchOnWindowFocus: false,
   });
 }
+
+

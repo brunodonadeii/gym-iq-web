@@ -1,4 +1,4 @@
-import { ResetPasswordPage } from "@/pages/ResetPassword/ResetPasswordPage";
+﻿import { ResetPasswordPage } from "@/pages/ResetPassword/ResetPasswordPage";
 import { getDefaultPathByRole } from "@/utils/auth";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
@@ -15,3 +15,4 @@ export const Route = createFileRoute("/reset-password")({
   }),
   component: ResetPasswordPage,
 });
+

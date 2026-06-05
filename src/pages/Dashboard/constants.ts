@@ -1,4 +1,4 @@
-import type { RetentionRiskLevel } from "@/pages/Dashboard/types";
+﻿import type { RetentionRiskLevel } from "@/pages/Dashboard/types";
 
 export const OPEN_ALERTS_SORT = "riskScore,desc";
 
@@ -28,3 +28,5 @@ export const chartColors = {
   suspended: "#b45309",
   canceled: "#b91c1c",
 };
+
+

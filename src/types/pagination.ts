@@ -1,4 +1,4 @@
-export type PageRequest = {
+﻿export type PageRequest = {
   page?: number;
   size?: number;
   sort?: string;
@@ -13,3 +13,4 @@ export type PageResponse<T> = {
   first: boolean;
   last: boolean;
 };
+

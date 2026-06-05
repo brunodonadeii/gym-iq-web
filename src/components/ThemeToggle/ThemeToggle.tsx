@@ -1,4 +1,4 @@
-// components/ThemeToggle/ThemeToggle.tsx
+﻿// components/ThemeToggle/ThemeToggle.tsx
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "@/hooks/useTheme";
 import styles from "./ThemeToggle.module.css";
@@ -16,3 +16,4 @@ export const ThemeToggle = () => {
     </button>
   );
 };
+

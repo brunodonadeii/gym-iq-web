@@ -1,4 +1,4 @@
-import { normalizeApiError } from "@/utils/apiError";
+﻿import { normalizeApiError } from "@/utils/apiError";
 
 const numberFormatter = new Intl.NumberFormat("pt-BR");
 
@@ -47,10 +47,11 @@ export const formatDateTime = (value?: string) => {
 };
 
 export const getErrorMessage = (error: unknown, fallback: string) =>
-  normalizeApiError(error, fallback).mensagem ?? fallback;
+  normalizeApiError(error, fallback).message ?? fallback;
 
 export const isForbiddenError = (error: unknown) =>
   normalizeApiError(error).status === 403;
 
 export const hasPositiveValues = (values: number[]) =>
   values.some((value) => value > 0);
+

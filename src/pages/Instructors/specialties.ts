@@ -1,4 +1,4 @@
-export const INSTRUCTOR_SPECIALTY_OPTIONS = [
+﻿export const INSTRUCTOR_SPECIALTY_OPTIONS = [
   "Musculação",
   "Hipertrofia",
   "Emagrecimento",
@@ -17,3 +17,5 @@ export const parseInstructorSpecialties = (value?: string | null) =>
 
 export const stringifyInstructorSpecialties = (values: string[]) =>
   values.join(", ");
+
+

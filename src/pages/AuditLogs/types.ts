@@ -1,4 +1,4 @@
-import type { PageResponse } from "@/types/pagination";
+﻿import type { PageResponse } from "@/types/pagination";
 
 export type AuditLog = {
   auditLogId?: number;
@@ -21,3 +21,4 @@ export type AuditLogFilters = {
 };
 
 export type AuditLogApiResponse = AuditLog[] | PageResponse<AuditLog>;
+

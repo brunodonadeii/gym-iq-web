@@ -1,4 +1,4 @@
-export type DateRangeValue = {
+﻿export type DateRangeValue = {
   startDate: string;
   endDate: string;
 };
@@ -119,3 +119,5 @@ export const formatDateRangeLabel = (value: DateRangeValue) => {
 
   return `${formatter.format(startDate)} - ${formatter.format(endDate)}`;
 };
+
+
