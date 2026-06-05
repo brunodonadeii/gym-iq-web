@@ -57,16 +57,19 @@ const EMPTY_EXERCISE_FORM: WorkoutSheetExerciseFormData = {
   repetitions: "",
   loadKg: "",
   restSeconds: "",
+  trainingSection: "Treino A",
   executionOrder: "",
   notes: "",
 };
 
 const exerciseColumns = [
-  { width: "24%" },
-  { width: "12%" },
-  { width: "16%" },
+  { width: "20%" },
   { width: "14%" },
-  { width: "22%" },
+  { width: "12%" },
+  { width: "14%" },
+  { width: "14%" },
+  { width: "18%" },
+  { width: "10%" },
   { width: "12%" },
 ];
 
@@ -98,6 +101,7 @@ const mapWorkoutSheetToForm = (
       repetitions: exercise.repetitions ?? "",
       loadKg: String(exercise.loadKg ?? ""),
       restSeconds: String(exercise.restSeconds ?? ""),
+      trainingSection: exercise.trainingSection ?? "Treino A",
       executionOrder: String(exercise.executionOrder ?? ""),
       notes: exercise.notes ?? "",
     })) ?? [],
@@ -219,6 +223,7 @@ const WorkoutSheetsDetailsContent = ({
             repetitions: exercise.repetitions ?? "",
             loadKg: String(exercise.loadKg ?? ""),
             restSeconds: String(exercise.restSeconds ?? ""),
+            trainingSection: exercise.trainingSection ?? "Treino A",
             executionOrder: String(exercise.executionOrder ?? ""),
             notes: exercise.notes ?? "",
           }));
@@ -260,6 +265,11 @@ const WorkoutSheetsDetailsContent = ({
 
     if (!exerciseForm.repetitions) {
       focusById("repetitions");
+      return;
+    }
+
+    if (!exerciseForm.trainingSection) {
+      focusById("trainingSection");
       return;
     }
 
@@ -315,6 +325,7 @@ const WorkoutSheetsDetailsContent = ({
       repetitions: String(exercise.repetitions ?? ""),
       loadKg: String(exercise.loadKg ?? ""),
       restSeconds: String(exercise.restSeconds ?? ""),
+      trainingSection: exercise.trainingSection ?? "Treino A",
       executionOrder: String(exercise.executionOrder ?? ""),
       notes: exercise.notes ?? "",
     });
@@ -482,7 +493,7 @@ const WorkoutSheetsDetailsContent = ({
           <div>
             <h3 className={styles.sectionTitle}>Exercicios da ficha</h3>
             <p className={styles.sectionDescription}>
-              Adicione ou edite exercicio, series, repeticoes, descanso e ordem.
+              Adicione ou edite exercicio, bloco, series, repeticoes, descanso e ordem.
             </p>
           </div>
         </div>
@@ -528,6 +539,16 @@ const WorkoutSheetsDetailsContent = ({
             onChange={setExerciseField("repetitions")}
             placeholder="10-12"
           />
+          <TextField
+            label="Bloco do treino"
+            id="trainingSection"
+            value={exerciseForm.trainingSection}
+            onChange={setExerciseField("trainingSection")}
+            placeholder="Treino A"
+          />
+        </div>
+
+        <div className={styles.grid}>
           <TextField
             label="Descanso em segundos"
             id="restSeconds"
@@ -579,6 +600,7 @@ const WorkoutSheetsDetailsContent = ({
             <TableHead>
               <TableRow>
                 <TableHeaderCell>Exercicio</TableHeaderCell>
+                <TableHeaderCell>Bloco</TableHeaderCell>
                 <TableHeaderCell>Series</TableHeaderCell>
                 <TableHeaderCell>Repeticoes</TableHeaderCell>
                 <TableHeaderCell>Descanso</TableHeaderCell>
@@ -588,7 +610,7 @@ const WorkoutSheetsDetailsContent = ({
             </TableHead>
 
             <TableBody>
-              {tableLoading && <TableSkeletonRows columns={6} />}
+              {tableLoading && <TableSkeletonRows columns={7} />}
 
               {!tableLoading &&
                 exerciseRows.map((exercise) => {
@@ -603,6 +625,7 @@ const WorkoutSheetsDetailsContent = ({
                           </span>
                         </div>
                       </TableCell>
+                      <TableCell>{exercise.trainingSection || "-"}</TableCell>
                       <TableCell>{exercise.sets}</TableCell>
                       <TableCell>{exercise.repetitions}</TableCell>
                       <TableCell>
@@ -637,7 +660,7 @@ const WorkoutSheetsDetailsContent = ({
 
               {!tableLoading && exerciseRows.length === 0 && (
                 <TableEmptyState
-                  colSpan={6}
+                  colSpan={7}
                   message="Nenhum exercicio vinculado a esta ficha."
                 />
               )}

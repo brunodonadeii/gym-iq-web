@@ -17,6 +17,7 @@ const normalizeExercise = (data: WorkoutSheetExerciseFormData) => ({
   repetitions: data.repetitions,
   loadKg: data.loadKg ? Number(data.loadKg) : undefined,
   restSeconds: data.restSeconds ? Number(data.restSeconds) : undefined,
+  trainingSection: data.trainingSection || undefined,
   executionOrder: Number(data.executionOrder),
   notes: data.notes || undefined,
 });

@@ -22,6 +22,7 @@ const normalizeWorkoutSheet = (data: WorkoutSheetFormData) => ({
     restSeconds: exercise.restSeconds
       ? Number(exercise.restSeconds)
       : undefined,
+    trainingSection: exercise.trainingSection || undefined,
     executionOrder: Number(exercise.executionOrder),
     notes: exercise.notes || undefined,
   })),

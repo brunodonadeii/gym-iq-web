@@ -46,6 +46,7 @@ export type WorkoutSheetExercise = {
   repetitions: string;
   loadKg?: number | string | null;
   restSeconds?: number | string | null;
+  trainingSection: string;
   executionOrder: number | string;
   notes?: string | null;
 };
@@ -56,6 +57,7 @@ export type WorkoutSheetExerciseFormData = {
   repetitions: string;
   loadKg: string;
   restSeconds: string;
+  trainingSection: string;
   executionOrder: string;
   notes: string;
 };

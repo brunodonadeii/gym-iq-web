@@ -28,6 +28,7 @@ const createEmptyExercise = (
   repetitions: "",
   loadKg: "",
   restSeconds: "",
+  trainingSection: "Treino A",
   executionOrder: String(executionOrder),
   notes: "",
 });
@@ -83,6 +84,10 @@ const validate = (data: WorkoutSheetFormData) => {
 
     if (!exercise.repetitions.trim()) {
       current.repetitions = "Informe as repeticoes.";
+    }
+
+    if (!exercise.trainingSection.trim()) {
+      current.trainingSection = "Informe o bloco do treino.";
     }
 
     if (!exercise.executionOrder || Number(exercise.executionOrder) <= 0) {
@@ -509,6 +514,24 @@ export const WorkoutSheetsCreate = () => {
                     error={currentErrors.repetitions}
                     required
                   />
+                  <TextField
+                    label="Bloco do treino"
+                    id={`exercise-${index}-trainingSection`}
+                    value={exercise.trainingSection}
+                    onChange={(event) =>
+                      updateExercise(
+                        index,
+                        "trainingSection",
+                        event.target.value,
+                      )
+                    }
+                    placeholder="Treino A"
+                    error={currentErrors.trainingSection}
+                    required
+                  />
+                </div>
+
+                <div className={styles.row}>
                   <TextField
                     label="Descanso em segundos"
                     id={`exercise-${index}-restSeconds`}
