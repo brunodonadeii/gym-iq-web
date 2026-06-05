@@ -1,5 +1,6 @@
 import type { EnrollmentStatus } from "@/pages/Enrollments/types";
 import type { PaymentStatus } from "@/pages/Payments/types";
+import type { WorkoutSheetExercise } from "@/pages/WorkoutSheets/types";
 
 export const enrollmentStatusLabels: Record<EnrollmentStatus, string> = {
   ACTIVE: "Ativa",
@@ -57,6 +58,30 @@ export const formatExerciseMeta = (
   ].filter(Boolean);
 
   return parts.join(" | ");
+};
+
+export const groupExercisesByTrainingSection = (
+  exercises?: WorkoutSheetExercise[],
+) => {
+  if (!exercises?.length) return [];
+
+  const groups = new Map<string, WorkoutSheetExercise[]>();
+
+  exercises.forEach((exercise) => {
+    const section = exercise.trainingSection?.trim() || "Treino";
+    const current = groups.get(section) ?? [];
+    current.push(exercise);
+    groups.set(section, current);
+  });
+
+  return Array.from(groups.entries()).map(([section, items]) => ({
+    section,
+    exercises: items
+      .slice()
+      .sort(
+        (a, b) => Number(a.executionOrder ?? 0) - Number(b.executionOrder ?? 0),
+      ),
+  }));
 };
 
 export const getPaymentStatusClassName = (

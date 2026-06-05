@@ -2,7 +2,7 @@ import { Button } from "@/components/Button/Button";
 import type { WorkoutSheet } from "@/pages/WorkoutSheets/types";
 import { ChevronDown, Printer } from "lucide-react";
 import { printWorkoutSheetReceipt } from "../printWorkoutSheetReceipt";
-import { formatExerciseMeta } from "../utils";
+import { formatExerciseMeta, groupExercisesByTrainingSection } from "../utils";
 import styles from "../StudentPortalPage.module.css";
 
 type WorkoutSheetCardProps = {
@@ -16,9 +16,7 @@ export const WorkoutSheetCard = ({
   onToggle,
   sheet,
 }: WorkoutSheetCardProps) => {
-  const exercises = sheet.exercises?.slice().sort(
-    (a, b) => Number(a.executionOrder ?? 0) - Number(b.executionOrder ?? 0),
-  );
+  const exerciseGroups = groupExercisesByTrainingSection(sheet.exercises);
 
   return (
     <div className={styles.sheetItem}>
@@ -27,17 +25,21 @@ export const WorkoutSheetCard = ({
           <p className={styles.itemTitle}>{sheet.name}</p>
           <p className={styles.itemDescription}>
             {sheet.goal ?? "Sem objetivo informado"} | Instrutor:{" "}
-            {sheet.instructorName ?? sheet.instructor?.name ?? "Não informado"}
+            {sheet.instructorName ?? sheet.instructor?.name ?? "NÃ£o informado"}
           </p>
         </div>
         <span className={styles.badge}>
-          {sheet.exercises?.length ?? 0} exercício(s)
+          {sheet.exercises?.length ?? 0} exercÃ­cio(s)
         </span>
       </div>
 
       <div className={styles.sheetActions}>
-        <Button variant="ghost" leftIcon={<ChevronDown size={16} />} onClick={onToggle}>
-          {expanded ? "Ocultar exercícios" : "Ver exercícios"}
+        <Button
+          variant="ghost"
+          leftIcon={<ChevronDown size={16} />}
+          onClick={onToggle}
+        >
+          {expanded ? "Ocultar exercÃ­cios" : "Ver exercÃ­cios"}
         </Button>
         <Button
           variant="secondary"
@@ -50,32 +52,42 @@ export const WorkoutSheetCard = ({
 
       {expanded && (
         <div className={styles.exercisePanel}>
-          {exercises?.length ? (
-            exercises.map((exercise) => (
-              <div
-                className={styles.exerciseItem}
-                key={exercise.workoutSheetExerciseId}
-              >
-                <div>
-                  <p className={styles.itemTitle}>
-                    {exercise.executionOrder}. {exercise.exerciseName}
-                  </p>
-                  <p className={styles.itemDescription}>
-                    {formatExerciseMeta(
-                      exercise.sets,
-                      exercise.repetitions,
-                      exercise.restSeconds,
-                    ) || "Sem detalhes informados"}
-                  </p>
+          {exerciseGroups.length ? (
+            exerciseGroups.map((group) => (
+              <section className={styles.exerciseGroup} key={group.section}>
+                <div className={styles.exerciseGroupHeader}>
+                  <span className={styles.exerciseGroupTitle}>
+                    {group.section}
+                  </span>
                 </div>
-                <span className={styles.exerciseNote}>
-                  {exercise.notes || exercise.muscleGroup || "-"}
-                </span>
-              </div>
+
+                {group.exercises.map((exercise) => (
+                  <div
+                    className={styles.exerciseItem}
+                    key={exercise.workoutSheetExerciseId}
+                  >
+                    <div>
+                      <p className={styles.itemTitle}>
+                        {exercise.executionOrder}. {exercise.exerciseName}
+                      </p>
+                      <p className={styles.itemDescription}>
+                        {formatExerciseMeta(
+                          exercise.sets,
+                          exercise.repetitions,
+                          exercise.restSeconds,
+                        ) || "Sem detalhes informados"}
+                      </p>
+                    </div>
+                    <span className={styles.exerciseNote}>
+                      {exercise.notes || exercise.muscleGroup || "-"}
+                    </span>
+                  </div>
+                ))}
+              </section>
             ))
           ) : (
             <div className={styles.empty}>
-              Esta ficha ainda não possui exercícios listados.
+              Esta ficha ainda nÃ£o possui exercÃ­cios listados.
             </div>
           )}
         </div>

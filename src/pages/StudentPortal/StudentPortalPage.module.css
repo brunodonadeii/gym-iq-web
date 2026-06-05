@@ -195,6 +195,23 @@
   background: var(--surface-alt);
 }
 
+.exerciseGroup {
+  display: grid;
+  gap: 6px;
+}
+
+.exerciseGroupHeader {
+  display: flex;
+  align-items: center;
+}
+
+.exerciseGroupTitle {
+  color: var(--text-primary);
+  font-size: 0.8rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
 .exerciseItem {
   display: flex;
   justify-content: space-between;
