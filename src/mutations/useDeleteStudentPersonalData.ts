@@ -4,9 +4,9 @@ import { authFetch } from "@/services/api";
 import type { ApiError } from "@/utils/apiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-async function anonymizeStudent({ id }: { id: string }) {
-  const response = await authFetch(`students/${id}/anonymize`, {
-    method: "PATCH",
+async function deleteStudentPersonalData({ id }: { id: string }) {
+  const response = await authFetch(`students/${id}/personal-data`, {
+    method: "DELETE",
   });
 
   const responseData = await response.json();
@@ -18,12 +18,11 @@ async function anonymizeStudent({ id }: { id: string }) {
   return responseData;
 }
 
-export function useAnonymizeStudent() {
+export function useDeleteStudentPersonalData() {
   const queryClient = useQueryClient();
 
   return useMutation<Student, ApiError, { id: string }>({
-    mutationFn: anonymizeStudent,
-
+    mutationFn: deleteStudentPersonalData,
     onSuccess: async (_, variables) => {
       await invalidateStudentRelatedQueries(queryClient, variables.id);
     },

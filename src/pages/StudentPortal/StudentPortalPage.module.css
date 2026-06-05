@@ -58,6 +58,11 @@
   box-shadow: var(--shadow-sm);
 }
 
+.cardActions {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .wide {
   grid-column: 1 / -1;
 }

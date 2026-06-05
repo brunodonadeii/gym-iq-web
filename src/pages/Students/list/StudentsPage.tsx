@@ -17,8 +17,8 @@ import {
 } from "@/components/Table/Table";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useActivateStudent } from "@/mutations/useActivateStudent";
-import { useAnonymizeStudent } from "@/mutations/useAnonymizeStudent";
 import { useDeactivateStudent } from "@/mutations/useDeactivateStudent";
+import { useDeleteStudentPersonalData } from "@/mutations/useDeleteStudentPersonalData";
 import { isAnonymizedStudent } from "@/pages/Students/types";
 import {
   fetchStudents,
@@ -49,7 +49,7 @@ const studentColumns = [
 
 type ConfirmAction =
   | { type: "deactivate"; studentId: string; studentName: string }
-  | { type: "anonymize"; studentId: string; studentName: string };
+  | { type: "delete"; studentId: string; studentName: string };
 
 type StudentStatusFilter = "all" | "active" | "inactive";
 
@@ -87,8 +87,10 @@ export const StudentsPage = () => {
     useDeactivateStudent();
   const { mutate: activateStudent, isPending: isActivatingStudent } =
     useActivateStudent();
-  const { mutate: anonymizeStudent, isPending: isAnonymizingStudent } =
-    useAnonymizeStudent();
+  const {
+    mutate: deleteStudentPersonalData,
+    isPending: isDeletingStudentPersonalData,
+  } = useDeleteStudentPersonalData();
   const students = data?.content ?? [];
   const visibleStudents = students.filter((student) =>
     statusFilter === "active"
@@ -122,19 +124,19 @@ export const StudentsPage = () => {
     );
   };
 
-  const handleAnonymizeStudent = (studentId: string) => {
-    anonymizeStudent(
+  const handleDeleteStudentPersonalData = (studentId: string) => {
+    deleteStudentPersonalData(
       { id: studentId },
       {
         onSuccess: () => {
-          toast.success("Aluno anonimizado com sucesso!");
+          toast.success("Cadastro do aluno excluido com sucesso!");
           setConfirmAction(null);
         },
         onError: (e) => {
           const message =
             e?.mensagem ??
             e?.message ??
-            "Nao foi possivel anonimizar o aluno.";
+            "Nao foi possivel excluir os dados do aluno.";
 
           toast.error(
             <div>
@@ -142,7 +144,7 @@ export const StudentsPage = () => {
               <br />
               <span>
                 {/ativo/i.test(message)
-                  ? "O aluno precisa estar inativo antes da anonimização."
+                  ? "O aluno precisa estar inativo antes da exclusao."
                   : message}
               </span>
             </div>,
@@ -199,7 +201,7 @@ export const StudentsPage = () => {
       return;
     }
 
-    handleAnonymizeStudent(confirmAction.studentId);
+    handleDeleteStudentPersonalData(confirmAction.studentId);
   };
 
   return (
@@ -250,7 +252,7 @@ export const StudentsPage = () => {
           <div>
             <h3 className={styles.sectionTitle}>Lista principal</h3>
             <p className={styles.sectionDescription}>
-              {visibleStudents.length} aluno(s) exibido(s) nesta página.
+              {visibleStudents.length} aluno(s) exibido(s) nesta pagina.
             </p>
           </div>
         </div>
@@ -262,7 +264,7 @@ export const StudentsPage = () => {
                 <TableHeaderCell>Nome</TableHeaderCell>
                 <TableHeaderCell>Criado em</TableHeaderCell>
                 <TableHeaderCell center>Status</TableHeaderCell>
-                <TableHeaderCell center>Ações</TableHeaderCell>
+                <TableHeaderCell center>Acoes</TableHeaderCell>
               </TableRow>
             </TableHead>
 
@@ -339,13 +341,13 @@ export const StudentsPage = () => {
                                       ),
                                   },
                                   {
-                                    label: "Anonimizar aluno",
+                                    label: "Excluir",
                                     icon: <EyeOff size={15} />,
                                     disabled:
-                                      isAnonymizingStudent || anonymized,
+                                      isDeletingStudentPersonalData || anonymized,
                                     onSelect: () =>
                                       setConfirmAction({
-                                        type: "anonymize",
+                                        type: "delete",
                                         studentId: String(student.studentId),
                                         studentName: student.name,
                                       }),
@@ -384,23 +386,21 @@ export const StudentsPage = () => {
       <ConfirmDialog
         open={!!confirmAction}
         title={
-          confirmAction?.type === "anonymize"
-            ? "Anonimizar aluno?"
+          confirmAction?.type === "delete"
+            ? "Excluir cadastro do aluno?"
             : "Inativar aluno?"
         }
         description={
-          confirmAction?.type === "anonymize"
-            ? `Os dados pessoais de ${confirmAction.studentName} serão removidos e o histórico será preservado. Esta ação exige que o aluno já esteja inativo.`
+          confirmAction?.type === "delete"
+            ? `Os dados pessoais de ${confirmAction.studentName} serao removidos e o historico sera preservado. Esta acao exige que o aluno ja esteja inativo.`
             : confirmAction
-              ? `${confirmAction.studentName} perderá o acesso ativo, mas o histórico será preservado.`
+              ? `${confirmAction.studentName} perdera o acesso ativo, mas o historico sera preservado.`
               : ""
         }
         confirmLabel={
-          confirmAction?.type === "anonymize"
-            ? "Anonimizar aluno"
-            : "Inativar aluno"
+          confirmAction?.type === "delete" ? "Excluir" : "Inativar aluno"
         }
-        loading={isDeactivatingStudent || isAnonymizingStudent}
+        loading={isDeactivatingStudent || isDeletingStudentPersonalData}
         onCancel={() => setConfirmAction(null)}
         onConfirm={handleConfirmAction}
       />

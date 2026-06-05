@@ -1,5 +1,7 @@
 import { Button } from "@/components/Button/Button";
+import { ConfirmDialog } from "@/components/ConfirmDialog/ConfirmDialog";
 import { Skeleton } from "@/components/Skeleton/Skeleton";
+import { useDeleteMyStudentPersonalData } from "@/mutations/useDeleteMyStudentPersonalData";
 import { useGetMyActiveEnrollment } from "@/queries/useGetMyActiveEnrollment";
 import { useGetMyEnrollments } from "@/queries/useGetMyEnrollments";
 import { useGetMyPayments } from "@/queries/useGetMyPayments";
@@ -9,6 +11,7 @@ import { useGetStudentMe } from "@/queries/useGetStudentMe";
 import { clearAuthStorage } from "@/utils/auth";
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { toast } from "sonner";
 import { WorkoutSheetCard } from "./components/WorkoutSheetCard";
 import styles from "./StudentPortalPage.module.css";
 import {
@@ -24,6 +27,7 @@ import {
 
 export const StudentPortalPage = () => {
   const [expandedSheetId, setExpandedSheetId] = useState<string | null>(null);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const navigate = useNavigate();
   const { data: student, isLoading: isLoadingStudent } = useGetStudentMe();
   const { data: activeEnrollment, isLoading: isLoadingActiveEnrollment } =
@@ -35,10 +39,33 @@ export const StudentPortalPage = () => {
     useGetMyPresences();
   const { data: workoutSheets, isLoading: isLoadingWorkoutSheets } =
     useGetMyWorkoutSheets();
+  const { mutate: deleteMyPersonalData, isPending: isDeletingMyPersonalData } =
+    useDeleteMyStudentPersonalData();
 
   const handleLogout = () => {
     clearAuthStorage();
     navigate({ to: "/login" });
+  };
+
+  const handleDeleteAccount = () => {
+    deleteMyPersonalData(undefined, {
+      onSuccess: () => {
+        clearAuthStorage();
+        toast.success("Seus dados pessoais foram excluidos com sucesso.");
+        navigate({ to: "/login" });
+      },
+      onError: (e) => {
+        toast.error(
+          <div>
+            <strong>{e?.erro ?? e?.error ?? "Erro"}</strong>
+            <br />
+            <span>
+              {e?.mensagem ?? e?.message ?? "Nao foi possivel excluir seus dados."}
+            </span>
+          </div>,
+        );
+      },
+    });
   };
 
   return (
@@ -46,16 +73,16 @@ export const StudentPortalPage = () => {
       <div className={styles.container}>
         <header className={styles.header}>
           <div>
-            <span className={styles.eyebrow}>Área do aluno</span>
+            <span className={styles.eyebrow}>Area do aluno</span>
             <h1 className={styles.title}>
               {isLoadingStudent ? (
                 <Skeleton width="280px" height="3rem" />
               ) : (
-                `Olá, ${student?.name ?? "aluno"}`
+                `Ola, ${student?.name ?? "aluno"}`
               )}
             </h1>
             <p className={styles.subtitle}>
-              Acompanhe sua matrícula, pagamentos, presenças e fichas de treino.
+              Acompanhe sua matricula, pagamentos, presencas e fichas de treino.
             </p>
           </div>
 
@@ -73,30 +100,42 @@ export const StudentPortalPage = () => {
             {isLoadingStudent ? (
               <Skeleton height="160px" radius="18px" />
             ) : (
-              <div className={styles.details}>
-                <div className={styles.detail}>
-                  <span>Email</span>
-                  <strong>{student?.email ?? "Não informado"}</strong>
+              <>
+                <div className={styles.details}>
+                  <div className={styles.detail}>
+                    <span>Email</span>
+                    <strong>{student?.email ?? "Nao informado"}</strong>
+                  </div>
+                  <div className={styles.detail}>
+                    <span>CPF</span>
+                    <strong>{student?.cpf ?? "Nao informado"}</strong>
+                  </div>
+                  <div className={styles.detail}>
+                    <span>Telefone</span>
+                    <strong>{student?.phone ?? "Nao informado"}</strong>
+                  </div>
+                  <div className={styles.detail}>
+                    <span>Status</span>
+                    <strong>{student?.active ? "Ativo" : "Inativo"}</strong>
+                  </div>
                 </div>
-                <div className={styles.detail}>
-                  <span>CPF</span>
-                  <strong>{student?.cpf ?? "Não informado"}</strong>
+
+                <div className={styles.cardActions}>
+                  <Button
+                    variant="danger"
+                    onClick={() => setConfirmDeleteOpen(true)}
+                    disabled={isDeletingMyPersonalData}
+                  >
+                    Excluir
+                  </Button>
                 </div>
-                <div className={styles.detail}>
-                  <span>Telefone</span>
-                  <strong>{student?.phone ?? "Não informado"}</strong>
-                </div>
-                <div className={styles.detail}>
-                  <span>Status</span>
-                  <strong>{student?.active ? "Ativo" : "Inativo"}</strong>
-                </div>
-              </div>
+              </>
             )}
           </article>
 
           <article className={styles.card}>
             <div className={styles.cardHeader}>
-              <h2 className={styles.cardTitle}>Matrícula ativa</h2>
+              <h2 className={styles.cardTitle}>Matricula ativa</h2>
               {activeEnrollment?.status && (
                 <span
                   className={getEnrollmentStatusClassName(
@@ -122,7 +161,7 @@ export const StudentPortalPage = () => {
                   </strong>
                 </div>
                 <div className={styles.detail}>
-                  <span>Início</span>
+                  <span>Inicio</span>
                   <strong>{formatDate(activeEnrollment.startDate)}</strong>
                 </div>
                 <div className={styles.detail}>
@@ -138,7 +177,7 @@ export const StudentPortalPage = () => {
               </div>
             ) : (
               <div className={styles.empty}>
-                Nenhuma matrícula ativa encontrada.
+                Nenhuma matricula ativa encontrada.
               </div>
             )}
           </article>
@@ -177,7 +216,7 @@ export const StudentPortalPage = () => {
           </article>
 
           <article className={styles.card}>
-            <h2 className={styles.cardTitle}>Últimas presenças</h2>
+            <h2 className={styles.cardTitle}>Ultimas presencas</h2>
 
             {isLoadingPresences ? (
               <Skeleton height="180px" radius="18px" />
@@ -194,7 +233,7 @@ export const StudentPortalPage = () => {
                 ))}
               </div>
             ) : (
-              <div className={styles.empty}>Nenhuma presença encontrada.</div>
+              <div className={styles.empty}>Nenhuma presenca encontrada.</div>
             )}
           </article>
 
@@ -226,7 +265,7 @@ export const StudentPortalPage = () => {
           </article>
 
           <article className={`${styles.card} ${styles.wide}`}>
-            <h2 className={styles.cardTitle}>Histórico de matrículas</h2>
+            <h2 className={styles.cardTitle}>Historico de matriculas</h2>
 
             {isLoadingEnrollments ? (
               <Skeleton height="160px" radius="18px" />
@@ -244,7 +283,7 @@ export const StudentPortalPage = () => {
                           `Plano #${enrollment.planId}`}
                       </p>
                       <p className={styles.itemDescription}>
-                        {formatDate(enrollment.startDate)} até{" "}
+                        {formatDate(enrollment.startDate)} ate{" "}
                         {formatEnrollmentEndDate(enrollment.endDate)}
                       </p>
                     </div>
@@ -260,11 +299,21 @@ export const StudentPortalPage = () => {
                 ))}
               </div>
             ) : (
-              <div className={styles.empty}>Nenhuma matrícula encontrada.</div>
+              <div className={styles.empty}>Nenhuma matricula encontrada.</div>
             )}
           </article>
         </section>
       </div>
+
+      <ConfirmDialog
+        open={confirmDeleteOpen}
+        title="Excluir seus dados?"
+        description="Seus dados pessoais serao removidos e o historico sera preservado. Esta acao nao pode ser desfeita."
+        confirmLabel="Excluir"
+        loading={isDeletingMyPersonalData}
+        onCancel={() => setConfirmDeleteOpen(false)}
+        onConfirm={handleDeleteAccount}
+      />
     </main>
   );
 };
