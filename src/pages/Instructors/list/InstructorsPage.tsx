@@ -22,7 +22,6 @@ import {
   useGetInstructors,
 } from "@/queries/useGetInstructors";
 import { auth } from "@/utils/auth";
-import { maskEmail, maskPhone } from "@/utils/sensitiveData";
 import { useNavigate } from "@tanstack/react-router";
 import {
   BadgeCheck,
@@ -37,13 +36,11 @@ import { toast } from "sonner";
 import styles from "./InstructorsPage.module.css";
 
 const instructorColumns = [
-  { width: "20%" },
-  { width: "14%" },
-  { width: "15%" },
-  { width: "21%" },
+  { width: "34%" },
+  { width: "18%" },
+  { width: "24%" },
   { width: "14%" },
   { width: "10%" },
-  { width: "6%" },
 ];
 
 const statusOptions: { label: string; value: InstructorStatusFilter }[] = [
@@ -186,8 +183,6 @@ export const InstructorsPage = () => {
               <TableRow>
                 <TableHeaderCell>Nome</TableHeaderCell>
                 <TableHeaderCell>CREF</TableHeaderCell>
-                <TableHeaderCell>Telefone</TableHeaderCell>
-                <TableHeaderCell>E-mail</TableHeaderCell>
                 <TableHeaderCell>Especialidade</TableHeaderCell>
                 <TableHeaderCell center>Status</TableHeaderCell>
                 <TableHeaderCell center>Ações</TableHeaderCell>
@@ -195,7 +190,7 @@ export const InstructorsPage = () => {
             </TableHead>
 
             <TableBody>
-              {tableLoading && <TableSkeletonRows columns={7} />}
+              {tableLoading && <TableSkeletonRows columns={5} />}
 
               {!tableLoading &&
                 instructors.map((instructor) => (
@@ -211,8 +206,6 @@ export const InstructorsPage = () => {
                       </div>
                     </TableCell>
                     <TableCell>{instructor.cref}</TableCell>
-                    <TableCell>{maskPhone(instructor.phone)}</TableCell>
-                    <TableCell>{maskEmail(instructor.email)}</TableCell>
                     <TableCell>{instructor.specialty || "-"}</TableCell>
                     <TableCell center>
                       <span
@@ -238,7 +231,7 @@ export const InstructorsPage = () => {
 
               {!tableLoading && instructors.length === 0 && (
                 <TableEmptyState
-                  colSpan={7}
+                  colSpan={5}
                   message="Nenhum instrutor encontrado."
                 />
               )}

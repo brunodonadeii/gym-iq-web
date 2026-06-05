@@ -26,7 +26,6 @@ import {
   STUDENTS_QUERY_STALE_TIME,
   useGetStudents,
 } from "@/queries/useGetStudents";
-import { maskCpf, maskEmail, maskPhone } from "@/utils/sensitiveData";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import {
@@ -42,31 +41,26 @@ import { toast } from "sonner";
 import styles from "./StudentsPage.module.css";
 
 const studentColumns = [
-  { width: "24%" },
+  { width: "48%" },
+  { width: "18%" },
   { width: "16%" },
-  { width: "16%" },
-  { width: "22%" },
-  { width: "12%" },
-  { width: "10%" },
+  { width: "18%" },
 ];
 
 type ConfirmAction =
   | { type: "deactivate"; studentId: string; studentName: string }
   | { type: "anonymize"; studentId: string; studentName: string };
 
-const getSensitiveValue = (
-  value: string | undefined,
-  maskedValue: string,
-  anonymized: boolean,
-) => {
-  if (anonymized) {
-    return value || "-";
-  }
-
-  return maskedValue;
-};
-
 type StudentStatusFilter = "all" | "active" | "inactive";
+
+const formatDate = (value?: string | null) =>
+  value
+    ? new Date(value).toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      })
+    : "-";
 
 export const StudentsPage = () => {
   const navigate = useNavigate();
@@ -266,16 +260,14 @@ export const StudentsPage = () => {
             <TableHead>
               <TableRow>
                 <TableHeaderCell>Nome</TableHeaderCell>
-                <TableHeaderCell>CPF</TableHeaderCell>
-                <TableHeaderCell>Telefone</TableHeaderCell>
-                <TableHeaderCell>Email</TableHeaderCell>
+                <TableHeaderCell>Criado em</TableHeaderCell>
                 <TableHeaderCell center>Status</TableHeaderCell>
                 <TableHeaderCell center>Ações</TableHeaderCell>
               </TableRow>
             </TableHead>
 
             <TableBody>
-              {tableLoading && <TableSkeletonRows columns={6} />}
+              {tableLoading && <TableSkeletonRows columns={4} />}
 
               {!tableLoading &&
                 visibleStudents.map((student) => {
@@ -295,27 +287,7 @@ export const StudentsPage = () => {
                           )}
                         </div>
                       </TableCell>
-                      <TableCell>
-                        {getSensitiveValue(
-                          student.cpf,
-                          maskCpf(student.cpf),
-                          anonymized,
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {getSensitiveValue(
-                          student.phone,
-                          maskPhone(student.phone),
-                          anonymized,
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {getSensitiveValue(
-                          student.email,
-                          maskEmail(student.email),
-                          anonymized,
-                        )}
-                      </TableCell>
+                      <TableCell>{formatDate(student.createdAt)}</TableCell>
                       <TableCell center>
                         <span
                           className={`${styles.statusBadge} ${
@@ -389,7 +361,7 @@ export const StudentsPage = () => {
 
               {!tableLoading && visibleStudents.length === 0 && (
                 <TableEmptyState
-                  colSpan={6}
+                  colSpan={4}
                   message="Nenhum aluno encontrado."
                 />
               )}

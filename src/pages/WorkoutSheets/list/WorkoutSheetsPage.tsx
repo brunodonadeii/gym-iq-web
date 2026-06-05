@@ -57,9 +57,6 @@ const getWorkoutSheetId = (sheet: WorkoutSheet) => String(sheet.workoutSheetId);
 const resolveStudentName = (sheet: WorkoutSheet) =>
   sheet.student?.name ?? sheet.studentName ?? `Aluno #${sheet.studentId}`;
 
-const resolveStudentEmail = (sheet: WorkoutSheet) =>
-  sheet.student?.email ?? sheet.studentEmail ?? "";
-
 const resolveInstructorName = (sheet: WorkoutSheet) =>
   sheet.instructor?.name ??
   sheet.instructorName ??
@@ -331,11 +328,6 @@ export const WorkoutSheetsPage = () => {
                           <span className={styles.namePrimary}>
                             {resolveStudentName(sheet)}
                           </span>
-                          {resolveStudentEmail(sheet) && (
-                            <span className={styles.nameSecondary}>
-                              {resolveStudentEmail(sheet)}
-                            </span>
-                          )}
                         </div>
                       </TableCell>
                       <TableCell>{resolveInstructorName(sheet)}</TableCell>

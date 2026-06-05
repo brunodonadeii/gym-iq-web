@@ -38,14 +38,13 @@ import { toast } from "sonner";
 import styles from "./EnrollmentsPage.module.css";
 
 const enrollmentColumns = [
-  { width: "16%" },
+  { width: "22%" },
   { width: "18%" },
-  { width: "16%" },
   { width: "12%" },
-  { width: "12%" },
+  { width: "14%" },
   { width: "10%" },
+  { width: "14%" },
   { width: "10%" },
-  { width: "6%" },
 ];
 
 const statusLabels: Record<EnrollmentStatus, string> = {
@@ -408,7 +407,6 @@ export const EnrollmentsPage = () => {
             <TableHead>
               <TableRow>
                 <TableHeaderCell>Aluno</TableHeaderCell>
-                <TableHeaderCell>E-mail</TableHeaderCell>
                 <TableHeaderCell>Plano</TableHeaderCell>
                 <TableHeaderCell>Início</TableHeaderCell>
                 <TableHeaderCell>Fim</TableHeaderCell>
@@ -419,7 +417,7 @@ export const EnrollmentsPage = () => {
             </TableHead>
 
             <TableBody>
-              {tableLoading && <TableSkeletonRows columns={8} />}
+              {tableLoading && <TableSkeletonRows columns={7} />}
 
               {!tableLoading &&
                 enrollments.map((enrollment) => (
@@ -430,9 +428,6 @@ export const EnrollmentsPage = () => {
                           {resolveStudentName(enrollment)}
                         </span>
                       </div>
-                    </TableCell>
-                    <TableCell>
-                      {maskEmail(resolveStudentEmail(enrollment))}
                     </TableCell>
                     <TableCell>{resolvePlanName(enrollment)}</TableCell>
                     <TableCell>{formatDate(enrollment.startDate)}</TableCell>
@@ -462,7 +457,7 @@ export const EnrollmentsPage = () => {
 
               {!tableLoading && enrollments.length === 0 && (
                 <TableEmptyState
-                  colSpan={8}
+                  colSpan={7}
                   message="Nenhuma matrícula encontrada."
                 />
               )}

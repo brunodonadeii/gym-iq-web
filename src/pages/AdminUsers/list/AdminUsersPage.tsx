@@ -19,7 +19,6 @@ import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useDeleteAdminUser } from "@/mutations/useDeleteAdminUser";
 import type { AdminUser, AdminUserRole } from "@/pages/AdminUsers/types";
 import { useGetAdminUsers } from "@/queries/useGetAdminUsers";
-import { maskEmail } from "@/utils/sensitiveData";
 import { useNavigate } from "@tanstack/react-router";
 import { Pencil, PlusCircle, Search, Trash2 } from "lucide-react";
 import { useState } from "react";
@@ -27,12 +26,11 @@ import { toast } from "sonner";
 import styles from "./AdminUsersPage.module.css";
 
 const userColumns = [
-  { width: "28%" },
-  { width: "28%" },
+  { width: "40%" },
+  { width: "18%" },
   { width: "14%" },
-  { width: "12%" },
-  { width: "12%" },
-  { width: "6%" },
+  { width: "18%" },
+  { width: "10%" },
 ];
 
 const roleLabels: Record<AdminUserRole, string> = {
@@ -155,7 +153,6 @@ export const AdminUsersPage = () => {
             <TableHead>
               <TableRow>
                 <TableHeaderCell>Nome</TableHeaderCell>
-                <TableHeaderCell>E-mail</TableHeaderCell>
                 <TableHeaderCell>Permissão</TableHeaderCell>
                 <TableHeaderCell center>Status</TableHeaderCell>
                 <TableHeaderCell>Criado em</TableHeaderCell>
@@ -164,7 +161,7 @@ export const AdminUsersPage = () => {
             </TableHead>
 
             <TableBody>
-              {isLoading && <TableSkeletonRows columns={6} />}
+              {isLoading && <TableSkeletonRows columns={5} />}
 
               {!isLoading &&
                 users.map((user) => {
@@ -180,7 +177,6 @@ export const AdminUsersPage = () => {
                           </span>
                         </div>
                       </TableCell>
-                      <TableCell>{maskEmail(user.email)}</TableCell>
                       <TableCell>{roleLabels[user.role]}</TableCell>
                       <TableCell center>
                         <span
@@ -223,7 +219,7 @@ export const AdminUsersPage = () => {
 
               {!isLoading && users.length === 0 && (
                 <TableEmptyState
-                  colSpan={6}
+                  colSpan={5}
                   message="Nenhum usuário administrativo encontrado."
                 />
               )}
