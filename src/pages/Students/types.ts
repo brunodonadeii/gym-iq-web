@@ -18,7 +18,7 @@ export type Student = {
   lgpdAccepted: boolean;
   name: string;
   phone: string;
-  studentId: number;
+  studentId: string;
   userId: string;
   zipCode?: string | null;
 };
@@ -33,7 +33,7 @@ export type StudentCreateFormData = StudentBaseFormData & {
 };
 
 export type StudentOption = {
-  studentId: number;
+  studentId: string;
   name: string;
   email: string;
   cpf: string;

@@ -13,8 +13,8 @@ type UpdateWorkoutSheetData = {
 };
 
 const normalizeWorkoutSheet = (data: WorkoutSheetFormData) => ({
-  studentId: Number(data.studentId),
-  instructorId: Number(data.instructorId),
+  studentId: data.studentId,
+  instructorId: data.instructorId,
   name: data.name,
   goal: data.goal || undefined,
   startDate: data.startDate || undefined,

@@ -1,5 +1,5 @@
 export type Instructor = {
-  instructorId: number;
+  instructorId: string;
   userId: string;
   name: string;
   email: string;

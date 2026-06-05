@@ -3,8 +3,8 @@ export type RetentionRiskLevel = "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
 export type RetentionAlertStatus = "OPEN" | "RESOLVED";
 
 export type RetentionAlert = {
-  retentionAlertId: number;
-  studentId: number;
+  retentionAlertId: string;
+  studentId: string;
   studentName: string;
   studentEmail: string;
   riskScore: number;

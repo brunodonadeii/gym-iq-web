@@ -4,8 +4,8 @@ import type { Student } from "@/pages/Students/types";
 export type EnrollmentStatus = "ACTIVE" | "SUSPENDED" | "CANCELED";
 
 export type Enrollment = {
-  enrollmentId: number;
-  studentId: number;
+  enrollmentId: string;
+  studentId: string;
   planId: number;
   startDate: string;
   endDate: string | null;

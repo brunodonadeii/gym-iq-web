@@ -5,7 +5,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 async function createEnrollment(data: EnrollmentCreateFormData) {
   const payload = {
-    studentId: Number(data.studentId),
+    studentId: data.studentId,
     planId: Number(data.planId),
     ...(data.startDate ? { startDate: data.startDate } : {}),
   };

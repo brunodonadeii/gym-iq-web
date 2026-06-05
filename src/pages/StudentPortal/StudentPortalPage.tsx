@@ -23,7 +23,7 @@ import {
 } from "./utils";
 
 export const StudentPortalPage = () => {
-  const [expandedSheetId, setExpandedSheetId] = useState<number | null>(null);
+  const [expandedSheetId, setExpandedSheetId] = useState<string | null>(null);
   const navigate = useNavigate();
   const { data: student, isLoading: isLoadingStudent } = useGetStudentMe();
   const { data: activeEnrollment, isLoading: isLoadingActiveEnrollment } =

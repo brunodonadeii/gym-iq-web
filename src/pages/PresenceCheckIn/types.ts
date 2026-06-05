@@ -8,8 +8,8 @@ export type SelfCheckInPayload = SelfCheckInFormData & {
 };
 
 export type PresenceCheckInResponse = {
-  presenceId: number;
-  studentId: number;
+  presenceId: string;
+  studentId: string;
   studentName: string;
   studentEmail: string;
   checkInAt: string;

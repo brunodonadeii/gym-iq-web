@@ -5,7 +5,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 async function createPayment(data: PaymentCreateFormData) {
   const payload = {
-    enrollmentId: Number(data.enrollmentId),
+    enrollmentId: data.enrollmentId,
     dueDate: data.dueDate,
     ...(data.amount ? { amount: Number(data.amount) } : {}),
     ...(data.paymentMethod ? { paymentMethod: data.paymentMethod } : {}),

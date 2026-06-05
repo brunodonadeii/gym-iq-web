@@ -11,10 +11,10 @@ export type PaymentMethod =
   | "";
 
 export type Payment = {
-  id?: number;
-  paymentId?: number;
-  enrollmentId: number;
-  studentId?: number;
+  id?: string;
+  paymentId?: string;
+  enrollmentId: string;
+  studentId?: string;
   planId?: number;
   amount: number;
   dueDate: string;

@@ -1,8 +1,8 @@
 export type WorkoutSheet = {
-  workoutSheetId: number;
-  studentId: number;
+  workoutSheetId: string;
+  studentId: string;
   studentName: string;
-  instructorId: number;
+  instructorId: string;
   instructorName: string;
   name: string;
   goal?: string | null;
@@ -15,12 +15,12 @@ export type WorkoutSheet = {
   updatedAt: string;
   studentEmail?: string;
   student?: {
-    studentId?: number;
+    studentId?: string;
     name?: string;
     email?: string;
   };
   instructor?: {
-    instructorId?: number;
+    instructorId?: string;
     name?: string;
     email?: string;
   };
@@ -38,7 +38,7 @@ export type WorkoutSheetFormData = {
 };
 
 export type WorkoutSheetExercise = {
-  workoutSheetExerciseId: number;
+  workoutSheetExerciseId: string;
   exerciseId: number;
   exerciseName: string;
   muscleGroup: string;

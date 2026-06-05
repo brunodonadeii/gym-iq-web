@@ -1,6 +1,6 @@
 export type Presence = {
-  presenceId: number;
-  studentId: number;
+  presenceId: string;
+  studentId: string;
   studentName: string;
   studentEmail: string;
   checkInAt: string;
