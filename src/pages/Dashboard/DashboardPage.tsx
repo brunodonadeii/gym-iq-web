@@ -336,6 +336,24 @@ export const DashboardPage = () => {
             loading={operationsLoading}
           />
           <MetricCard
+            label="Clientes no início"
+            value={formatNumber(operations.data?.activeCustomersAtPeriodStart)}
+            icon={<Users size={18} />}
+            loading={operationsLoading}
+          />
+          <MetricCard
+            label="Clientes perdidos"
+            value={formatNumber(operations.data?.lostCustomersInPeriod)}
+            icon={<AlertTriangle size={18} />}
+            loading={operationsLoading}
+          />
+          <MetricCard
+            label="Churn rate"
+            value={formatPercent(operations.data?.churnRate)}
+            icon={<TrendingUp size={18} />}
+            loading={operationsLoading}
+          />
+          <MetricCard
             label="Matrículas ativas"
             value={formatNumber(operations.data?.activeEnrollments)}
             icon={<ClipboardList size={18} />}

@@ -52,5 +52,8 @@ export type OperationsDashboard = {
   canceledEnrollments: number;
   enrollmentsExpiringInNext7Days: number;
   newStudentsCurrentMonth: number;
+  activeCustomersAtPeriodStart: number;
+  lostCustomersInPeriod: number;
+  churnRate: number;
   generatedAt: string;
 };
