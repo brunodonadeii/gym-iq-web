@@ -1,5 +1,5 @@
-﻿import { authFetch } from "@/services/api";
-import type { ApiError } from "@/utils/apiError";
+import { authFetch } from "@/services/api";
+import { parseApiResponse, type ApiError } from "@/utils/apiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 async function refreshOverduePayments() {
@@ -10,13 +10,7 @@ async function refreshOverduePayments() {
     },
   });
 
-  const responseData = await response.json();
-
-  if (!response.ok) {
-    throw responseData;
-  }
-
-  return responseData;
+  return parseApiResponse<unknown>(response);
 }
 
 export function useRefreshOverduePayments() {

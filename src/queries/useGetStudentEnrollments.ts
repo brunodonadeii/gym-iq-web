@@ -1,5 +1,6 @@
-﻿import type { Enrollment } from "@/pages/Enrollments/types";
+import type { Enrollment } from "@/pages/Enrollments/types";
 import { authFetch } from "@/services/api";
+import { parseApiResponse } from "@/utils/apiError";
 import type { PageRequest, PageResponse } from "@/types/pagination";
 import { buildPaginationParams } from "@/utils/pagination";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
@@ -18,11 +19,7 @@ async function fetchStudentEnrollments(
     `enrollments/student/${studentId}?${buildPaginationParams(pagination)}`,
   );
 
-  if (!response.ok) {
-    throw new Error("Erro ao buscar matrículas do aluno");
-  }
-
-  return response.json();
+  return parseApiResponse<PageResponse<Enrollment>>(response, "Erro ao buscar matrículas do aluno");
 }
 
 export function useGetStudentEnrollments(

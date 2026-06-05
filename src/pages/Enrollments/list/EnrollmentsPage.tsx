@@ -1,4 +1,4 @@
-﻿import { Autocomplete } from "@/components/Autocomplete/Autocomplete";
+import { Autocomplete } from "@/components/Autocomplete/Autocomplete";
 import { Button } from "@/components/Button/Button";
 import { Dropdown, type DropdownItem } from "@/components/Dropdown/Dropdown";
 import { ListToolbar } from "@/components/ListToolbar/ListToolbar";
@@ -94,9 +94,6 @@ const resolveStudentName = (enrollment: Enrollment) =>
   enrollment.student?.name ??
   enrollment.studentName ??
   `Aluno #${enrollment.studentId}`;
-
-const resolveStudentEmail = (enrollment: Enrollment) =>
-  enrollment.student?.email ?? enrollment.studentEmail ?? "Sem e-mail";
 
 const resolvePlanName = (enrollment: Enrollment) =>
   enrollment.plan?.name ?? enrollment.planName ?? `Plano #${enrollment.planId}`;

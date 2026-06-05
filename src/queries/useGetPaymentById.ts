@@ -1,15 +1,12 @@
-﻿import type { Payment } from "@/pages/Payments/types";
+import type { Payment } from "@/pages/Payments/types";
 import { authFetch } from "@/services/api";
+import { parseApiResponse } from "@/utils/apiError";
 import { useQuery } from "@tanstack/react-query";
 
 async function fetchPayment(id: string): Promise<Payment> {
   const response = await authFetch(`payments/${id}`);
 
-  if (!response.ok) {
-    throw new Error("Erro ao buscar pagamento");
-  }
-
-  return response.json();
+  return parseApiResponse<Payment>(response, "Erro ao buscar pagamento");
 }
 
 export function useGetPaymentById(id: string, enabled = true) {

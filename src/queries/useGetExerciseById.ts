@@ -1,15 +1,12 @@
-﻿import type { Exercise } from "@/pages/Exercises/types";
+import type { Exercise } from "@/pages/Exercises/types";
 import { authFetch } from "@/services/api";
+import { parseApiResponse } from "@/utils/apiError";
 import { useQuery } from "@tanstack/react-query";
 
 async function fetchExercise(id: string): Promise<Exercise> {
   const response = await authFetch(`exercises/${id}`);
 
-  if (!response.ok) {
-    throw new Error("Erro ao buscar exercício");
-  }
-
-  return response.json();
+  return parseApiResponse<Exercise>(response, "Erro ao buscar exercício");
 }
 
 export function useGetExerciseById(id?: string) {

@@ -1,5 +1,6 @@
-﻿import type { RetentionAlert } from "@/pages/Dashboard/types";
+import type { RetentionAlert } from "@/pages/Dashboard/types";
 import { authFetch } from "@/services/api";
+import { parseApiResponse } from "@/utils/apiError";
 import type { PageRequest, PageResponse } from "@/types/pagination";
 import { buildPaginationParams } from "@/utils/pagination";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
@@ -18,11 +19,7 @@ async function fetchOpenRetentionAlerts(
     `retention-alerts/open?${buildPaginationParams(pagination)}`,
   );
 
-  if (!response.ok) {
-    throw new Error("Erro ao buscar alertas de retenção abertos");
-  }
-
-  return response.json();
+  return parseApiResponse<PageResponse<RetentionAlert>>(response, "Erro ao buscar alertas de retenção abertos");
 }
 
 export function useGetOpenRetentionAlerts(

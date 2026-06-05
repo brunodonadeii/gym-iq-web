@@ -1,6 +1,6 @@
-﻿import type { Plan } from "@/pages/Plans/types";
+import type { Plan } from "@/pages/Plans/types";
 import { authFetch } from "@/services/api";
-import type { ApiError } from "@/utils/apiError";
+import { parseApiResponse, type ApiError } from "@/utils/apiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 
@@ -9,13 +9,7 @@ async function deactivatePlan({ id }: { id: string }) {
     method: "PATCH",
   });
 
-  const responseData = response.status === 204 ? null : await response.json();
-
-  if (!response.ok) {
-    throw responseData;
-  }
-
-  return responseData;
+  return parseApiResponse<Plan | null>(response);
 }
 
 export function useDeactivatePlan() {

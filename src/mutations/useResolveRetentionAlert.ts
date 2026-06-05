@@ -1,21 +1,15 @@
-﻿import type { RetentionAlert } from "@/pages/Dashboard/types";
+import type { RetentionAlert } from "@/pages/Dashboard/types";
 import { authFetch } from "@/services/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { dashboardKeys, retentionAlertKeys } from "@/queries/dashboardKeys";
-import type { ApiError } from "@/utils/apiError";
+import { parseApiResponse, type ApiError } from "@/utils/apiError";
 
 async function resolveRetentionAlert({ id }: { id: string }) {
   const response = await authFetch(`retention-alerts/${id}/resolve`, {
     method: "PATCH",
   });
 
-  const responseData = response.status === 204 ? null : await response.json();
-
-  if (!response.ok) {
-    throw responseData;
-  }
-
-  return responseData;
+  return parseApiResponse<RetentionAlert | null>(response);
 }
 
 export function useResolveRetentionAlert() {

@@ -1,9 +1,9 @@
-﻿import type {
+import type {
   Instructor,
   InstructorCreateFormData,
 } from "@/pages/Instructors/types";
 import { authFetch } from "@/services/api";
-import type { ApiError } from "@/utils/apiError";
+import { parseApiResponse, type ApiError } from "@/utils/apiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 async function createInstructor(data: InstructorCreateFormData) {
@@ -18,13 +18,7 @@ async function createInstructor(data: InstructorCreateFormData) {
     }),
   });
 
-  const responseData = await response.json();
-
-  if (!response.ok) {
-    throw responseData;
-  }
-
-  return responseData;
+  return parseApiResponse<Instructor>(response);
 }
 
 export function useCreateInstructor() {

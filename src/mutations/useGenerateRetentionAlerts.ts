@@ -1,7 +1,7 @@
-﻿import { authFetch } from "@/services/api";
+import { authFetch } from "@/services/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { dashboardKeys, retentionAlertKeys } from "@/queries/dashboardKeys";
-import type { ApiError } from "@/utils/apiError";
+import { parseApiResponse, type ApiError } from "@/utils/apiError";
 
 async function generateRetentionAlerts() {
   const response = await authFetch(
@@ -11,13 +11,7 @@ async function generateRetentionAlerts() {
     },
   );
 
-  const responseData = response.status === 204 ? null : await response.json();
-
-  if (!response.ok) {
-    throw responseData;
-  }
-
-  return responseData;
+  return parseApiResponse<unknown>(response);
 }
 
 export function useGenerateRetentionAlerts() {

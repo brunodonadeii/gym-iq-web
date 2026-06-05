@@ -1,5 +1,6 @@
-﻿import type { WorkoutSheetExercise } from "@/pages/WorkoutSheets/types";
+import type { WorkoutSheetExercise } from "@/pages/WorkoutSheets/types";
 import { authFetch } from "@/services/api";
+import { parseApiResponse } from "@/utils/apiError";
 import type { PageRequest, PageResponse } from "@/types/pagination";
 import { buildPaginationParams } from "@/utils/pagination";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
@@ -15,11 +16,10 @@ async function fetchWorkoutSheetExercises(
     })}`,
   );
 
-  if (!response.ok) {
-    throw new Error("Erro ao buscar exercícios da ficha");
-  }
-
-  return response.json();
+  return parseApiResponse<PageResponse<WorkoutSheetExercise>>(
+    response,
+    "Erro ao buscar exercícios da ficha",
+  );
 }
 
 export function useGetWorkoutSheetExercises(

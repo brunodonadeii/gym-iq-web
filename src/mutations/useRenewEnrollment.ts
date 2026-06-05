@@ -1,6 +1,6 @@
-﻿import type { Enrollment } from "@/pages/Enrollments/types";
+import type { Enrollment } from "@/pages/Enrollments/types";
 import { authFetch } from "@/services/api";
-import type { ApiError } from "@/utils/apiError";
+import { parseApiResponse, type ApiError } from "@/utils/apiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 
@@ -20,13 +20,7 @@ async function renewEnrollment({ id, newPlanId }: RenewEnrollmentData) {
     },
   );
 
-  const responseData = await response.json();
-
-  if (!response.ok) {
-    throw responseData;
-  }
-
-  return responseData;
+  return parseApiResponse<Enrollment>(response);
 }
 
 export function useRenewEnrollment() {

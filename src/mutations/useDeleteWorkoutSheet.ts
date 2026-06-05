@@ -1,5 +1,5 @@
-﻿import { authFetch } from "@/services/api";
-import type { ApiError } from "@/utils/apiError";
+import { authFetch } from "@/services/api";
+import { parseApiResponse, type ApiError } from "@/utils/apiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 type DeleteWorkoutSheetData = {
@@ -10,13 +10,8 @@ async function deleteWorkoutSheet({ id }: DeleteWorkoutSheetData) {
   const response = await authFetch(`workout-sheets/${id}`, {
     method: "DELETE",
   });
-  const responseData = response.status === 204 ? null : await response.json();
 
-  if (!response.ok) {
-    throw responseData;
-  }
-
-  return responseData;
+  return parseApiResponse<unknown>(response);
 }
 
 export function useDeleteWorkoutSheet() {

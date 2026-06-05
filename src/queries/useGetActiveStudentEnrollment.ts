@@ -1,5 +1,6 @@
-﻿import type { Enrollment } from "@/pages/Enrollments/types";
+import type { Enrollment } from "@/pages/Enrollments/types";
 import { authFetch } from "@/services/api";
+import { parseApiResponse } from "@/utils/apiError";
 import { useQuery } from "@tanstack/react-query";
 
 async function fetchActiveStudentEnrollment(
@@ -11,11 +12,10 @@ async function fetchActiveStudentEnrollment(
     return null;
   }
 
-  if (!response.ok) {
-    throw new Error("Erro ao buscar matrícula ativa do aluno");
-  }
-
-  return response.json();
+  return parseApiResponse<Enrollment | null>(
+    response,
+    "Erro ao buscar matrícula ativa do aluno",
+  );
 }
 
 export function useGetActiveStudentEnrollment(

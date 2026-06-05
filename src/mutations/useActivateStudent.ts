@@ -1,6 +1,6 @@
-﻿import { invalidateStudentRelatedQueries } from "@/mutations/studentQueryInvalidation";
+import { invalidateStudentRelatedQueries } from "@/mutations/studentQueryInvalidation";
 import { authFetch } from "@/services/api";
-import type { ApiError } from "@/utils/apiError";
+import { parseApiResponse, type ApiError } from "@/utils/apiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 async function activateStudent({ id }: { id: string }) {
@@ -8,15 +8,7 @@ async function activateStudent({ id }: { id: string }) {
     method: "PATCH",
   });
 
-  if (!response.ok) {
-    throw await response.json();
-  }
-
-  if (response.status === 204) {
-    return null;
-  }
-
-  return response.json();
+  return parseApiResponse<unknown>(response);
 }
 
 export function useActivateStudent() {

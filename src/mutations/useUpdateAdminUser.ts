@@ -1,9 +1,9 @@
-﻿import type {
+import type {
   AdminUser,
   AdminUserUpdateFormData,
 } from "@/pages/AdminUsers/types";
 import { authFetch } from "@/services/api";
-import type { ApiError } from "@/utils/apiError";
+import { parseApiResponse, type ApiError } from "@/utils/apiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 type UpdateAdminUserVariables = {
@@ -17,13 +17,7 @@ async function updateAdminUser({ id, data }: UpdateAdminUserVariables) {
     body: JSON.stringify(data),
   });
 
-  const responseData = await response.json();
-
-  if (!response.ok) {
-    throw responseData;
-  }
-
-  return responseData;
+  return parseApiResponse<AdminUser>(response);
 }
 
 export function useUpdateAdminUser() {

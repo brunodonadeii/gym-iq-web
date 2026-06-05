@@ -1,14 +1,17 @@
-﻿import { Button } from "@/components/Button/Button";
+import { Button } from "@/components/Button/Button";
 import { Form } from "@/components/Form/Form";
 import { TextField } from "@/components/TextField/TextField";
 import { useFormInputs } from "@/hooks/useFormInputs";
 import { useUpdateInstructor } from "@/mutations/useUpdateInstructor";
 import { SpecialtySelector } from "@/pages/Instructors/components/SpecialtySelector";
-import type { InstructorUpdateFormData } from "@/pages/Instructors/types";
+import type {
+  Instructor,
+  InstructorUpdateFormData,
+} from "@/pages/Instructors/types";
 import { useGetInstructorById } from "@/queries/useGetInstructorById";
 import { auth } from "@/utils/auth";
 import { useNavigate, useParams } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import styles from "./InstructorsEdit.module.css";
 
@@ -30,29 +33,39 @@ const formatDate = (value?: string) =>
       })
     : "Nao informado";
 
-export const InstructorsEdit = () => {
+const getInitialFormData = (
+  details?: Instructor,
+): InstructorUpdateFormData =>
+  details
+    ? {
+        name: details.name,
+        email: details.email,
+        cref: details.cref,
+        phone: details.phone,
+        specialty: details.specialty ?? "",
+        lgpdAccepted: details.lgpdAccepted,
+      }
+    : EMPTY_FORM;
+
+type InstructorsEditFormProps = {
+  instructorId: string;
+  details?: Instructor;
+  initialData: InstructorUpdateFormData;
+  isLoading: boolean;
+};
+
+const InstructorsEditForm = ({
+  instructorId,
+  details,
+  initialData,
+  isLoading,
+}: InstructorsEditFormProps) => {
   const isAdmin = auth.hasAnyRole(["ADMIN"]);
-  const params = useParams({ strict: false });
-  const instructorId = params.instructorId;
   const navigate = useNavigate();
-  const [data, setData] = useState<InstructorUpdateFormData>(EMPTY_FORM);
+  const [data, setData] = useState<InstructorUpdateFormData>(initialData);
   const [errors, setErrors] = useState<Partial<Record<string, string>>>({});
   const { set, setMasked } = useFormInputs(setData);
-  const { data: details, isLoading } = useGetInstructorById(instructorId);
   const { mutate, isPending } = useUpdateInstructor();
-
-  useEffect(() => {
-    if (!details) return;
-
-    setData({
-      name: details.name,
-      email: details.email,
-      cref: details.cref,
-      phone: details.phone,
-      specialty: details.specialty ?? "",
-      lgpdAccepted: details.lgpdAccepted,
-    });
-  }, [details]);
 
   const validate = () => {
     const nextErrors: Partial<Record<string, string>> = {};
@@ -204,6 +217,22 @@ export const InstructorsEdit = () => {
       </div>
 
     </Form>
+  );
+};
+
+export const InstructorsEdit = () => {
+  const params = useParams({ strict: false });
+  const instructorId = params.instructorId;
+  const { data: details, isLoading } = useGetInstructorById(instructorId);
+
+  return (
+    <InstructorsEditForm
+      key={details?.instructorId ?? "loading"}
+      instructorId={instructorId}
+      details={details}
+      initialData={getInitialFormData(details)}
+      isLoading={isLoading}
+    />
   );
 };
 

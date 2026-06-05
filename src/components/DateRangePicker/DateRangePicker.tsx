@@ -1,4 +1,4 @@
-﻿import { Button } from "@/components/Button/Button";
+import { Button } from "@/components/Button/Button";
 import { TextField } from "@/components/TextField/TextField";
 import {
   DATE_RANGE_PRESETS,
@@ -40,13 +40,6 @@ export const DateRangePicker = ({
     () => getMatchingDateRangePreset(value),
     [value],
   );
-
-  useEffect(() => {
-    if (!open) {
-      setDraftRange(value);
-      setCustomMode(activePreset === "custom");
-    }
-  }, [activePreset, open, value]);
 
   useEffect(() => {
     if (!open) return;

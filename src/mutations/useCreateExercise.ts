@@ -1,6 +1,6 @@
-﻿import type { Exercise, ExerciseFormData } from "@/pages/Exercises/types";
+import type { Exercise, ExerciseFormData } from "@/pages/Exercises/types";
 import { authFetch } from "@/services/api";
-import type { ApiError } from "@/utils/apiError";
+import { parseApiResponse, type ApiError } from "@/utils/apiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 async function createExercise({ data }: { data: ExerciseFormData }) {
@@ -12,13 +12,8 @@ async function createExercise({ data }: { data: ExerciseFormData }) {
       description: data.description || undefined,
     }),
   });
-  const responseData = await response.json();
 
-  if (!response.ok) {
-    throw responseData;
-  }
-
-  return responseData;
+  return parseApiResponse<Exercise>(response);
 }
 
 export function useCreateExercise() {

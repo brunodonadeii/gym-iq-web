@@ -1,15 +1,12 @@
-﻿import type { Student } from "@/pages/Students/types";
+import type { Student } from "@/pages/Students/types";
 import { authFetch } from "@/services/api";
+import { parseApiResponse } from "@/utils/apiError";
 import { useQuery } from "@tanstack/react-query";
 
 async function fetchStudent(id: string): Promise<Student> {
   const response = await authFetch(`students/${id}`);
 
-  if (!response.ok) {
-    throw new Error("Erro ao buscar alunos");
-  }
-
-  return response.json();
+  return parseApiResponse<Student>(response, "Erro ao buscar alunos");
 }
 
 export function useGetStudentById(id: string) {

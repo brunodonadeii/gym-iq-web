@@ -1,16 +1,13 @@
-﻿import type { StudentOption } from "@/pages/Students/types";
+import type { StudentOption } from "@/pages/Students/types";
 import { authFetch } from "@/services/api";
+import { parseApiResponse } from "@/utils/apiError";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 async function fetchStudentOptions(search: string): Promise<StudentOption[]> {
   const query = search ? `?q=${encodeURIComponent(search)}` : "";
   const response = await authFetch(`students/options${query}`);
 
-  if (!response.ok) {
-    throw new Error("Erro ao buscar opções de alunos");
-  }
-
-  return response.json();
+  return parseApiResponse<StudentOption[]>(response, "Erro ao buscar opções de alunos");
 }
 
 export function useGetStudentOptions(search = "", enabled = true) {

@@ -1,6 +1,6 @@
-﻿import type { Payment, PaymentCreateFormData } from "@/pages/Payments/types";
+import type { Payment, PaymentCreateFormData } from "@/pages/Payments/types";
 import { authFetch } from "@/services/api";
-import type { ApiError } from "@/utils/apiError";
+import { parseApiResponse, type ApiError } from "@/utils/apiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 async function createPayment(data: PaymentCreateFormData) {
@@ -20,13 +20,7 @@ async function createPayment(data: PaymentCreateFormData) {
     body: JSON.stringify(payload),
   });
 
-  const responseData = await response.json();
-
-  if (!response.ok) {
-    throw responseData;
-  }
-
-  return responseData;
+  return parseApiResponse<Payment>(response);
 }
 
 export function useCreatePayment() {

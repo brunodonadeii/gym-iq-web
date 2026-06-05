@@ -1,9 +1,9 @@
-﻿import type {
+import type {
   WorkoutSheetExercise,
   WorkoutSheetExerciseFormData,
 } from "@/pages/WorkoutSheets/types";
 import { authFetch } from "@/services/api";
-import type { ApiError } from "@/utils/apiError";
+import { parseApiResponse, type ApiError } from "@/utils/apiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 type UpdateWorkoutSheetExerciseData = {
@@ -31,13 +31,8 @@ async function updateWorkoutSheetExercise({
     method: "PUT",
     body: JSON.stringify(normalizeExercise(data)),
   });
-  const responseData = await response.json();
 
-  if (!response.ok) {
-    throw responseData;
-  }
-
-  return responseData;
+  return parseApiResponse<WorkoutSheetExercise>(response);
 }
 
 export function useUpdateWorkoutSheetExercise() {

@@ -1,13 +1,13 @@
-﻿import { Button } from "@/components/Button/Button";
+import { Button } from "@/components/Button/Button";
 import { Form } from "@/components/Form/Form";
 import { TextField } from "@/components/TextField/TextField";
 import { useFormInputs } from "@/hooks/useFormInputs";
 import { useUpdatePlan } from "@/mutations/useUpdatePlan";
-import type { PlanFormData } from "@/pages/Plans/types";
+import type { Plan, PlanFormData } from "@/pages/Plans/types";
 import { useGetPlanById } from "@/queries/useGetPlanById";
 import { formatCurrencyInput, parseCurrencyInput } from "@/utils/currency";
 import { useNavigate, useParams } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import styles from "./PlansEdit.module.css";
 
@@ -18,26 +18,32 @@ const EMPTY_FORM: PlanFormData = {
   monthlyPrice: 0,
 };
 
-export const PlansEdit = () => {
-  const params = useParams({ strict: false });
-  const planId = params.planId;
-  const [data, setData] = useState<PlanFormData>(EMPTY_FORM);
+const getInitialFormData = (details?: Plan): PlanFormData =>
+  details
+    ? {
+        name: details.name,
+        description: details.description,
+        monthlyPrice: details.monthlyPrice,
+        durationMonths: details.durationMonths,
+      }
+    : EMPTY_FORM;
+
+type PlansEditFormProps = {
+  planId: string;
+  initialData: PlanFormData;
+  isLoading: boolean;
+};
+
+const PlansEditForm = ({
+  planId,
+  initialData,
+  isLoading,
+}: PlansEditFormProps) => {
+  const [data, setData] = useState<PlanFormData>(initialData);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const { set } = useFormInputs(setData);
   const { mutate: mutateUpdate, isPending } = useUpdatePlan();
-  const { data: details, isLoading } = useGetPlanById(planId);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!details) return;
-
-    setData({
-      name: details.name,
-      description: details.description,
-      monthlyPrice: details.monthlyPrice,
-      durationMonths: details.durationMonths,
-    });
-  }, [details]);
 
   const validate = () => {
     const nextErrors: Record<string, string> = {};
@@ -48,7 +54,7 @@ export const PlansEdit = () => {
       nextErrors.monthlyPrice = "Informe um valor mensal maior que zero.";
     }
     if (!data.durationMonths || Number(data.durationMonths) <= 0) {
-      nextErrors.durationMonths = "Informe uma dura��o maior que zero.";
+      nextErrors.durationMonths = "Informe uma duracao maior que zero.";
     }
 
     setErrors(nextErrors);
@@ -81,7 +87,7 @@ export const PlansEdit = () => {
   return (
     <Form
       title="Dados do plano"
-      description="Informa��es base para identificar e editar um plano."
+      description="Informações base para identificar e editar um plano."
       loading={isLoading}
       actions={
         <>
@@ -143,7 +149,7 @@ export const PlansEdit = () => {
           required
         />
         <TextField
-          label="Dura��o em meses"
+          label="Duração em meses"
           id="durationMonths"
           value={data.durationMonths}
           onChange={(event) => {
@@ -155,6 +161,21 @@ export const PlansEdit = () => {
         />
       </div>
     </Form>
+  );
+};
+
+export const PlansEdit = () => {
+  const params = useParams({ strict: false });
+  const planId = params.planId;
+  const { data: details, isLoading } = useGetPlanById(planId);
+
+  return (
+    <PlansEditForm
+      key={details?.planId ?? "loading"}
+      planId={planId}
+      initialData={getInitialFormData(details)}
+      isLoading={isLoading}
+    />
   );
 };
 

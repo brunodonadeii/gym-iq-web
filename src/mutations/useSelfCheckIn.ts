@@ -1,11 +1,10 @@
-﻿import type {
+import type {
   PresenceCheckInResponse,
   SelfCheckInPayload,
 } from "@/pages/PresenceCheckIn/types";
-import type { ApiError } from "@/utils/apiError";
+import { parseApiResponse, type ApiError } from "@/utils/apiError";
 import { buildApiUrl } from "@/services/apiUrl";
 import { useMutation } from "@tanstack/react-query";
-
 
 async function selfCheckIn(payload: SelfCheckInPayload) {
   const response = await fetch(buildApiUrl("presences/self-check-in"), {
@@ -16,13 +15,7 @@ async function selfCheckIn(payload: SelfCheckInPayload) {
     body: JSON.stringify(payload),
   });
 
-  const responseData = await response.json().catch(() => ({}));
-
-  if (!response.ok) {
-    throw responseData;
-  }
-
-  return responseData;
+  return parseApiResponse<PresenceCheckInResponse>(response);
 }
 
 export function useSelfCheckIn() {

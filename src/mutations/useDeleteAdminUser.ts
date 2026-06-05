@@ -1,5 +1,5 @@
-﻿import { authFetch } from "@/services/api";
-import type { ApiError } from "@/utils/apiError";
+import { authFetch } from "@/services/api";
+import { parseApiVoidResponse, type ApiError } from "@/utils/apiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 async function deleteAdminUser(id: string) {
@@ -7,10 +7,7 @@ async function deleteAdminUser(id: string) {
     method: "DELETE",
   });
 
-  if (!response.ok) {
-    const responseData = await response.json();
-    throw responseData;
-  }
+  return parseApiVoidResponse(response);
 }
 
 export function useDeleteAdminUser() {

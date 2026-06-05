@@ -1,15 +1,12 @@
-﻿import type { WorkoutSheet } from "@/pages/WorkoutSheets/types";
+import type { WorkoutSheet } from "@/pages/WorkoutSheets/types";
 import { authFetch } from "@/services/api";
+import { parseApiResponse } from "@/utils/apiError";
 import { useQuery } from "@tanstack/react-query";
 
 async function fetchWorkoutSheet(id: string): Promise<WorkoutSheet> {
   const response = await authFetch(`workout-sheets/${id}`);
 
-  if (!response.ok) {
-    throw new Error("Erro ao buscar ficha de treino");
-  }
-
-  return response.json();
+  return parseApiResponse<WorkoutSheet>(response, "Erro ao buscar ficha de treino");
 }
 
 export function useGetWorkoutSheetById(id?: string) {

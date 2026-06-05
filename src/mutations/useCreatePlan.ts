@@ -1,6 +1,6 @@
-﻿import type { Plan, PlanFormData } from "@/pages/Plans/types";
+import type { Plan, PlanFormData } from "@/pages/Plans/types";
 import { authFetch } from "@/services/api";
-import type { ApiError } from "@/utils/apiError";
+import { parseApiResponse, type ApiError } from "@/utils/apiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface CreatePlanData {
@@ -16,13 +16,7 @@ async function createPlan({ data }: CreatePlanData) {
     body: JSON.stringify(data),
   });
 
-  const responseData = await response.json();
-
-  if (!response.ok) {
-    throw responseData;
-  }
-
-  return responseData;
+  return parseApiResponse<Plan>(response);
 }
 
 export function useCreatePlan() {

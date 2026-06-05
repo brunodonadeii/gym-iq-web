@@ -1,5 +1,6 @@
-﻿import type { Instructor } from "@/pages/Instructors/types";
+import type { Instructor } from "@/pages/Instructors/types";
 import { authFetch } from "@/services/api";
+import { parseApiResponse } from "@/utils/apiError";
 import type { PageRequest, PageResponse } from "@/types/pagination";
 import { buildPaginationParams } from "@/utils/pagination";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
@@ -24,11 +25,10 @@ async function fetchInstructors(
   const url = search ? `instructors/search?${query}` : `instructors?${query}`;
   const response = await authFetch(url);
 
-  if (!response.ok) {
-    throw new Error("Erro ao buscar instrutores");
-  }
-
-  return response.json();
+  return parseApiResponse<PageResponse<Instructor>>(
+    response,
+    "Erro ao buscar instrutores",
+  );
 }
 
 export function useGetInstructors(

@@ -1,9 +1,9 @@
-﻿import type {
+import type {
   Instructor,
   InstructorUpdateFormData,
 } from "@/pages/Instructors/types";
 import { authFetch } from "@/services/api";
-import type { ApiError } from "@/utils/apiError";
+import { parseApiResponse, type ApiError } from "@/utils/apiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface UpdateInstructorData {
@@ -29,13 +29,7 @@ async function updateInstructor({ data, id }: UpdateInstructorData) {
     body: JSON.stringify(payload),
   });
 
-  const responseData = await response.json();
-
-  if (!response.ok) {
-    throw responseData;
-  }
-
-  return responseData;
+  return parseApiResponse<Instructor>(response);
 }
 
 export function useUpdateInstructor() {
