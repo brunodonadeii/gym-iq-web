@@ -40,15 +40,15 @@ async function fetchPayments(
   pagination: PageRequest,
 ): Promise<PageResponse<Payment>> {
   const { status, ...paymentsQuery } = query;
+  const resolvedStatus = resolveStatus(paymentsQuery, status);
   const request = {
     ...pagination,
     sort: pagination.sort ?? getDefaultSort(),
-    ...(resolveStatus(paymentsQuery, status)
-      ? { status: resolveStatus(paymentsQuery, status) }
-      : {}),
   };
   const response = await authFetch(
-    `${getPaymentsUrl(paymentsQuery)}?${buildPaginationParams(request)}`,
+    `${getPaymentsUrl(paymentsQuery)}?${buildPaginationParams(request, {
+      status: resolvedStatus,
+    })}`,
   );
 
   return parseApiResponse(response, "Erro ao buscar pagamentos");

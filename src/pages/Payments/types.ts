@@ -1,7 +1,7 @@
 ﻿import type { Enrollment } from "@/pages/Enrollments/types";
 import type { Student } from "@/pages/Students/types";
 
-export type PaymentStatus = "PENDING" | "PAID" | "OVERDUE";
+export type PaymentStatus = "PENDING" | "PAID" | "OVERDUE" | "CANCELED";
 export type PaymentMethod =
   | "PIX"
   | "CASH"

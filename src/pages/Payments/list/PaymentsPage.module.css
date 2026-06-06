@@ -186,6 +186,11 @@
   color: #b91c1c;
 }
 
+.statusCANCELED {
+  background: rgba(100, 116, 139, 0.16);
+  color: #475569;
+}
+
 @media (max-width: 1080px) {
   .hero {
     grid-template-columns: 1fr;

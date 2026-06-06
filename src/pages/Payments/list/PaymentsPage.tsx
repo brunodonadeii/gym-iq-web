@@ -55,6 +55,7 @@ const statusLabels: Record<PaymentStatus, string> = {
   PENDING: "Pendente",
   PAID: "Pago",
   OVERDUE: "Atrasado",
+  CANCELED: "Cancelado",
 };
 
 const paymentMethodLabels: Record<string, string> = {
@@ -279,7 +280,7 @@ export const PaymentsPage = () => {
     const paymentId = getPaymentId(payment);
     const busy = isPayingPayment || isUpdatingStatus;
 
-    if (payment.status === "PAID") {
+    if (payment.status === "PAID" || payment.status === "CANCELED") {
       return [
         {
           label: "Apenas visualizar",
@@ -354,6 +355,7 @@ export const PaymentsPage = () => {
               { label: "Pendente", value: "PENDING" },
               { label: "Pago", value: "PAID" },
               { label: "Atrasado", value: "OVERDUE" },
+              { label: "Cancelado", value: "CANCELED" },
             ]}
             containerProps={{ className: styles.filterField }}
           />

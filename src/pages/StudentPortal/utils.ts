@@ -12,6 +12,7 @@ export const paymentStatusLabels: Record<PaymentStatus, string> = {
   PENDING: "Pendente",
   PAID: "Pago",
   OVERDUE: "Atrasado",
+  CANCELED: "Cancelado",
 };
 
 export const formatDate = (value?: string | null) =>
@@ -90,6 +91,7 @@ export const getPaymentStatusClassName = (
 ) => {
   if (status === "PAID") return `${styles.badge} ${styles.successBadge}`;
   if (status === "OVERDUE") return `${styles.badge} ${styles.dangerBadge}`;
+  if (status === "CANCELED") return `${styles.badge} ${styles.dangerBadge}`;
 
   return `${styles.badge} ${styles.warningBadge}`;
 };

@@ -1,5 +1,5 @@
 ﻿import { Button } from "@/components/Button/Button";
-import { Link } from "@tanstack/react-router";
+import { Link, Navigate, useRouterState } from "@tanstack/react-router";
 import type { ErrorComponentProps } from "@tanstack/react-router";
 import styles from "./RouteFallback.module.css";
 
@@ -35,6 +35,18 @@ export const GlobalErrorFallback = ({ error }: ErrorComponentProps) => {
 };
 
 export const GlobalNotFoundFallback = () => {
+  const pathname = useRouterState({
+    select: (state) => state.location.pathname,
+  });
+
+  if (pathname.startsWith("/dashboard/")) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  if (pathname.startsWith("/audit-logs/")) {
+    return <Navigate to="/audit-logs" replace />;
+  }
+
   return (
     <main className={styles.page}>
       <section className={styles.card}>
