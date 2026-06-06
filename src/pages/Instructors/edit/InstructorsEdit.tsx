@@ -7,7 +7,6 @@ import { useFormInputs } from "@/hooks/useFormInputs";
 import { useUpdateInstructor } from "@/mutations/useUpdateInstructor";
 import {
   formatCrefInput,
-  getInstructorApiFieldErrors,
   INSTRUCTOR_LIMITS,
   type InstructorFormErrors,
   validateInstructorUpdate,
@@ -22,6 +21,7 @@ import type {
 } from "@/pages/Instructors/types";
 import { useGetInstructorById } from "@/queries/useGetInstructorById";
 import { auth } from "@/utils/auth";
+import { getApiFieldErrors } from "@/utils/apiError";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -35,6 +35,15 @@ const EMPTY_FORM: InstructorUpdateFormData = {
   specialty: "",
   lgpdAccepted: false,
 };
+
+const INSTRUCTOR_FIELDS = [
+  "name",
+  "email",
+  "cref",
+  "phone",
+  "specialty",
+  "lgpdAccepted",
+] as const;
 
 const formatDate = (value?: string) =>
   value
@@ -123,7 +132,7 @@ const InstructorsEditForm = ({
           toast.success("Instrutor editado com sucesso!");
         },
         onError: (e) => {
-          const fieldErrors = getInstructorApiFieldErrors(e);
+          const fieldErrors = getApiFieldErrors(e, INSTRUCTOR_FIELDS);
 
           if (fieldErrors) {
             setErrors(fieldErrors);

@@ -14,6 +14,7 @@ import { useGetInstructors } from "@/queries/useGetInstructors";
 import { useGetMyInstructor } from "@/queries/useGetMyInstructor";
 import { useGetStudentOptions } from "@/queries/useGetStudentOptions";
 import { auth } from "@/utils/auth";
+import { getApiFieldErrors } from "@/utils/apiError";
 import { useNavigate } from "@tanstack/react-router";
 import { PlusCircle, Trash2 } from "lucide-react";
 import { useState } from "react";
@@ -268,6 +269,18 @@ export const WorkoutSheetsCreate = () => {
           navigate({ to: "/workout-sheets" });
         },
         onError: (e) => {
+          const fieldErrors = getApiFieldErrors(e, [
+            "studentId",
+            "instructorId",
+            "name",
+          ] as const);
+
+          if (fieldErrors) {
+            setErrors(fieldErrors);
+            focusFirstError(fieldErrors);
+            return;
+          }
+
           toast.error(
             <div>
               <strong>{e?.error ?? "Erro"}</strong>

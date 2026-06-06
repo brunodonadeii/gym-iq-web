@@ -6,7 +6,6 @@ import { useFormInputs } from "@/hooks/useFormInputs";
 import { useCreateInstructor } from "@/mutations/useCreateInstructor";
 import {
   formatCrefInput,
-  getInstructorApiFieldErrors,
   INSTRUCTOR_LIMITS,
   type InstructorFormErrors,
   validateInstructorCreate,
@@ -14,6 +13,7 @@ import {
 import { INSTRUCTOR_SPECIALTY_OPTIONS } from "@/pages/Instructors/specialties";
 import type { InstructorCreateFormData } from "@/pages/Instructors/types";
 import { useNavigate } from "@tanstack/react-router";
+import { getApiFieldErrors } from "@/utils/apiError";
 import { useState } from "react";
 import { toast } from "sonner";
 import styles from "./InstructorsCreate.module.css";
@@ -27,6 +27,16 @@ const EMPTY_FORM: InstructorCreateFormData = {
   specialty: "",
   lgpdAccepted: false,
 };
+
+const INSTRUCTOR_FIELDS = [
+  "name",
+  "email",
+  "password",
+  "cref",
+  "phone",
+  "specialty",
+  "lgpdAccepted",
+] as const;
 
 export const InstructorsCreate = () => {
   const navigate = useNavigate();
@@ -84,7 +94,7 @@ export const InstructorsCreate = () => {
           navigate({ to: "/instructors" });
         },
         onError: (e) => {
-          const fieldErrors = getInstructorApiFieldErrors(e);
+          const fieldErrors = getApiFieldErrors(e, INSTRUCTOR_FIELDS);
 
           if (fieldErrors) {
             setErrors(fieldErrors);

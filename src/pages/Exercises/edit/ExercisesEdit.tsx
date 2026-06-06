@@ -6,6 +6,7 @@ import { useFormInputs } from "@/hooks/useFormInputs";
 import { useUpdateExercise } from "@/mutations/useUpdateExercise";
 import type { Exercise, ExerciseFormData } from "@/pages/Exercises/types";
 import { useGetExerciseById } from "@/queries/useGetExerciseById";
+import { getApiFieldErrors } from "@/utils/apiError";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -16,6 +17,8 @@ const EMPTY_FORM: ExerciseFormData = {
   muscleGroup: "",
   description: "",
 };
+
+const EXERCISE_FIELDS = ["name", "muscleGroup", "description"] as const;
 
 const mapExerciseToForm = (details?: Exercise): ExerciseFormData => ({
   name: details?.name ?? "",
@@ -63,6 +66,12 @@ const ExercisesEditForm = ({
           navigate({ to: "/exercises" });
         },
         onError: (e) => {
+          const fieldErrors = getApiFieldErrors(e, EXERCISE_FIELDS);
+          if (fieldErrors) {
+            setErrors(fieldErrors);
+            return;
+          }
+
           toast.error(
             <div>
               <strong>{e?.error ?? "Erro"}</strong>

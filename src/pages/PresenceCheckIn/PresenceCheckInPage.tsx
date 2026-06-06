@@ -5,7 +5,7 @@ import type {
   PresenceCheckInResponse,
   SelfCheckInFormData,
 } from "@/pages/PresenceCheckIn/types";
-import { normalizeApiError } from "@/utils/apiError";
+import { getApiFieldErrors, normalizeApiError } from "@/utils/apiError";
 import { AlertCircle, CheckCircle2, LogIn, RotateCcw } from "lucide-react";
 import type { FormEvent } from "react";
 import { useState } from "react";
@@ -33,12 +33,16 @@ export const PresenceCheckInPage = () => {
     null,
   );
   const [errorMessage, setErrorMessage] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<
+    Partial<Record<keyof SelfCheckInFormData, string>>
+  >({});
   const { mutate, isPending } = useSelfCheckIn();
   const canSubmit = Boolean(data.identifier.trim() && data.password.trim());
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setErrorMessage("");
+    setFieldErrors({});
     setPresence(null);
 
     mutate(
@@ -53,6 +57,16 @@ export const PresenceCheckInPage = () => {
           setData(EMPTY_FORM);
         },
         onError: (error) => {
+          const nextFieldErrors = getApiFieldErrors(error, [
+            "identifier",
+            "password",
+          ] as const);
+
+          if (nextFieldErrors) {
+            setFieldErrors(nextFieldErrors);
+            return;
+          }
+
           const apiError = normalizeApiError(
             error,
             "Não foi possível registrar o check-in.",
@@ -80,12 +94,17 @@ export const PresenceCheckInPage = () => {
               label="CPF ou e-mail"
               id="identifier"
               value={data.identifier}
-              onChange={(event) =>
+              onChange={(event) => {
                 setData((prev) => ({
                   ...prev,
                   identifier: event.target.value,
-                }))
-              }
+                }));
+                setFieldErrors((prev) => ({
+                  ...prev,
+                  identifier: undefined,
+                }));
+              }}
+              error={fieldErrors.identifier}
               autoComplete="username"
               inputMode="email"
               disabled={isPending}
@@ -98,12 +117,17 @@ export const PresenceCheckInPage = () => {
               id="password"
               type="password"
               value={data.password}
-              onChange={(event) =>
+              onChange={(event) => {
                 setData((prev) => ({
                   ...prev,
                   password: event.target.value,
-                }))
-              }
+                }));
+                setFieldErrors((prev) => ({
+                  ...prev,
+                  password: undefined,
+                }));
+              }}
+              error={fieldErrors.password}
               autoComplete="current-password"
               disabled={isPending}
               required

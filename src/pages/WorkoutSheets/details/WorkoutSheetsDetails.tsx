@@ -38,6 +38,7 @@ import { Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import type { ApiError } from "@/utils/apiError";
+import { getApiFieldErrors } from "@/utils/apiError";
 import { auth } from "@/utils/auth";
 import styles from "./WorkoutSheetsDetails.module.css";
 
@@ -62,6 +63,33 @@ const EMPTY_EXERCISE_FORM: WorkoutSheetExerciseFormData = {
   executionOrder: "",
   notes: "",
 };
+
+type SheetFormField = Exclude<keyof WorkoutSheetFormData, "exercises">;
+type SheetFormErrors = Partial<Record<SheetFormField, string>>;
+type ExerciseFormErrors = Partial<
+  Record<keyof WorkoutSheetExerciseFormData, string>
+>;
+
+const SHEET_FIELDS = [
+  "studentId",
+  "instructorId",
+  "name",
+  "goal",
+  "startDate",
+  "endDate",
+  "notes",
+] as const;
+
+const EXERCISE_FIELDS = [
+  "exerciseId",
+  "sets",
+  "repetitions",
+  "loadKg",
+  "restSeconds",
+  "trainingSection",
+  "executionOrder",
+  "notes",
+] as const;
 
 const exerciseColumns = [
   { width: "20%" },
@@ -130,6 +158,9 @@ const WorkoutSheetsDetailsContent = ({
   );
   const [exerciseForm, setExerciseForm] =
     useState<WorkoutSheetExerciseFormData>(EMPTY_EXERCISE_FORM);
+  const [sheetErrors, setSheetErrors] = useState<SheetFormErrors>({});
+  const [exerciseErrors, setExerciseErrors] =
+    useState<ExerciseFormErrors>({});
   const [studentSearch, setStudentSearch] = useState(
     details?.student?.name ?? details?.studentName ?? "",
   );
@@ -210,6 +241,7 @@ const WorkoutSheetsDetailsContent = ({
 
   const resetExerciseForm = () => {
     setExerciseForm(EMPTY_EXERCISE_FORM);
+    setExerciseErrors({});
     setExerciseSearch("");
     setEditingExerciseId("");
   };
@@ -241,6 +273,13 @@ const WorkoutSheetsDetailsContent = ({
       {
         onSuccess: () => toast.success("Ficha atualizada com sucesso!"),
         onError: (e) => {
+          const fieldErrors = getApiFieldErrors(e, SHEET_FIELDS);
+          if (fieldErrors) {
+            setSheetErrors(fieldErrors);
+            focusById(Object.keys(fieldErrors)[0]);
+            return;
+          }
+
           toast.error(
             <div>
               <strong>{e?.error ?? "Erro"}</strong>
@@ -294,6 +333,13 @@ const WorkoutSheetsDetailsContent = ({
         resetExerciseForm();
       },
       onError: (e: ApiError) => {
+        const fieldErrors = getApiFieldErrors(e, EXERCISE_FIELDS);
+        if (fieldErrors) {
+          setExerciseErrors(fieldErrors);
+          focusById(Object.keys(fieldErrors)[0]);
+          return;
+        }
+
         toast.error(
           <div>
             <strong>{e?.error ?? "Erro"}</strong>
@@ -385,6 +431,10 @@ const WorkoutSheetsDetailsContent = ({
                 onSearchChange={(value) => {
                   setStudentSearch(value);
                   setSheetForm((prev) => ({ ...prev, studentId: "" }));
+                  setSheetErrors((prev) => ({
+                    ...prev,
+                    studentId: undefined,
+                  }));
                 }}
                 onSelect={(option) => {
                   setStudentSearch(option.label);
@@ -401,6 +451,7 @@ const WorkoutSheetsDetailsContent = ({
                 loading={isFetchingStudents}
                 placeholder="Digite o nome ou o CPF/e-mail completos"
                 required
+                error={sheetErrors.studentId}
               />
               {isInstructor ? (
                 <TextField
@@ -409,6 +460,7 @@ const WorkoutSheetsDetailsContent = ({
                   value={effectiveInstructorName}
                   onChange={() => undefined}
                   helperText={me?.email ?? undefined}
+                  error={sheetErrors.instructorId}
                   readOnly
                   disabled
                   required
@@ -421,6 +473,10 @@ const WorkoutSheetsDetailsContent = ({
                   onSearchChange={(value) => {
                     setInstructorSearch(value);
                     setSheetForm((prev) => ({ ...prev, instructorId: "" }));
+                    setSheetErrors((prev) => ({
+                      ...prev,
+                      instructorId: undefined,
+                    }));
                   }}
                   onSelect={(option) => {
                     setInstructorSearch(option.label);
@@ -437,45 +493,69 @@ const WorkoutSheetsDetailsContent = ({
                   loading={isFetchingInstructors}
                   placeholder="Digite nome, CREF ou e-mail completo"
                   required
+                  error={sheetErrors.instructorId}
                 />
               )}
               <TextField
                 label="Nome da ficha"
                 id="name"
                 value={sheetForm.name}
-                onChange={setSheetField("name")}
+                onChange={(event) => {
+                  setSheetField("name")(event);
+                  setSheetErrors((prev) => ({ ...prev, name: undefined }));
+                }}
                 required
+                error={sheetErrors.name}
               />
               <TextField
                 label="Objetivo"
                 id="goal"
                 value={sheetForm.goal}
-                onChange={setSheetField("goal")}
+                onChange={(event) => {
+                  setSheetField("goal")(event);
+                  setSheetErrors((prev) => ({ ...prev, goal: undefined }));
+                }}
                 optional
+                error={sheetErrors.goal}
               />
               <TextField
                 label="Data de inicio"
                 id="startDate"
                 type="date"
                 value={sheetForm.startDate}
-                onChange={setSheetField("startDate")}
+                onChange={(event) => {
+                  setSheetField("startDate")(event);
+                  setSheetErrors((prev) => ({
+                    ...prev,
+                    startDate: undefined,
+                  }));
+                }}
                 optional
+                error={sheetErrors.startDate}
               />
               <TextField
                 label="Data de fim"
                 id="endDate"
                 type="date"
                 value={sheetForm.endDate}
-                onChange={setSheetField("endDate")}
+                onChange={(event) => {
+                  setSheetField("endDate")(event);
+                  setSheetErrors((prev) => ({ ...prev, endDate: undefined }));
+                }}
                 optional
+                error={sheetErrors.endDate}
               />
               <TextField
                 label="Observações"
                 id="notes"
                 value={sheetForm.notes}
-                onChange={setSheetField("notes")}
+                onChange={(event) => {
+                  setSheetField("notes")(event);
+                  setSheetErrors((prev) => ({ ...prev, notes: undefined }));
+                }}
                 containerProps={{ className: styles.fieldWide }}
                 optional
+                error={sheetErrors.notes}
               />
             </div>
           )}
@@ -530,6 +610,10 @@ const WorkoutSheetsDetailsContent = ({
             onSearchChange={(value) => {
               setExerciseSearch(value);
               setExerciseForm((prev) => ({ ...prev, exerciseId: "" }));
+              setExerciseErrors((prev) => ({
+                ...prev,
+                exerciseId: undefined,
+              }));
             }}
             onSelect={(option) => {
               setExerciseSearch(option.label);
@@ -546,14 +630,19 @@ const WorkoutSheetsDetailsContent = ({
             loading={isFetchingExercises}
             placeholder="Digite o nome do exercicio"
             required
+            error={exerciseErrors.exerciseId}
           />
           <TextField
             label="Series"
             id="sets"
             type="number"
             value={exerciseForm.sets}
-            onChange={setExerciseField("sets")}
+            onChange={(event) => {
+              setExerciseField("sets")(event);
+              setExerciseErrors((prev) => ({ ...prev, sets: undefined }));
+            }}
             required
+            error={exerciseErrors.sets}
           />
         </div>
 
@@ -562,17 +651,31 @@ const WorkoutSheetsDetailsContent = ({
             label="Repeticoes"
             id="repetitions"
             value={exerciseForm.repetitions}
-            onChange={setExerciseField("repetitions")}
+            onChange={(event) => {
+              setExerciseField("repetitions")(event);
+              setExerciseErrors((prev) => ({
+                ...prev,
+                repetitions: undefined,
+              }));
+            }}
             placeholder="10-12"
             required
+            error={exerciseErrors.repetitions}
           />
           <TextField
             label="Bloco do treino"
             id="trainingSection"
             value={exerciseForm.trainingSection}
-            onChange={setExerciseField("trainingSection")}
+            onChange={(event) => {
+              setExerciseField("trainingSection")(event);
+              setExerciseErrors((prev) => ({
+                ...prev,
+                trainingSection: undefined,
+              }));
+            }}
             placeholder="Treino A"
             required
+            error={exerciseErrors.trainingSection}
           />
         </div>
 
@@ -582,8 +685,15 @@ const WorkoutSheetsDetailsContent = ({
             id="restSeconds"
             type="number"
             value={exerciseForm.restSeconds}
-            onChange={setExerciseField("restSeconds")}
+            onChange={(event) => {
+              setExerciseField("restSeconds")(event);
+              setExerciseErrors((prev) => ({
+                ...prev,
+                restSeconds: undefined,
+              }));
+            }}
             optional
+            error={exerciseErrors.restSeconds}
           />
         </div>
 
@@ -593,16 +703,27 @@ const WorkoutSheetsDetailsContent = ({
             id="executionOrder"
             type="number"
             value={exerciseForm.executionOrder}
-            onChange={setExerciseField("executionOrder")}
+            onChange={(event) => {
+              setExerciseField("executionOrder")(event);
+              setExerciseErrors((prev) => ({
+                ...prev,
+                executionOrder: undefined,
+              }));
+            }}
             required
+            error={exerciseErrors.executionOrder}
           />
           <TextField
             label="Observações do exercício"
             id="notes"
             value={exerciseForm.notes}
-            onChange={setExerciseField("notes")}
+            onChange={(event) => {
+              setExerciseField("notes")(event);
+              setExerciseErrors((prev) => ({ ...prev, notes: undefined }));
+            }}
             placeholder="Ajustes de execucao"
             optional
+            error={exerciseErrors.notes}
           />
         </div>
 

@@ -10,6 +10,7 @@ import type {
 } from "@/pages/Enrollments/types";
 import { useGetEnrollmentById } from "@/queries/useGetEnrollmentById";
 import { useGetPlans } from "@/queries/useGetPlans";
+import { getApiFieldErrors } from "@/utils/apiError";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -88,6 +89,19 @@ const EnrollmentsRenewForm = ({
           navigate({ to: "/enrollments" });
         },
         onError: (e) => {
+          const fieldErrors = getApiFieldErrors(e, [
+            "newPlanId",
+            "planId",
+          ] as const);
+          const planFieldError =
+            fieldErrors?.newPlanId ?? fieldErrors?.planId;
+
+          if (planFieldError) {
+            setPlanError(planFieldError);
+            document.getElementById("newPlanId")?.focus();
+            return;
+          }
+
           toast.error(
             <div>
               <strong>{e?.error ?? "Erro"}</strong>

@@ -5,6 +5,7 @@ import { TextField } from "@/components/TextField/TextField";
 import { useFormInputs } from "@/hooks/useFormInputs";
 import { useUpdateStudent } from "@/mutations/useUpdateStudent";
 import { useGetStudentById } from "@/queries/useGetStudentById";
+import { getApiFieldErrors } from "@/utils/apiError";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -20,6 +21,16 @@ const EMPTY_FORM: StudentUpdateFormData = {
   zipCode: "",
   address: "",
 };
+
+const STUDENT_UPDATE_FIELDS = [
+  "name",
+  "email",
+  "cpf",
+  "birthDate",
+  "phone",
+  "zipCode",
+  "address",
+] as const;
 
 export const StudentsEdit = () => {
   const params = useParams({ strict: false });
@@ -81,6 +92,13 @@ export const StudentsEdit = () => {
           toast.success("Aluno editado com sucesso!");
         },
         onError: (e) => {
+          const fieldErrors = getApiFieldErrors(e, STUDENT_UPDATE_FIELDS);
+          if (fieldErrors) {
+            setErrors(fieldErrors);
+            focusFirstError(fieldErrors);
+            return;
+          }
+
           toast.error(
             <div>
               <strong>{e?.error ?? "Erro"}</strong>

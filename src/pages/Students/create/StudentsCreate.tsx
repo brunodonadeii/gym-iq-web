@@ -4,6 +4,7 @@ import { TextField } from "@/components/TextField/TextField";
 import { useFormInputs } from "@/hooks/useFormInputs";
 import { useCreateStudent } from "@/mutations/useCreateStudent";
 import type { StudentCreateFormData } from "@/pages/Students/types";
+import { getApiFieldErrors } from "@/utils/apiError";
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -20,6 +21,18 @@ const EMPTY_FORM: StudentCreateFormData = {
   address: "",
   lgpdAccepted: false,
 };
+
+const STUDENT_CREATE_FIELDS = [
+  "name",
+  "email",
+  "password",
+  "cpf",
+  "birthDate",
+  "phone",
+  "zipCode",
+  "address",
+  "lgpdAccepted",
+] as const;
 
 export const StudentsCreate = () => {
   const navigate = useNavigate();
@@ -72,6 +85,13 @@ export const StudentsCreate = () => {
         navigate({ to: "/students" });
       },
       onError: (e) => {
+        const fieldErrors = getApiFieldErrors(e, STUDENT_CREATE_FIELDS);
+        if (fieldErrors) {
+          setErrors(fieldErrors);
+          focusFirstError(fieldErrors);
+          return;
+        }
+
         toast.error(
           <div>
             <strong>{e?.error ?? "Erro"}</strong>

@@ -10,6 +10,7 @@ import {
 } from "@/pages/Plans/planValidation";
 import type { PlanFormData } from "@/pages/Plans/types";
 import { formatCurrencyInput, parseCurrencyInput } from "@/utils/currency";
+import { getApiFieldErrors } from "@/utils/apiError";
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -21,6 +22,13 @@ const EMPTY_FORM: PlanFormData = {
   durationMonths: 1,
   monthlyPrice: 0,
 };
+
+const PLAN_FIELDS = [
+  "name",
+  "description",
+  "durationMonths",
+  "monthlyPrice",
+] as const;
 
 export const PlansCreate = () => {
   const [data, setData] = useState<PlanFormData>(EMPTY_FORM);
@@ -52,6 +60,12 @@ export const PlansCreate = () => {
           navigate({ to: "/plans" });
         },
         onError: (e) => {
+          const fieldErrors = getApiFieldErrors(e, PLAN_FIELDS);
+          if (fieldErrors) {
+            setErrors(fieldErrors);
+            return;
+          }
+
           toast.error(
             <div>
               <strong>{e?.error ?? "Erro"}</strong>

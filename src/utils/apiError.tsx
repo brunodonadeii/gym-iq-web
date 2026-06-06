@@ -212,4 +212,22 @@ export function showApiError(
   return apiError;
 }
 
+export function getApiFieldErrors<Field extends string>(
+  error: unknown,
+  allowedFields: readonly Field[],
+): Partial<Record<Field, string>> | null {
+  const fields = normalizeApiError(error).fields;
+  if (!fields) return null;
+
+  const allowedFieldSet = new Set<string>(allowedFields);
+  const entries = Object.entries(fields).filter(
+    (entry): entry is [Field, string] =>
+      allowedFieldSet.has(entry[0]) &&
+      typeof entry[1] === "string" &&
+      Boolean(entry[1].trim()),
+  );
+
+  return entries.length ? Object.fromEntries(entries) : null;
+}
+
 

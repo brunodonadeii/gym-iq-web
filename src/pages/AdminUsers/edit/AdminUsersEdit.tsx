@@ -8,6 +8,7 @@ import type {
   AdminUserRole,
   AdminUserUpdateFormData,
 } from "@/pages/AdminUsers/types";
+import { getApiFieldErrors } from "@/utils/apiError";
 import { useGetAdminUserById } from "@/queries/useGetAdminUserById";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { useState } from "react";
@@ -18,6 +19,8 @@ const roleOptions = [
   { label: "Recepção", value: "RECEPTION" },
   { label: "Administrador", value: "ADMIN" },
 ];
+
+const ADMIN_USER_UPDATE_FIELDS = ["name", "email", "role"] as const;
 
 type FormErrors = Partial<Record<keyof AdminUserUpdateFormData, string>>;
 
@@ -87,6 +90,13 @@ const AdminUsersEditForm = ({
           navigate({ to: "/admin-users" });
         },
         onError: (e) => {
+          const fieldErrors = getApiFieldErrors(e, ADMIN_USER_UPDATE_FIELDS);
+          if (fieldErrors) {
+            setErrors(fieldErrors);
+            focusFirstError(fieldErrors);
+            return;
+          }
+
           toast.error(
             <div>
               <strong>{e?.error ?? "Erro"}</strong>

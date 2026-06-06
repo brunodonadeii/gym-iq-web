@@ -4,6 +4,7 @@ import { TextField } from "@/components/TextField/TextField";
 import { useFormInputs } from "@/hooks/useFormInputs";
 import { useCreateExercise } from "@/mutations/useCreateExercise";
 import type { ExerciseFormData } from "@/pages/Exercises/types";
+import { getApiFieldErrors } from "@/utils/apiError";
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -14,6 +15,8 @@ const EMPTY_FORM: ExerciseFormData = {
   muscleGroup: "",
   description: "",
 };
+
+const EXERCISE_FIELDS = ["name", "muscleGroup", "description"] as const;
 
 export const ExercisesCreate = () => {
   const [data, setData] = useState<ExerciseFormData>(EMPTY_FORM);
@@ -45,6 +48,12 @@ export const ExercisesCreate = () => {
           navigate({ to: "/exercises" });
         },
         onError: (e) => {
+          const fieldErrors = getApiFieldErrors(e, EXERCISE_FIELDS);
+          if (fieldErrors) {
+            setErrors(fieldErrors);
+            return;
+          }
+
           toast.error(
             <div>
               <strong>{e?.error ?? "Erro"}</strong>

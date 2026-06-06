@@ -3,7 +3,6 @@ import type {
   InstructorUpdateFormData,
 } from "@/pages/Instructors/types";
 import { INSTRUCTOR_SPECIALTY_OPTIONS } from "@/pages/Instructors/specialties";
-import type { ApiError } from "@/utils/apiError";
 
 export const INSTRUCTOR_LIMITS = {
   name: {
@@ -100,32 +99,6 @@ export const validateInstructorCreate = (
 export const validateInstructorUpdate = (
   data: InstructorUpdateFormData,
 ): InstructorFormErrors => validateCommonFields(data);
-
-const INSTRUCTOR_FIELDS = new Set<InstructorFormField>([
-  "name",
-  "email",
-  "password",
-  "cref",
-  "phone",
-  "specialty",
-  "lgpdAccepted",
-]);
-
-export const getInstructorApiFieldErrors = (
-  error: ApiError,
-): InstructorFormErrors | null => {
-  if (error.error !== "VALIDATION_ERROR" || !error.fields) {
-    return null;
-  }
-
-  const entries = Object.entries(error.fields).filter(
-    (entry): entry is [InstructorFormField, string] =>
-      INSTRUCTOR_FIELDS.has(entry[0] as InstructorFormField) &&
-      typeof entry[1] === "string",
-  );
-
-  return entries.length ? Object.fromEntries(entries) : null;
-};
 
 export const formatCrefInput = (value: string) => {
   const compact = value.toUpperCase().replace(/[^A-Z0-9]/g, "");

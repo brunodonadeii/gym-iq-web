@@ -8,6 +8,7 @@ import type {
   AdminUserCreateFormData,
   AdminUserRole,
 } from "@/pages/AdminUsers/types";
+import { getApiFieldErrors } from "@/utils/apiError";
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -25,6 +26,14 @@ const roleOptions = [
   { label: "Recepção", value: "RECEPTION" },
   { label: "Administrador", value: "ADMIN" },
 ];
+
+const ADMIN_USER_CREATE_FIELDS = [
+  "name",
+  "email",
+  "password",
+  "role",
+  "lgpdAccepted",
+] as const;
 
 type FormErrors = Partial<Record<keyof AdminUserCreateFormData, string>>;
 
@@ -98,6 +107,13 @@ export const AdminUsersCreate = () => {
           navigate({ to: "/admin-users" });
         },
         onError: (e) => {
+          const fieldErrors = getApiFieldErrors(e, ADMIN_USER_CREATE_FIELDS);
+          if (fieldErrors) {
+            setErrors(fieldErrors);
+            focusFirstError(fieldErrors);
+            return;
+          }
+
           toast.error(
             <div>
               <strong>{e?.error ?? "Erro"}</strong>

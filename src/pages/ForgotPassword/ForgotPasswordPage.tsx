@@ -2,7 +2,11 @@
 import { Card } from "@/components/Card/Card";
 import { TextField } from "@/components/TextField/TextField";
 import { forgotPassword } from "@/services/auth";
-import { normalizeApiError, showApiError } from "@/utils/apiError";
+import {
+  getApiFieldErrors,
+  normalizeApiError,
+  showApiError,
+} from "@/utils/apiError";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -10,6 +14,7 @@ import styles from "@/pages/Login/LoginPage.module.css";
 
 export const ForgotPasswordPage = () => {
   const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -22,6 +27,12 @@ export const ForgotPasswordPage = () => {
       const response = await forgotPassword({ email: email.trim() });
       toast.success(response.message);
     } catch (error) {
+      const fieldErrors = getApiFieldErrors(error, ["email"] as const);
+      if (fieldErrors?.email) {
+        setEmailError(fieldErrors.email);
+        return;
+      }
+
       const apiError = normalizeApiError(
         error,
             "Não foi possível solicitar a redefinição de senha.",
@@ -63,7 +74,11 @@ export const ForgotPasswordPage = () => {
               type="email"
               id="forgotPasswordEmail"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setEmailError("");
+              }}
+              error={emailError || undefined}
               disabled={isSubmitting}
               required
             />

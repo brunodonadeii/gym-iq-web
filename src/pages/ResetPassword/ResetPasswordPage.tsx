@@ -2,7 +2,11 @@
 import { Card } from "@/components/Card/Card";
 import { TextField } from "@/components/TextField/TextField";
 import { resetPassword } from "@/services/auth";
-import { normalizeApiError, showApiError } from "@/utils/apiError";
+import {
+  getApiFieldErrors,
+  normalizeApiError,
+  showApiError,
+} from "@/utils/apiError";
 import { Link, useSearch } from "@tanstack/react-router";
 import { useState } from "react";
 import styles from "@/pages/Login/LoginPage.module.css";
@@ -67,6 +71,20 @@ export const ResetPasswordPage = () => {
       setNewPassword("");
       setConfirmPassword("");
     } catch (error) {
+      const fieldErrors = getApiFieldErrors(error, [
+        "newPassword",
+        "password",
+        "confirmPassword",
+      ] as const);
+
+      if (fieldErrors) {
+        setPasswordError(
+          fieldErrors.newPassword ?? fieldErrors.password ?? "",
+        );
+        setConfirmPasswordError(fieldErrors.confirmPassword ?? "");
+        return;
+      }
+
       const apiError = normalizeApiError(
         error,
             "Não foi possível redefinir a senha.",

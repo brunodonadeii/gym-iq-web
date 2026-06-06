@@ -3,7 +3,11 @@ import { Card } from "@/components/Card/Card";
 import { TextField } from "@/components/TextField/TextField";
 import { router } from "@/router";
 import { login } from "@/services/auth";
-import { normalizeApiError, showApiError } from "@/utils/apiError";
+import {
+  getApiFieldErrors,
+  normalizeApiError,
+  showApiError,
+} from "@/utils/apiError";
 import { auth, getDefaultPathByRole } from "@/utils/auth";
 import { Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useState } from "react";
@@ -56,6 +60,13 @@ export const LoginPage = () => {
           redirect === "/dashboard" ? getDefaultPathByRole(auth.role) : redirect,
       });
     } catch (error) {
+      const fieldErrors = getApiFieldErrors(error, ["email", "password"] as const);
+      if (fieldErrors) {
+        setEmailError(fieldErrors.email ?? "");
+        setPasswordError(fieldErrors.password ?? "");
+        return;
+      }
+
       const apiError = normalizeApiError(
         error,
             "Não foi possível entrar. Confira seu e-mail e senha e tente novamente.",

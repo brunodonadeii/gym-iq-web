@@ -28,6 +28,7 @@ import type {
 import { useGetEnrollments } from "@/queries/useGetEnrollments";
 import { useGetPayments } from "@/queries/useGetPayments";
 import { useGetStudentOptions } from "@/queries/useGetStudentOptions";
+import { getApiFieldErrors } from "@/utils/apiError";
 import { CheckCircle2, ClockAlert, RefreshCcw, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -121,6 +122,9 @@ export const PaymentsPage = () => {
   const [size, setSize] = useState(10);
   const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
   const [payForm, setPayForm] = useState<PaymentPayFormData>(EMPTY_PAY_FORM);
+  const [payFormErrors, setPayFormErrors] = useState<
+    Partial<Record<keyof PaymentPayFormData, string>>
+  >({});
   const debouncedStudentSearch = useDebouncedValue(studentSearch);
 
   const { data: students, isFetching: isFetchingStudents } =
@@ -222,6 +226,7 @@ export const PaymentsPage = () => {
         : "",
       notes: payment.notes ?? "",
     });
+    setPayFormErrors({});
   };
 
   const closePayModal = () => {
@@ -229,6 +234,7 @@ export const PaymentsPage = () => {
 
     setSelectedPayment(null);
     setPayForm(EMPTY_PAY_FORM);
+    setPayFormErrors({});
   };
 
   const handlePayPayment = () => {
@@ -244,6 +250,18 @@ export const PaymentsPage = () => {
           closePayModal();
         },
         onError: (e) => {
+          const fieldErrors = getApiFieldErrors(e, [
+            "paidAt",
+            "paymentMethod",
+            "notes",
+          ] as const);
+
+          if (fieldErrors) {
+            setPayFormErrors(fieldErrors);
+            document.getElementById(Object.keys(fieldErrors)[0])?.focus();
+            return;
+          }
+
           toast.error(
             <div>
               <strong>{e?.error ?? "Erro"}</strong>
@@ -551,9 +569,11 @@ export const PaymentsPage = () => {
                 type="datetime-local"
                 value={payForm.paidAt}
                 optional
-                onChange={(e) =>
-                  setPayForm((prev) => ({ ...prev, paidAt: e.target.value }))
-                }
+                onChange={(e) => {
+                  setPayForm((prev) => ({ ...prev, paidAt: e.target.value }));
+                  setPayFormErrors((prev) => ({ ...prev, paidAt: undefined }));
+                }}
+                error={payFormErrors.paidAt}
               />
 
               <SelectField
@@ -561,13 +581,18 @@ export const PaymentsPage = () => {
                 id="payPaymentMethod"
                 value={payForm.paymentMethod}
                 optional
-                onChange={(e) =>
+                onChange={(e) => {
                   setPayForm((prev) => ({
                     ...prev,
                     paymentMethod: e.target.value as PaymentMethod,
-                  }))
-                }
+                  }));
+                  setPayFormErrors((prev) => ({
+                    ...prev,
+                    paymentMethod: undefined,
+                  }));
+                }}
                 options={paymentMethodOptions}
+                error={payFormErrors.paymentMethod}
               />
 
               <TextField
@@ -575,10 +600,12 @@ export const PaymentsPage = () => {
                 id="payNotes"
                 value={payForm.notes}
                 optional
-                onChange={(e) =>
-                  setPayForm((prev) => ({ ...prev, notes: e.target.value }))
-                }
+                onChange={(e) => {
+                  setPayForm((prev) => ({ ...prev, notes: e.target.value }));
+                  setPayFormErrors((prev) => ({ ...prev, notes: undefined }));
+                }}
                 placeholder="Pago na recepção"
+                error={payFormErrors.notes}
               />
             </div>
 

@@ -6,6 +6,7 @@ import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useFormInputs } from "@/hooks/useFormInputs";
 import { useCreateEnrollment } from "@/mutations/useCreateEnrollment";
 import type { EnrollmentCreateFormData } from "@/pages/Enrollments/types";
+import { getApiFieldErrors } from "@/utils/apiError";
 import { useGetStudentOptions } from "@/queries/useGetStudentOptions";
 import { useGetPlans } from "@/queries/useGetPlans";
 import { useNavigate } from "@tanstack/react-router";
@@ -18,6 +19,8 @@ const EMPTY_FORM: EnrollmentCreateFormData = {
   planId: "",
   startDate: "",
 };
+
+const ENROLLMENT_FIELDS = ["studentId", "planId", "startDate"] as const;
 
 export const EnrollmentsCreate = () => {
   const [data, setData] = useState<EnrollmentCreateFormData>(EMPTY_FORM);
@@ -73,6 +76,13 @@ export const EnrollmentsCreate = () => {
         navigate({ to: "/enrollments" });
       },
       onError: (e) => {
+        const fieldErrors = getApiFieldErrors(e, ENROLLMENT_FIELDS);
+        if (fieldErrors) {
+          setErrors(fieldErrors);
+          document.getElementById(Object.keys(fieldErrors)[0])?.focus();
+          return;
+        }
+
         toast.error(
           <div>
             <strong>{e?.error ?? "Erro"}</strong>
