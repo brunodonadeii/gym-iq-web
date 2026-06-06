@@ -106,7 +106,7 @@ const getSheetExerciseId = (exercise: WorkoutSheetExercise) =>
   String(exercise.workoutSheetExerciseId);
 
 const resolveExerciseName = (exercise: WorkoutSheetExercise) =>
-  exercise.exerciseName ?? `Exercicio #${exercise.exerciseId}`;
+  exercise.exerciseName ?? `Exercício #${exercise.exerciseId}`;
 
 const resolveExerciseId = (exercise: WorkoutSheetExercise) =>
   String(exercise.exerciseId);
@@ -327,8 +327,8 @@ const WorkoutSheetsDetailsContent = ({
       onSuccess: () => {
         toast.success(
           editingExerciseId
-            ? "Exercicio atualizado com sucesso!"
-            : "Exercicio adicionado com sucesso!",
+            ? "Exercício atualizado com sucesso!"
+            : "Exercício adicionado com sucesso!",
         );
         resetExerciseForm();
       },
@@ -383,7 +383,7 @@ const WorkoutSheetsDetailsContent = ({
     deleteExercise(
       { id, workoutSheetId: String(workoutSheetId) },
       {
-        onSuccess: () => toast.success("Exercicio removido da ficha!"),
+        onSuccess: () => toast.success("Exercício removido da ficha!"),
         onError: (e) => {
           toast.error(
             <div>
@@ -597,16 +597,16 @@ const WorkoutSheetsDetailsContent = ({
       >
         <div className={styles.sectionHeader}>
           <div>
-            <h3 className={styles.sectionTitle}>Exercicios da ficha</h3>
+              <h3 className={styles.sectionTitle}>Exercícios da ficha</h3>
             <p className={styles.sectionDescription}>
-              Adicione ou edite exercicio, bloco, series, repeticoes, descanso e ordem.
+              Adicione ou edite exercício, bloco, séries, repetições, descanso e ordem.
             </p>
           </div>
         </div>
 
         <div className={styles.grid}>
           <Autocomplete
-            label="Exercicio"
+            label="Exercício"
             id="exerciseId"
             search={exerciseSearch}
             onSearchChange={(value) => {
@@ -630,7 +630,7 @@ const WorkoutSheetsDetailsContent = ({
             }}
             options={exerciseOptions}
             loading={isFetchingExercises}
-            placeholder="Digite o nome do exercicio"
+            placeholder="Digite o nome do exercício"
             required
             error={exerciseErrors.exerciseId}
           />
@@ -740,7 +740,7 @@ const WorkoutSheetsDetailsContent = ({
             </Button>
           )}
           <Button type="submit" loading={isExerciseSubmitting}>
-            {editingExerciseId ? "Salvar exercicio" : "Adicionar exercicio"}
+            {editingExerciseId ? "Salvar exercício" : "Adicionar exercício"}
           </Button>
         </div>
       </form>
@@ -757,13 +757,13 @@ const WorkoutSheetsDetailsContent = ({
           <Table columns={exerciseColumns} minWidth="980px">
             <TableHead>
               <TableRow>
-                <TableHeaderCell>Exercicio</TableHeaderCell>
+                <TableHeaderCell>Exercício</TableHeaderCell>
                 <TableHeaderCell>Bloco</TableHeaderCell>
                 <TableHeaderCell>Series</TableHeaderCell>
                 <TableHeaderCell>Repeticoes</TableHeaderCell>
                 <TableHeaderCell>Descanso</TableHeaderCell>
                 <TableHeaderCell>Observações</TableHeaderCell>
-                <TableHeaderCell center>Acoes</TableHeaderCell>
+                <TableHeaderCell center>Ações</TableHeaderCell>
               </TableRow>
             </TableHead>
 
@@ -819,7 +819,7 @@ const WorkoutSheetsDetailsContent = ({
               {!tableLoading && exerciseRows.length === 0 && (
                 <TableEmptyState
                   colSpan={7}
-                  message="Nenhum exercicio vinculado a esta ficha."
+                  message="Nenhum exercício vinculado a esta ficha."
                 />
               )}
             </TableBody>

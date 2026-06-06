@@ -115,7 +115,7 @@ export const StudentsPage = () => {
               <strong>{e?.error ?? "Erro"}</strong>
               <br />
               <span>
-                {e?.message ?? "N�o foi poss�vel inativar o aluno."}
+                {e?.message ?? "Não foi possível inativar o aluno."}
               </span>
             </div>,
           );
@@ -129,7 +129,7 @@ export const StudentsPage = () => {
       { id: studentId },
       {
         onSuccess: () => {
-          toast.success("Cadastro do aluno excluido com sucesso!");
+          toast.success("Cadastro do aluno excluído com sucesso!");
           setConfirmAction(null);
         },
         onError: (e) => {
@@ -137,7 +137,9 @@ export const StudentsPage = () => {
             <div>
               <strong>{e?.error ?? "Erro"}</strong>
               <br />
-              <span>{e?.message ?? "N�o foi poss�vel excluir os dados do aluno."}</span>
+              <span>
+                {e?.message ?? "Não foi possível excluir os dados do aluno."}
+              </span>
             </div>,
           );
         },
@@ -157,7 +159,7 @@ export const StudentsPage = () => {
             <div>
               <strong>{e?.error ?? "Erro"}</strong>
               <br />
-              <span>{e?.message ?? "N�o foi poss�vel ativar o aluno."}</span>
+              <span>{e?.message ?? "Não foi possível ativar o aluno."}</span>
             </div>,
           );
         },
@@ -241,7 +243,7 @@ export const StudentsPage = () => {
           <div>
             <h3 className={styles.sectionTitle}>Lista principal</h3>
             <p className={styles.sectionDescription}>
-              {visibleStudents.length} aluno(s) exibido(s) nesta p�gina.
+              {visibleStudents.length} aluno(s) exibido(s) nesta página.
             </p>
           </div>
         </div>
@@ -253,7 +255,7 @@ export const StudentsPage = () => {
                 <TableHeaderCell>Nome</TableHeaderCell>
                 <TableHeaderCell>Criado em</TableHeaderCell>
                 <TableHeaderCell center>Status</TableHeaderCell>
-                <TableHeaderCell center>A��es</TableHeaderCell>
+                <TableHeaderCell center>Ações</TableHeaderCell>
               </TableRow>
             </TableHead>
 
@@ -381,9 +383,9 @@ export const StudentsPage = () => {
         }
         description={
           confirmAction?.type === "delete"
-            ? `Os dados pessoais de ${confirmAction.studentName} ser�o removidos e o hist�rico ser� preservado. Esta a��o exige que o aluno j� esteja inativo e n�o ser� conclu�da se houver pagamentos pendentes ou atrasados.`
+            ? `Os dados pessoais de ${confirmAction.studentName} serão removidos e o histórico será preservado. Esta ação exige que o aluno já esteja inativo e não será concluída se houver pagamentos pendentes ou atrasados.`
             : confirmAction
-              ? `${confirmAction.studentName} perder� o acesso ativo, mas o hist�rico ser� preservado.`
+              ? `${confirmAction.studentName} perderá o acesso ativo, mas o histórico será preservado.`
               : ""
         }
         confirmLabel={

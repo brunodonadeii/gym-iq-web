@@ -76,11 +76,11 @@ const validate = (data: WorkoutSheetFormData) => {
     const current: Partial<Record<ExerciseField, string>> = {};
 
     if (!exercise.exerciseId) {
-      current.exerciseId = "Selecione o exercicio.";
+      current.exerciseId = "Selecione o exercício.";
     }
 
     if (!exercise.sets || Number(exercise.sets) <= 0) {
-      current.sets = "Informe um numero de series maior que zero.";
+      current.sets = "Informe um número de séries maior que zero.";
     }
 
     if (!exercise.repetitions.trim()) {
@@ -296,7 +296,7 @@ export const WorkoutSheetsCreate = () => {
   return (
     <Form
       title="Dados da ficha"
-      description="Vincule aluno, instrutor, periodo de vigencia e exercicios da ficha."
+      description="Vincule aluno, instrutor, período de vigência e exercícios da ficha."
       loading={false}
       onSubmit={handleSubmit}
       actions={
@@ -440,9 +440,9 @@ export const WorkoutSheetsCreate = () => {
       <section className={styles.exercisesSection}>
         <div className={styles.exercisesHeader}>
           <div>
-            <h3 className={styles.exercisesTitle}>Exercicios</h3>
+            <h3 className={styles.exercisesTitle}>Exercícios</h3>
             <p className={styles.exercisesDescription}>
-              Monte a ficha com todos os exercicios antes de salvar.
+              Monte a ficha com todos os exercícios antes de salvar.
             </p>
           </div>
         </div>
@@ -454,7 +454,7 @@ export const WorkoutSheetsCreate = () => {
             return (
               <div className={styles.exerciseCard} key={index}>
                 <div className={styles.exerciseCardHeader}>
-                  <strong>Exercicio {index + 1}</strong>
+                  <strong>Exercício {index + 1}</strong>
                   {data.exercises.length > 1 && (
                     <Button
                       variant="ghost"
@@ -469,7 +469,7 @@ export const WorkoutSheetsCreate = () => {
 
                 <div className={styles.row}>
                   <Autocomplete
-                    label="Exercicio"
+                    label="Exercício"
                     id={`exercise-${index}-exerciseId`}
                     search={exerciseSearches[index] ?? ""}
                     onSearchChange={(value) => {
@@ -503,7 +503,7 @@ export const WorkoutSheetsCreate = () => {
                     loading={
                       activeExerciseIndex === index && isFetchingExercises
                     }
-                    placeholder="Digite o nome do exercicio"
+                    placeholder="Digite o nome do exercício"
                     error={currentErrors.exerciseId}
                     required
                   />

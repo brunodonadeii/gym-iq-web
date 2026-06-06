@@ -26,8 +26,8 @@ export const ResetPasswordPage = () => {
 
     if (!token) {
       showApiError(
-        new Error("O link de redefinicao esta incompleto ou invalido."),
-        "O link de redefinicao esta incompleto ou invalido.",
+        new Error("O link de redefinição está incompleto ou inválido."),
+        "O link de redefinição está incompleto ou inválido.",
       );
       hasError = true;
     }

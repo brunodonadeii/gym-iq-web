@@ -89,12 +89,12 @@ export const LoginPage = () => {
             <img className={styles.logo} src="/logo.svg" alt="Gym IQ" />
           </div>
           <h2>
-            Dados, <span className={styles.accent}>previsoes</span> e gestao em
-            um so sistema.
+            Dados, <span className={styles.accent}>previsões</span> e gestão em
+            um só sistema.
           </h2>
           <p className={styles.muted}>
-            Centralize alunos, pagamentos, metricas e analises preditivas em uma
-            unica plataforma.
+            Centralize alunos, pagamentos, métricas e análises preditivas em uma
+            única plataforma.
           </p>
         </div>
       </div>

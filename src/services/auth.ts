@@ -39,7 +39,7 @@ export async function login(data: LoginRequest): Promise<AuthResponse> {
 
   const jsonData = await parseApiResponse<AuthResponse>(
     response,
-    "Nao foi possivel entrar. Confira seu e-mail e senha e tente novamente.",
+        "Não foi possível entrar. Confira seu e-mail e senha e tente novamente.",
   );
 
   clearAuthStorage();
@@ -63,7 +63,7 @@ export async function forgotPassword(
 
   return parseApiResponse<AuthMessageResponse>(
     response,
-    "Nao foi possivel solicitar a redefinicao de senha.",
+        "Não foi possível solicitar a redefinição de senha.",
   );
 }
 
@@ -78,7 +78,7 @@ export async function resetPassword(
 
   return parseApiResponse<AuthMessageResponse>(
     response,
-    "Nao foi possivel redefinir a senha.",
+        "Não foi possível redefinir a senha.",
   );
 }
 

@@ -28,7 +28,7 @@ export const formatPercent = (value?: number) =>
 
 export const formatDateTime = (value?: string) => {
   if (!value) {
-    return "Nao informado";
+  return "Não informado";
   }
 
   const date = new Date(value);

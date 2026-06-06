@@ -7,7 +7,7 @@ import { dashboardKeys } from "./dashboardKeys";
 async function fetchRetentionDashboard(): Promise<RetentionDashboard> {
   const response = await authFetch("dashboard/retention");
 
-  return parseApiResponse(response, "Erro ao buscar dashboard de reten��o");
+  return parseApiResponse(response, "Erro ao buscar dashboard de retenção");
 }
 
 export function useGetRetentionDashboard(enabled = true) {
