@@ -1,5 +1,6 @@
 ﻿import { Autocomplete } from "@/components/Autocomplete/Autocomplete";
 import { Button } from "@/components/Button/Button";
+import { DetailLoadState } from "@/components/DetailLoadState/DetailLoadState";
 import { Dropdown } from "@/components/Dropdown/Dropdown";
 import { Pagination } from "@/components/Pagination/Pagination";
 import { Skeleton } from "@/components/Skeleton/Skeleton";
@@ -686,8 +687,33 @@ const WorkoutSheetsDetailsContent = ({
 export const WorkoutSheetsDetails = () => {
   const params = useParams({ strict: false });
   const workoutSheetId = params.workoutSheetId;
-  const { data: details, isLoading: isLoadingDetails } =
-    useGetWorkoutSheetById(workoutSheetId);
+  const navigate = useNavigate();
+  const {
+    data: details,
+    error,
+    isError,
+    isLoading: isLoadingDetails,
+  } = useGetWorkoutSheetById(workoutSheetId);
+
+  if (isLoadingDetails) {
+    return (
+      <DetailLoadState
+        entity={{ name: "Ficha de treino", article: "esta", pronoun: "ela" }}
+        loading
+        onBack={() => navigate({ to: "/workout-sheets" })}
+      />
+    );
+  }
+
+  if (isError || (!isLoadingDetails && !details)) {
+    return (
+      <DetailLoadState
+        entity={{ name: "Ficha de treino", article: "esta", pronoun: "ela" }}
+        error={error}
+        onBack={() => navigate({ to: "/workout-sheets" })}
+      />
+    );
+  }
 
   return (
     <WorkoutSheetsDetailsContent

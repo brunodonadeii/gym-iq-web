@@ -1,4 +1,5 @@
 import { Button } from "@/components/Button/Button";
+import { DetailLoadState } from "@/components/DetailLoadState/DetailLoadState";
 import { Form } from "@/components/Form/Form";
 import { TextField } from "@/components/TextField/TextField";
 import { useFormInputs } from "@/hooks/useFormInputs";
@@ -223,7 +224,19 @@ const InstructorsEditForm = ({
 export const InstructorsEdit = () => {
   const params = useParams({ strict: false });
   const instructorId = params.instructorId;
-  const { data: details, isLoading } = useGetInstructorById(instructorId);
+  const navigate = useNavigate();
+  const { data: details, error, isError, isLoading } =
+    useGetInstructorById(instructorId);
+
+  if (isError || (!isLoading && !details)) {
+    return (
+      <DetailLoadState
+        entity={{ name: "Instrutor", article: "este", pronoun: "ele" }}
+        error={error}
+        onBack={() => navigate({ to: "/instructors" })}
+      />
+    );
+  }
 
   return (
     <InstructorsEditForm

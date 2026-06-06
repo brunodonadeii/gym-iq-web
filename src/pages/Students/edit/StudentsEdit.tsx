@@ -1,4 +1,5 @@
 ﻿import { Button } from "@/components/Button/Button";
+import { DetailLoadState } from "@/components/DetailLoadState/DetailLoadState";
 import { Form } from "@/components/Form/Form";
 import { TextField } from "@/components/TextField/TextField";
 import { useFormInputs } from "@/hooks/useFormInputs";
@@ -27,7 +28,8 @@ export const StudentsEdit = () => {
   const [errors, setErrors] = useState<Partial<Record<string, string>>>({});
   const { set, setMasked } = useFormInputs(setData);
   const { mutate: mutateUpdate, isPending } = useUpdateStudent();
-  const { data: details, isLoading } = useGetStudentById(studentId);
+  const { data: details, error, isError, isLoading } =
+    useGetStudentById(studentId);
   const navigate = useNavigate();
   const anonymized = isAnonymizedStudent(details);
 
@@ -90,6 +92,16 @@ export const StudentsEdit = () => {
       },
     );
   };
+
+  if (isError || (!isLoading && !details)) {
+    return (
+      <DetailLoadState
+        entity={{ name: "Aluno", article: "este", pronoun: "ele" }}
+        error={error}
+        onBack={() => navigate({ to: "/students" })}
+      />
+    );
+  }
 
   return (
     <Form

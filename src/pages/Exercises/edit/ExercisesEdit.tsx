@@ -1,4 +1,5 @@
 ﻿import { Button } from "@/components/Button/Button";
+import { DetailLoadState } from "@/components/DetailLoadState/DetailLoadState";
 import { Form } from "@/components/Form/Form";
 import { TextField } from "@/components/TextField/TextField";
 import { useFormInputs } from "@/hooks/useFormInputs";
@@ -133,8 +134,20 @@ const ExercisesEditForm = ({
 export const ExercisesEdit = () => {
   const params = useParams({ strict: false });
   const exerciseId = params.exerciseId;
-  const { data: details, isLoading } = useGetExerciseById(exerciseId);
+  const navigate = useNavigate();
+  const { data: details, error, isError, isLoading } =
+    useGetExerciseById(exerciseId);
   const initialData = isLoading ? EMPTY_FORM : mapExerciseToForm(details);
+
+  if (isError || (!isLoading && !details)) {
+    return (
+      <DetailLoadState
+        entity={{ name: "Exercício", article: "este", pronoun: "ele" }}
+        error={error}
+        onBack={() => navigate({ to: "/exercises" })}
+      />
+    );
+  }
 
   return (
     <ExercisesEditForm

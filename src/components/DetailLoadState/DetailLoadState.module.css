@@ -1,0 +1,6 @@
+.message {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-width: 60ch;
+}
+

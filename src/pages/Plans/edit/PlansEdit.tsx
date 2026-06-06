@@ -1,4 +1,5 @@
 import { Button } from "@/components/Button/Button";
+import { DetailLoadState } from "@/components/DetailLoadState/DetailLoadState";
 import { Form } from "@/components/Form/Form";
 import { TextField } from "@/components/TextField/TextField";
 import { useFormInputs } from "@/hooks/useFormInputs";
@@ -167,7 +168,18 @@ const PlansEditForm = ({
 export const PlansEdit = () => {
   const params = useParams({ strict: false });
   const planId = params.planId;
-  const { data: details, isLoading } = useGetPlanById(planId);
+  const navigate = useNavigate();
+  const { data: details, error, isError, isLoading } = useGetPlanById(planId);
+
+  if (isError || (!isLoading && !details)) {
+    return (
+      <DetailLoadState
+        entity={{ name: "Plano", article: "este", pronoun: "ele" }}
+        error={error}
+        onBack={() => navigate({ to: "/plans" })}
+      />
+    );
+  }
 
   return (
     <PlansEditForm
@@ -178,5 +190,4 @@ export const PlansEdit = () => {
     />
   );
 };
-
 

@@ -1,4 +1,5 @@
 ﻿import { Button } from "@/components/Button/Button";
+import { DetailLoadState } from "@/components/DetailLoadState/DetailLoadState";
 import { Form } from "@/components/Form/Form";
 import { SelectField } from "@/components/SelectField/SelectField";
 import { useFormInputs } from "@/hooks/useFormInputs";
@@ -7,10 +8,10 @@ import type {
   Enrollment,
   EnrollmentRenewFormData,
 } from "@/pages/Enrollments/types";
-import { useGetEnrollments } from "@/queries/useGetEnrollments";
+import { useGetEnrollmentById } from "@/queries/useGetEnrollmentById";
 import { useGetPlans } from "@/queries/useGetPlans";
 import { useNavigate, useParams } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import styles from "./EnrollmentsRenew.module.css";
 
@@ -174,32 +175,39 @@ export const EnrollmentsRenew = () => {
   const params = useParams({ strict: false });
   const enrollmentId = params.enrollmentId;
   const navigate = useNavigate();
-  const { data: enrollments, isLoading: isLoadingEnrollments } =
-    useGetEnrollments({ size: 100, sort: "createdAt,desc" });
+  const {
+    data: enrollment,
+    error,
+    isError,
+    isLoading: isLoadingEnrollment,
+  } = useGetEnrollmentById(enrollmentId);
   const { data: plans, isLoading: isLoadingPlans } = useGetPlans("active", "", {
     size: 100,
     sort: "name,asc",
   });
 
-  const enrollment = useMemo(
-    () =>
-      enrollments?.content.find(
-        (item) => String(item.enrollmentId) === String(enrollmentId),
-      ),
-    [enrollmentId, enrollments],
-  );
   const recurring = isRecurringEnrollment(enrollment);
-  const loading = isLoadingEnrollments || isLoadingPlans;
+  const loading = isLoadingEnrollment || isLoadingPlans;
   const initialData = enrollment
     ? { newPlanId: String(enrollment.planId) }
     : EMPTY_FORM;
 
   useEffect(() => {
-    if (recurring) {
+    if (!isLoadingEnrollment && enrollment && recurring) {
       toast.info("Matrículas recorrentes não permitem renovação manual.");
       navigate({ to: "/enrollments" });
     }
-  }, [navigate, recurring]);
+  }, [enrollment, isLoadingEnrollment, navigate, recurring]);
+
+  if (isError || (!isLoadingEnrollment && !enrollment)) {
+    return (
+      <DetailLoadState
+        entity={{ name: "Matrícula", article: "esta", pronoun: "ela" }}
+        error={error}
+        onBack={() => navigate({ to: "/enrollments" })}
+      />
+    );
+  }
 
   const planOptions = [
     { label: "Selecione o novo plano", value: "", disabled: true },
