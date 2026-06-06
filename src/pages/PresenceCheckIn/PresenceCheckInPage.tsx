@@ -89,7 +89,7 @@ export const PresenceCheckInPage = () => {
             </p>
           </div>
 
-          <form className={styles.form} onSubmit={handleSubmit}>
+          <form className={styles.form} onSubmit={handleSubmit} noValidate>
             <TextField
               label="CPF ou e-mail"
               id="identifier"

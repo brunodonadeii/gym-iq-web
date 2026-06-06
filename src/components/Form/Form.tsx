@@ -58,6 +58,7 @@ export const Form = ({
   return (
     <form
       className={styles.page}
+      noValidate
       onSubmit={(event) => {
         event.preventDefault();
         if (!loading) onSubmit();

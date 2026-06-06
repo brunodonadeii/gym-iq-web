@@ -401,6 +401,7 @@ const WorkoutSheetsDetailsContent = ({
     <div className={styles.page}>
       <form
         className={styles.editorForm}
+        noValidate
         onSubmit={(event) => {
           event.preventDefault();
           if (!isUpdatingSheet) handleUpdateSheet();
@@ -588,6 +589,7 @@ const WorkoutSheetsDetailsContent = ({
 
       <form
         className={styles.card}
+        noValidate
         onSubmit={(event) => {
           event.preventDefault();
           if (!isExerciseSubmitting) handleSubmitExercise();

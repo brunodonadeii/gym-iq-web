@@ -112,7 +112,7 @@ export const ResetPasswordPage = () => {
       </div>
 
       <div className={styles.right}>
-        <form className={styles.formWrapper} onSubmit={handleSubmit}>
+        <form className={styles.formWrapper} onSubmit={handleSubmit} noValidate>
           <Card>
             <div>
               <h3>Redefinir senha</h3>

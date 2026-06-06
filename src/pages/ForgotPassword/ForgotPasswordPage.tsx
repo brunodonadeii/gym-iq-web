@@ -62,7 +62,7 @@ export const ForgotPasswordPage = () => {
       </div>
 
       <div className={styles.right}>
-        <form className={styles.formWrapper} onSubmit={handleSubmit}>
+        <form className={styles.formWrapper} onSubmit={handleSubmit} noValidate>
           <Card>
             <div>
               <h3>Esqueci minha senha</h3>

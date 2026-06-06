@@ -100,7 +100,7 @@ export const LoginPage = () => {
       </div>
 
       <div className={styles.right}>
-        <form className={styles.formWrapper} onSubmit={handleSubmit}>
+        <form className={styles.formWrapper} onSubmit={handleSubmit} noValidate>
           <Card>
             <FormHeader />
             <TextField

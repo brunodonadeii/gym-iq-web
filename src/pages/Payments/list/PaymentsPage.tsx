@@ -519,6 +519,7 @@ export const PaymentsPage = () => {
             role="dialog"
             aria-modal="true"
             aria-labelledby="payPaymentTitle"
+            noValidate
             onSubmit={(event) => {
               event.preventDefault();
               if (!isPayingPayment) handlePayPayment();
