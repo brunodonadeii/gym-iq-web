@@ -40,7 +40,14 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 import styles from "./DashboardPage.module.css";
-import { getDateRangePresetValue } from "@/components/DateRangePicker/dateRangeUtils";
+import {
+  getDateRangePresetValue,
+  type DateRangePresetKey,
+  type DateRangeValue,
+} from "@/components/DateRangePicker/dateRangeUtils";
+
+const areDateRangesEqual = (a: DateRangeValue, b: DateRangeValue) =>
+  a.startDate === b.startDate && a.endDate === b.endDate;
 
 export const DashboardPage = () => {
   const isAdmin = auth.hasAnyRole(["ADMIN"]);
@@ -114,6 +121,38 @@ export const DashboardPage = () => {
         );
       },
     });
+  };
+
+  const handleFinancialRangeChange = (
+    value: DateRangeValue,
+    preset: DateRangePresetKey,
+  ) => {
+    const currentRange = {
+      startDate: financialStartDate,
+      endDate: financialEndDate,
+    };
+
+    setFinancialRange(value);
+
+    if (preset === "thisMonth" && areDateRangesEqual(value, currentRange)) {
+      financial.refetch();
+    }
+  };
+
+  const handleOperationsRangeChange = (
+    value: DateRangeValue,
+    preset: DateRangePresetKey,
+  ) => {
+    const currentRange = {
+      startDate: operationsStartDate,
+      endDate: operationsEndDate,
+    };
+
+    setOperationsRange(value);
+
+    if (preset === "thisMonth" && areDateRangesEqual(value, currentRange)) {
+      operations.refetch();
+    }
   };
 
   return (
@@ -259,7 +298,7 @@ export const DashboardPage = () => {
                 startDate: financialStartDate,
                 endDate: financialEndDate,
               }}
-              onChange={(value) => setFinancialRange(value)}
+              onChange={handleFinancialRangeChange}
               className={styles.sectionFilterField}
             />
           </div>
@@ -322,7 +361,7 @@ export const DashboardPage = () => {
                 startDate: operationsStartDate,
                 endDate: operationsEndDate,
               }}
-              onChange={(value) => setOperationsRange(value)}
+              onChange={handleOperationsRangeChange}
               className={styles.sectionFilterField}
             />
           </div>
