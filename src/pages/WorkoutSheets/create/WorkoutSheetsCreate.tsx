@@ -285,6 +285,7 @@ export const WorkoutSheetsCreate = () => {
       title="Dados da ficha"
       description="Vincule aluno, instrutor, periodo de vigencia e exercicios da ficha."
       loading={false}
+      onSubmit={handleSubmit}
       actions={
         <>
           <Button
@@ -295,7 +296,7 @@ export const WorkoutSheetsCreate = () => {
             Cancelar
           </Button>
           <Button
-            onClick={handleSubmit}
+            type="submit"
             loading={isPending}
             disabled={isInstructor && !effectiveInstructorId}
           >

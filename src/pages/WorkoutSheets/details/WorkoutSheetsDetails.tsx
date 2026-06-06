@@ -353,143 +353,158 @@ const WorkoutSheetsDetailsContent = ({
 
   return (
     <div className={styles.page}>
-      <section className={styles.card}>
-        <div className={styles.sectionHeader}>
-          <div>
-            <h3 className={styles.sectionTitle}>Dados da ficha</h3>
-            <p className={styles.sectionDescription}>
-              Atualize aluno, instrutor, nome, objetivo e periodo da ficha.
-            </p>
+      <form
+        className={styles.editorForm}
+        onSubmit={(event) => {
+          event.preventDefault();
+          if (!isUpdatingSheet) handleUpdateSheet();
+        }}
+      >
+        <section className={styles.card}>
+          <div className={styles.sectionHeader}>
+            <div>
+              <h3 className={styles.sectionTitle}>Dados da ficha</h3>
+              <p className={styles.sectionDescription}>
+                Atualize aluno, instrutor, nome, objetivo e periodo da ficha.
+              </p>
+            </div>
           </div>
-        </div>
 
-        {isLoadingDetails ? (
-          <div className={styles.skeletonStack}>
-            <Skeleton height="56px" />
-            <Skeleton height="56px" />
-            <Skeleton height="56px" />
-          </div>
-        ) : (
-          <div className={styles.grid}>
-            <Autocomplete
-              label="Aluno"
-              id="studentId"
-              search={studentSearch}
-              onSearchChange={(value) => {
-                setStudentSearch(value);
-                setSheetForm((prev) => ({ ...prev, studentId: "" }));
-              }}
-              onSelect={(option) => {
-                setStudentSearch(option.label);
-                setSheetForm((prev) => ({
-                  ...prev,
-                  studentId: option.value,
-                }));
-              }}
-              onClear={() => {
-                setStudentSearch("");
-                setSheetForm((prev) => ({ ...prev, studentId: "" }));
-              }}
-              options={autocompleteStudentOptions}
-              loading={isFetchingStudents}
-              placeholder="Digite o nome ou o CPF/e-mail completos"
-            />
-            {isInstructor ? (
-              <TextField
-                label="Instrutor"
-                id="instructorId"
-                value={effectiveInstructorName}
-                onChange={() => undefined}
-                helperText={me?.email ?? undefined}
-                readOnly
-                disabled
-              />
-            ) : (
+          {isLoadingDetails ? (
+            <div className={styles.skeletonStack}>
+              <Skeleton height="56px" />
+              <Skeleton height="56px" />
+              <Skeleton height="56px" />
+            </div>
+          ) : (
+            <div className={styles.grid}>
               <Autocomplete
-                label="Instrutor"
-                id="instructorId"
-                search={instructorSearch}
+                label="Aluno"
+                id="studentId"
+                search={studentSearch}
                 onSearchChange={(value) => {
-                  setInstructorSearch(value);
-                  setSheetForm((prev) => ({ ...prev, instructorId: "" }));
+                  setStudentSearch(value);
+                  setSheetForm((prev) => ({ ...prev, studentId: "" }));
                 }}
                 onSelect={(option) => {
-                  setInstructorSearch(option.label);
+                  setStudentSearch(option.label);
                   setSheetForm((prev) => ({
                     ...prev,
-                    instructorId: option.value,
+                    studentId: option.value,
                   }));
                 }}
                 onClear={() => {
-                  setInstructorSearch("");
-                  setSheetForm((prev) => ({ ...prev, instructorId: "" }));
+                  setStudentSearch("");
+                  setSheetForm((prev) => ({ ...prev, studentId: "" }));
                 }}
-                options={instructorOptions}
-                loading={isFetchingInstructors}
-                placeholder="Digite nome, CREF ou e-mail completo"
+                options={autocompleteStudentOptions}
+                loading={isFetchingStudents}
+                placeholder="Digite o nome ou o CPF/e-mail completos"
               />
-            )}
-            <TextField
-              label="Nome da ficha"
-              id="name"
-              value={sheetForm.name}
-              onChange={setSheetField("name")}
-            />
-            <TextField
-              label="Objetivo"
-              id="goal"
-              value={sheetForm.goal}
-              onChange={setSheetField("goal")}
-            />
-            <TextField
-              label="Data de inicio"
-              id="startDate"
-              type="date"
-              value={sheetForm.startDate}
-              onChange={setSheetField("startDate")}
-            />
-            <TextField
-              label="Data de fim"
-              id="endDate"
-              type="date"
-              value={sheetForm.endDate}
-              onChange={setSheetField("endDate")}
-            />
-            <TextField
-              label="Observações"
-              id="notes"
-              value={sheetForm.notes}
-              onChange={setSheetField("notes")}
-              containerProps={{ className: styles.fieldWide }}
-            />
+              {isInstructor ? (
+                <TextField
+                  label="Instrutor"
+                  id="instructorId"
+                  value={effectiveInstructorName}
+                  onChange={() => undefined}
+                  helperText={me?.email ?? undefined}
+                  readOnly
+                  disabled
+                />
+              ) : (
+                <Autocomplete
+                  label="Instrutor"
+                  id="instructorId"
+                  search={instructorSearch}
+                  onSearchChange={(value) => {
+                    setInstructorSearch(value);
+                    setSheetForm((prev) => ({ ...prev, instructorId: "" }));
+                  }}
+                  onSelect={(option) => {
+                    setInstructorSearch(option.label);
+                    setSheetForm((prev) => ({
+                      ...prev,
+                      instructorId: option.value,
+                    }));
+                  }}
+                  onClear={() => {
+                    setInstructorSearch("");
+                    setSheetForm((prev) => ({ ...prev, instructorId: "" }));
+                  }}
+                  options={instructorOptions}
+                  loading={isFetchingInstructors}
+                  placeholder="Digite nome, CREF ou e-mail completo"
+                />
+              )}
+              <TextField
+                label="Nome da ficha"
+                id="name"
+                value={sheetForm.name}
+                onChange={setSheetField("name")}
+              />
+              <TextField
+                label="Objetivo"
+                id="goal"
+                value={sheetForm.goal}
+                onChange={setSheetField("goal")}
+              />
+              <TextField
+                label="Data de inicio"
+                id="startDate"
+                type="date"
+                value={sheetForm.startDate}
+                onChange={setSheetField("startDate")}
+              />
+              <TextField
+                label="Data de fim"
+                id="endDate"
+                type="date"
+                value={sheetForm.endDate}
+                onChange={setSheetField("endDate")}
+              />
+              <TextField
+                label="Observações"
+                id="notes"
+                value={sheetForm.notes}
+                onChange={setSheetField("notes")}
+                containerProps={{ className: styles.fieldWide }}
+              />
+            </div>
+          )}
+        </section>
+
+        {!isLoadingDetails && (
+          <div className={styles.actions}>
+            <Button
+              type="button"
+              onClick={() => navigate({ to: "/workout-sheets" })}
+              disabled={isUpdatingSheet}
+            >
+              Voltar
+            </Button>
+            <Button
+              type="submit"
+              loading={isUpdatingSheet}
+              disabled={
+                !sheetForm.studentId ||
+                !effectiveInstructorId ||
+                !sheetForm.name ||
+                (sheetForm.exercises.length === 0 && exerciseRows.length === 0)
+              }
+            >
+              Salvar ficha
+            </Button>
           </div>
         )}
-      </section>
+      </form>
 
-      {!isLoadingDetails && (
-        <div className={styles.actions}>
-          <Button
-            onClick={() => navigate({ to: "/workout-sheets" })}
-            disabled={isUpdatingSheet}
-          >
-            Voltar
-          </Button>
-          <Button
-            onClick={handleUpdateSheet}
-            loading={isUpdatingSheet}
-            disabled={
-              !sheetForm.studentId ||
-              !effectiveInstructorId ||
-              !sheetForm.name ||
-              (sheetForm.exercises.length === 0 && exerciseRows.length === 0)
-            }
-          >
-            Salvar ficha
-          </Button>
-        </div>
-      )}
-
-      <section className={styles.card}>
+      <form
+        className={styles.card}
+        onSubmit={(event) => {
+          event.preventDefault();
+          if (!isExerciseSubmitting) handleSubmitExercise();
+        }}
+      >
         <div className={styles.sectionHeader}>
           <div>
             <h3 className={styles.sectionTitle}>Exercicios da ficha</h3>
@@ -578,15 +593,19 @@ const WorkoutSheetsDetailsContent = ({
 
         <div className={styles.actions}>
           {editingExerciseId && (
-            <Button onClick={resetExerciseForm} disabled={isExerciseSubmitting}>
+            <Button
+              type="button"
+              onClick={resetExerciseForm}
+              disabled={isExerciseSubmitting}
+            >
               Cancelar edicao
             </Button>
           )}
-          <Button onClick={handleSubmitExercise} loading={isExerciseSubmitting}>
+          <Button type="submit" loading={isExerciseSubmitting}>
             {editingExerciseId ? "Salvar exercicio" : "Adicionar exercicio"}
           </Button>
         </div>
-      </section>
+      </form>
 
       <section className={styles.tableSection}>
         <div className={styles.tableHeader}>

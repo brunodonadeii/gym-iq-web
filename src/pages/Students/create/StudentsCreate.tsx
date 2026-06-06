@@ -87,6 +87,7 @@ export const StudentsCreate = () => {
     <Form
       title="Dados pessoais"
       description="Informações base para identificar o aluno e iniciar o acesso."
+      onSubmit={handleSubmit}
       actions={
         <>
           <Button
@@ -95,7 +96,7 @@ export const StudentsCreate = () => {
           >
             Cancelar
           </Button>
-          <Button onClick={handleSubmit} loading={isPending}>
+          <Button type="submit" loading={isPending}>
             Salvar
           </Button>
         </>

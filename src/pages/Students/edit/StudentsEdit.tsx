@@ -112,6 +112,7 @@ export const StudentsEdit = () => {
           : "Informações base para identificar o aluno e iniciar o acesso."
       }
       loading={isLoading}
+      onSubmit={handleSubmit}
       actions={
         <>
           <Button
@@ -120,7 +121,7 @@ export const StudentsEdit = () => {
           >
             Cancelar
           </Button>
-          <Button onClick={handleSubmit} loading={isPending}>
+          <Button type="submit" loading={isPending}>
             Salvar
           </Button>
         </>

@@ -4,6 +4,12 @@
   gap: 24px;
 }
 
+.editorForm {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
 .card,
 .tableSection {
   background: var(--surface);

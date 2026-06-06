@@ -80,6 +80,7 @@ const ExercisesEditForm = ({
       title="Dados do exercício"
       description="Atualize as informações usadas nas fichas de treino."
       loading={loading}
+      onSubmit={handleSubmit}
       actions={
         <>
           <Button
@@ -88,7 +89,7 @@ const ExercisesEditForm = ({
           >
             Cancelar
           </Button>
-          <Button onClick={handleSubmit} loading={isPending}>
+          <Button type="submit" loading={isPending}>
             Salvar
           </Button>
         </>

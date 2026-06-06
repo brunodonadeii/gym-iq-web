@@ -105,6 +105,7 @@ const EnrollmentsRenewForm = ({
       title="Renovação de matrícula"
       description="Escolha o novo plano para renovar o contrato do aluno selecionado."
       loading={loading}
+      onSubmit={handleSubmit}
       actions={
         <>
           <Button
@@ -114,7 +115,7 @@ const EnrollmentsRenewForm = ({
             Cancelar
           </Button>
           <Button
-            onClick={handleSubmit}
+            type="submit"
             loading={isPending}
             disabled={recurring}
           >

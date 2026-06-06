@@ -148,6 +148,7 @@ const InstructorsEditForm = ({
       title="Detalhes do instrutor"
       description="Atualize dados profissionais e de contato."
       loading={isLoading}
+      onSubmit={isAdmin ? handleSubmit : undefined}
       actions={
         <>
           <Button
@@ -157,7 +158,7 @@ const InstructorsEditForm = ({
             {isAdmin ? "Cancelar" : "Voltar"}
           </Button>
           {isAdmin && (
-            <Button onClick={handleSubmit} loading={isPending}>
+            <Button type="submit" loading={isPending}>
               Salvar
             </Button>
           )}

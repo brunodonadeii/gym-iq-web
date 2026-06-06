@@ -92,6 +92,7 @@ const PlansEditForm = ({
       title="Dados do plano"
       description="Informações base para identificar e editar um plano."
       loading={isLoading}
+      onSubmit={handleSubmit}
       actions={
         <>
           <Button
@@ -100,7 +101,7 @@ const PlansEditForm = ({
           >
             Cancelar
           </Button>
-          <Button onClick={handleSubmit} loading={isPending}>
+          <Button type="submit" loading={isPending}>
             Salvar
           </Button>
         </>

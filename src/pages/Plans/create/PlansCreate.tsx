@@ -68,6 +68,7 @@ export const PlansCreate = () => {
     <Form
       title="Dados do plano"
       description="Informações base para identificar e criar um plano."
+      onSubmit={handleSubmit}
       actions={
         <>
           <Button
@@ -76,7 +77,7 @@ export const PlansCreate = () => {
           >
             Cancelar
           </Button>
-          <Button onClick={handleSubmit} loading={isPending}>
+          <Button type="submit" loading={isPending}>
             Salvar
           </Button>
         </>

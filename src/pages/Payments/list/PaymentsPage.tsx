@@ -496,11 +496,15 @@ export const PaymentsPage = () => {
 
       {selectedPayment && (
         <div className={styles.modalOverlay} role="presentation">
-          <section
+          <form
             className={styles.modal}
             role="dialog"
             aria-modal="true"
             aria-labelledby="payPaymentTitle"
+            onSubmit={(event) => {
+              event.preventDefault();
+              if (!isPayingPayment) handlePayPayment();
+            }}
           >
             <div className={styles.modalHeader}>
               <div>
@@ -515,6 +519,7 @@ export const PaymentsPage = () => {
               </div>
 
               <button
+                type="button"
                 className={styles.modalClose}
                 onClick={closePayModal}
                 aria-label="Fechar modal"
@@ -575,18 +580,18 @@ export const PaymentsPage = () => {
             </div>
 
             <div className={styles.modalActions}>
-              <Button onClick={closePayModal} disabled={isPayingPayment}>
+              <Button type="button" onClick={closePayModal} disabled={isPayingPayment}>
                 Cancelar
               </Button>
               <Button
-                onClick={handlePayPayment}
+                type="submit"
                 loading={isPayingPayment}
                 leftIcon={<CheckCircle2 size={18} />}
               >
                 Confirmar pagamento
               </Button>
             </div>
-          </section>
+          </form>
         </div>
       )}
     </div>

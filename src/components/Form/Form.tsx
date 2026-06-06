@@ -8,6 +8,7 @@ type FormProps = {
   loading?: boolean;
   title: string;
   description: string;
+  onSubmit?: () => void;
 };
 
 export const Form = ({
@@ -16,9 +17,10 @@ export const Form = ({
   loading,
   description,
   title = "Dados pessoais",
+  onSubmit,
 }: FormProps) => {
-  return (
-    <div className={styles.page}>
+  const content = (
+    <>
       <div className={styles.card}>
         {loading ? (
           <div className={styles.skeletonStack}>
@@ -46,7 +48,23 @@ export const Form = ({
       </div>
 
       <div className={styles.actions}>{actions}</div>
-    </div>
+    </>
+  );
+
+  if (!onSubmit) {
+    return <div className={styles.page}>{content}</div>;
+  }
+
+  return (
+    <form
+      className={styles.page}
+      onSubmit={(event) => {
+        event.preventDefault();
+        if (!loading) onSubmit();
+      }}
+    >
+      {content}
+    </form>
   );
 };
 

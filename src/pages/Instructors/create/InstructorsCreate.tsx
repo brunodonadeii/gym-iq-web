@@ -108,6 +108,7 @@ export const InstructorsCreate = () => {
     <Form
       title="Dados do instrutor"
       description="Cadastre acesso, contato, registro profissional e especialidade."
+      onSubmit={handleSubmit}
       actions={
         <>
           <Button
@@ -116,7 +117,7 @@ export const InstructorsCreate = () => {
           >
             Cancelar
           </Button>
-          <Button onClick={handleSubmit} loading={isPending}>
+          <Button type="submit" loading={isPending}>
             Salvar
           </Button>
         </>

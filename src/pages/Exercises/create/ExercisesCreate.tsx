@@ -61,6 +61,7 @@ export const ExercisesCreate = () => {
     <Form
       title="Dados do exercício"
       description="Cadastre as informações essenciais para reutilizar o exercício nas fichas."
+      onSubmit={handleSubmit}
       actions={
         <>
           <Button
@@ -69,7 +70,7 @@ export const ExercisesCreate = () => {
           >
             Cancelar
           </Button>
-          <Button onClick={handleSubmit} loading={isPending}>
+          <Button type="submit" loading={isPending}>
             Salvar
           </Button>
         </>

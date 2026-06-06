@@ -90,6 +90,7 @@ export const EnrollmentsCreate = () => {
       title="Dados da matrícula"
       description="Selecione o aluno, o plano e defina a data inicial quando precisar agendar a vigência."
       loading={loadingDependencies}
+      onSubmit={handleSubmit}
       actions={
         <>
           <Button
@@ -98,7 +99,7 @@ export const EnrollmentsCreate = () => {
           >
             Cancelar
           </Button>
-          <Button onClick={handleSubmit} loading={isPending}>
+          <Button type="submit" loading={isPending}>
             Salvar
           </Button>
         </>
