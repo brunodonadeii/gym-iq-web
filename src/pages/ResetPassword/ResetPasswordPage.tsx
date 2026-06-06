@@ -13,7 +13,8 @@ import styles from "@/pages/Login/LoginPage.module.css";
 
 export const ResetPasswordPage = () => {
   const search = useSearch({ strict: false }) as { token?: string };
-  const token = search.token ?? "";
+  const token = search.token?.trim() ?? "";
+  const hasToken = Boolean(token);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
@@ -25,10 +26,6 @@ export const ResetPasswordPage = () => {
     let hasError = false;
 
     if (!token) {
-      showApiError(
-        new Error("O link de redefinição está incompleto ou inválido."),
-        "O link de redefinição está incompleto ou inválido.",
-      );
       hasError = true;
     }
 
@@ -115,9 +112,21 @@ export const ResetPasswordPage = () => {
         <form className={styles.formWrapper} onSubmit={handleSubmit} noValidate>
           <Card>
             <div>
-              <h3>Redefinir senha</h3>
-              <span>Use o token recebido no seu e-mail</span>
+              <h3>
+                {hasToken ? "Redefinir senha" : "Link de redefinição inválido"}
+              </h3>
+              <span>
+                {hasToken
+                  ? "Use o token recebido no seu e-mail"
+                  : "Solicite um novo link de recuperação de senha."}
+              </span>
             </div>
+
+            {!hasToken && (
+              <div className={styles.errorMessage} role="alert">
+                Solicite um novo link de recuperação de senha.
+              </div>
+            )}
 
             <TextField
               label="Nova senha"
@@ -129,7 +138,7 @@ export const ResetPasswordPage = () => {
                 setPasswordError("");
               }}
               error={passwordError || undefined}
-              disabled={isSubmitting}
+              disabled={isSubmitting || !hasToken}
               required
             />
 
@@ -143,7 +152,7 @@ export const ResetPasswordPage = () => {
                 setConfirmPasswordError("");
               }}
               error={confirmPasswordError || undefined}
-              disabled={isSubmitting}
+              disabled={isSubmitting || !hasToken}
               required
             />
 
@@ -156,12 +165,17 @@ export const ResetPasswordPage = () => {
             <Button
               type="submit"
               loading={isSubmitting}
-              disabled={!newPassword || !confirmPassword}
+              disabled={!hasToken || !newPassword || !confirmPassword}
             >
               Salvar nova senha
             </Button>
 
             <div className={styles.footerAction}>
+              {!hasToken && (
+                <Link className={styles.inlineLink} to="/forgot-password">
+                  Solicitar novo link
+                </Link>
+              )}
               <Link className={styles.inlineLink} to="/login">
                 Voltar para login
               </Link>
