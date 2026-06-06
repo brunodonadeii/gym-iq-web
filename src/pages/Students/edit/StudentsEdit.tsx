@@ -212,6 +212,7 @@ export const StudentsEdit = () => {
             value={data.zipCode}
             onChange={setMasked("zipCode", "#####-###")}
             placeholder="00000-000"
+            optional
           />
         </div>
 

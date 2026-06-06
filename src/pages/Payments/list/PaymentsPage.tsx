@@ -550,6 +550,7 @@ export const PaymentsPage = () => {
                 id="paidAt"
                 type="datetime-local"
                 value={payForm.paidAt}
+                optional
                 onChange={(e) =>
                   setPayForm((prev) => ({ ...prev, paidAt: e.target.value }))
                 }
@@ -559,6 +560,7 @@ export const PaymentsPage = () => {
                 label="Forma de pagamento"
                 id="payPaymentMethod"
                 value={payForm.paymentMethod}
+                optional
                 onChange={(e) =>
                   setPayForm((prev) => ({
                     ...prev,
@@ -572,6 +574,7 @@ export const PaymentsPage = () => {
                 label="Observações"
                 id="payNotes"
                 value={payForm.notes}
+                optional
                 onChange={(e) =>
                   setPayForm((prev) => ({ ...prev, notes: e.target.value }))
                 }

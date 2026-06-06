@@ -25,6 +25,7 @@ type SelectFieldProps = Omit<
   options: SelectOption[];
   helperText?: string;
   error?: string;
+  optional?: boolean;
   containerProps?: HTMLAttributes<HTMLDivElement>;
 };
 
@@ -36,6 +37,7 @@ export const SelectField = ({
   options,
   helperText,
   error,
+  optional = false,
   containerProps,
   required,
   disabled,
@@ -73,12 +75,17 @@ export const SelectField = ({
       {...containerRest}
     >
       <label className={styles.label} htmlFor={id}>
-        <span>{label}</span>
-        {required && (
-          <span className={styles.requiredMeta} aria-hidden="true">
-            Obrigatório
-          </span>
-        )}
+        <span>
+          {label}
+          {required && (
+            <span className={styles.requiredMark} aria-hidden="true">
+              {" *"}
+            </span>
+          )}
+          {!required && optional && (
+            <span className={styles.optionalMeta}> (opcional)</span>
+          )}
+        </span>
       </label>
 
       <input

@@ -14,6 +14,7 @@ type TextFieldProps = Omit<
   onChange: ChangeEventHandler<HTMLInputElement>;
   helperText?: string;
   error?: string;
+  optional?: boolean;
   containerProps?: HTMLAttributes<HTMLDivElement>;
 };
 
@@ -24,6 +25,7 @@ export const TextField = ({
   id,
   helperText,
   error,
+  optional = false,
   containerProps,
   required,
   ...rest
@@ -37,12 +39,17 @@ export const TextField = ({
       {...containerRest}
     >
       <label className={styles.label} htmlFor={id}>
-        <span>{label}</span>
-        {required && (
-          <span className={styles.requiredMeta} aria-hidden="true">
-            Obrigatório
-          </span>
-        )}
+        <span>
+          {label}
+          {required && (
+            <span className={styles.requiredMark} aria-hidden="true">
+              {" *"}
+            </span>
+          )}
+          {!required && optional && (
+            <span className={styles.optionalMeta}> (opcional)</span>
+          )}
+        </span>
       </label>
 
       <input

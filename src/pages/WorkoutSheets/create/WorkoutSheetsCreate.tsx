@@ -390,6 +390,7 @@ export const WorkoutSheetsCreate = () => {
           value={data.goal}
           onChange={set("goal")}
           placeholder="Hipertrofia"
+          optional
         />
       </div>
 
@@ -400,6 +401,7 @@ export const WorkoutSheetsCreate = () => {
           type="date"
           value={data.startDate}
           onChange={set("startDate")}
+          optional
         />
         <TextField
           label="Data de fim"
@@ -407,6 +409,7 @@ export const WorkoutSheetsCreate = () => {
           type="date"
           value={data.endDate}
           onChange={set("endDate")}
+          optional
         />
       </div>
 
@@ -417,6 +420,7 @@ export const WorkoutSheetsCreate = () => {
           value={data.notes}
           onChange={set("notes")}
           placeholder="Foco em membros superiores"
+          optional
         />
       </div>
 
@@ -538,6 +542,7 @@ export const WorkoutSheetsCreate = () => {
                     id={`exercise-${index}-restSeconds`}
                     type="number"
                     value={exercise.restSeconds}
+                    optional
                     onChange={(event) =>
                       updateExercise(index, "restSeconds", event.target.value)
                     }
@@ -564,6 +569,7 @@ export const WorkoutSheetsCreate = () => {
                     label="Observações do exercício"
                     id={`exercise-${index}-notes`}
                     value={exercise.notes}
+                    optional
                     onChange={(event) =>
                       updateExercise(index, "notes", event.target.value)
                     }

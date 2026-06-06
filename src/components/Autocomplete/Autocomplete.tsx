@@ -23,6 +23,7 @@ type AutocompleteProps = {
   error?: string;
   emptyMessage?: string;
   required?: boolean;
+  optional?: boolean;
   containerClassName?: string;
 };
 
@@ -40,6 +41,7 @@ export const Autocomplete = ({
   error,
   emptyMessage = "Nenhum resultado encontrado.",
   required,
+  optional = false,
   containerClassName,
 }: AutocompleteProps) => {
   const [open, setOpen] = useState(false);
@@ -57,12 +59,17 @@ export const Autocomplete = ({
         .join(" ")}
     >
       <label className={styles.label} htmlFor={id}>
-        <span>{label}</span>
-        {required && (
-          <span className={styles.requiredMeta} aria-hidden="true">
-            Obrigatório
-          </span>
-        )}
+        <span>
+          {label}
+          {required && (
+            <span className={styles.requiredMark} aria-hidden="true">
+              {" *"}
+            </span>
+          )}
+          {!required && optional && (
+            <span className={styles.optionalMeta}> (opcional)</span>
+          )}
+        </span>
       </label>
 
       <div className={styles.wrapper}>

@@ -127,7 +127,6 @@ export const EnrollmentsCreate = () => {
           options={autocompleteStudentOptions}
           loading={isFetchingStudentOptions}
           placeholder="Digite nome, CPF ou e-mail"
-          helperText="Busca leve em /students/options."
           error={errors.studentId}
           required
         />
@@ -164,6 +163,7 @@ export const EnrollmentsCreate = () => {
           type="date"
           value={data.startDate}
           onChange={set("startDate")}
+          optional
         />
       </div>
     </Form>

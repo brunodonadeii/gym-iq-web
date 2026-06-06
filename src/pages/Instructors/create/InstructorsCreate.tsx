@@ -259,6 +259,9 @@ export const InstructorsCreate = () => {
         <span>
           Declaro que o instrutor aceitou o uso dos dados para cadastro e gestao
           do acesso na academia.
+          <span className={styles.requiredMark} aria-hidden="true">
+            {" *"}
+          </span>
         </span>
       </label>
       {errors.lgpdAccepted && (

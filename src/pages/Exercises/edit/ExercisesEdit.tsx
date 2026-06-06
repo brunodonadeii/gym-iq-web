@@ -126,6 +126,7 @@ const ExercisesEditForm = ({
           id="description"
           value={data.description}
           onChange={set("description")}
+          optional
         />
       </div>
     </Form>

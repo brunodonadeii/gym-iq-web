@@ -314,6 +314,9 @@ const InstructorsEditForm = ({
         <span>
           Confirmo o aceite dos termos de LGPD para atualizar o cadastro deste
           instrutor.
+          <span className={styles.requiredMark} aria-hidden="true">
+            {" *"}
+          </span>
         </span>
       </label>
       {errors.lgpdAccepted && (

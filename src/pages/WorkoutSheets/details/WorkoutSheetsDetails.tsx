@@ -400,6 +400,7 @@ const WorkoutSheetsDetailsContent = ({
                 options={autocompleteStudentOptions}
                 loading={isFetchingStudents}
                 placeholder="Digite o nome ou o CPF/e-mail completos"
+                required
               />
               {isInstructor ? (
                 <TextField
@@ -410,6 +411,7 @@ const WorkoutSheetsDetailsContent = ({
                   helperText={me?.email ?? undefined}
                   readOnly
                   disabled
+                  required
                 />
               ) : (
                 <Autocomplete
@@ -434,6 +436,7 @@ const WorkoutSheetsDetailsContent = ({
                   options={instructorOptions}
                   loading={isFetchingInstructors}
                   placeholder="Digite nome, CREF ou e-mail completo"
+                  required
                 />
               )}
               <TextField
@@ -441,12 +444,14 @@ const WorkoutSheetsDetailsContent = ({
                 id="name"
                 value={sheetForm.name}
                 onChange={setSheetField("name")}
+                required
               />
               <TextField
                 label="Objetivo"
                 id="goal"
                 value={sheetForm.goal}
                 onChange={setSheetField("goal")}
+                optional
               />
               <TextField
                 label="Data de inicio"
@@ -454,6 +459,7 @@ const WorkoutSheetsDetailsContent = ({
                 type="date"
                 value={sheetForm.startDate}
                 onChange={setSheetField("startDate")}
+                optional
               />
               <TextField
                 label="Data de fim"
@@ -461,6 +467,7 @@ const WorkoutSheetsDetailsContent = ({
                 type="date"
                 value={sheetForm.endDate}
                 onChange={setSheetField("endDate")}
+                optional
               />
               <TextField
                 label="Observações"
@@ -468,6 +475,7 @@ const WorkoutSheetsDetailsContent = ({
                 value={sheetForm.notes}
                 onChange={setSheetField("notes")}
                 containerProps={{ className: styles.fieldWide }}
+                optional
               />
             </div>
           )}
@@ -537,6 +545,7 @@ const WorkoutSheetsDetailsContent = ({
             options={exerciseOptions}
             loading={isFetchingExercises}
             placeholder="Digite o nome do exercicio"
+            required
           />
           <TextField
             label="Series"
@@ -544,6 +553,7 @@ const WorkoutSheetsDetailsContent = ({
             type="number"
             value={exerciseForm.sets}
             onChange={setExerciseField("sets")}
+            required
           />
         </div>
 
@@ -554,6 +564,7 @@ const WorkoutSheetsDetailsContent = ({
             value={exerciseForm.repetitions}
             onChange={setExerciseField("repetitions")}
             placeholder="10-12"
+            required
           />
           <TextField
             label="Bloco do treino"
@@ -561,6 +572,7 @@ const WorkoutSheetsDetailsContent = ({
             value={exerciseForm.trainingSection}
             onChange={setExerciseField("trainingSection")}
             placeholder="Treino A"
+            required
           />
         </div>
 
@@ -571,6 +583,7 @@ const WorkoutSheetsDetailsContent = ({
             type="number"
             value={exerciseForm.restSeconds}
             onChange={setExerciseField("restSeconds")}
+            optional
           />
         </div>
 
@@ -581,6 +594,7 @@ const WorkoutSheetsDetailsContent = ({
             type="number"
             value={exerciseForm.executionOrder}
             onChange={setExerciseField("executionOrder")}
+            required
           />
           <TextField
             label="Observações do exercício"
@@ -588,6 +602,7 @@ const WorkoutSheetsDetailsContent = ({
             value={exerciseForm.notes}
             onChange={setExerciseField("notes")}
             placeholder="Ajustes de execucao"
+            optional
           />
         </div>
 

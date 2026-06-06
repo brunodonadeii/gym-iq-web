@@ -195,6 +195,7 @@ export const StudentsCreate = () => {
             value={data.zipCode}
             onChange={setMasked("zipCode", "#####-###")}
             placeholder="00000-000"
+            optional
           />
         </div>
       </fieldset>
@@ -216,6 +217,9 @@ export const StudentsCreate = () => {
         <span>
           Declaro que o aluno aceitou o uso dos dados para cadastro e gestao do
           acesso na academia.
+          <span className={styles.requiredMark} aria-hidden="true">
+            {" *"}
+          </span>
         </span>
       </label>
       {errors.lgpdAccepted && (

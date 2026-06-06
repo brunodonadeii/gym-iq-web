@@ -35,3 +35,8 @@
   font-size: 0.875rem;
   line-height: 1.4;
 }
+
+.requiredMark {
+  color: #ef4444;
+  font-weight: 800;
+}

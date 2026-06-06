@@ -109,6 +109,7 @@ export const ExercisesCreate = () => {
           value={data.description}
           onChange={set("description")}
           placeholder="Observa��o curta"
+          optional
         />
       </div>
     </Form>
