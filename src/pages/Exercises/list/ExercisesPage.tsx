@@ -4,7 +4,6 @@ import { Dropdown } from "@/components/Dropdown/Dropdown";
 import { ListToolbar } from "@/components/ListToolbar/ListToolbar";
 import { Pagination } from "@/components/Pagination/Pagination";
 import { SearchBar } from "@/components/SearchBar/SearchBar";
-import { SelectField } from "@/components/SelectField/SelectField";
 import {
   Table,
   TableBody,
@@ -26,14 +25,11 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import styles from "./ExercisesPage.module.css";
 
-type ExerciseStatusFilter = "active" | "inactive" | "all";
-
 const exerciseColumns = [
-  { width: "28%" },
-  { width: "22%" },
-  { width: "30%" },
+  { width: "32%" },
+  { width: "24%" },
+  { width: "34%" },
   { width: "10%" },
-  { width: "8%" },
 ];
 
 const getExerciseId = (exercise: Exercise) => String(exercise.exerciseId);
@@ -42,15 +38,13 @@ export const ExercisesPage = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] =
-    useState<ExerciseStatusFilter>("active");
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
   const [exerciseToDelete, setExerciseToDelete] = useState<Exercise | null>(
     null,
   );
   const debouncedSearch = useDebouncedValue(search);
-  const queryMode = statusFilter === "active" ? "active" : "all";
+  const queryMode = "active";
 
   const { data, isLoading, isFetching } = useGetExercises(
     queryMode,
@@ -81,15 +75,7 @@ export const ExercisesPage = () => {
     });
   }, [data, debouncedSearch, page, queryClient, queryMode, size]);
 
-  const exercises = useMemo(() => {
-    const content = data?.content ?? [];
-
-    if (statusFilter === "inactive") {
-      return content.filter((exercise) => exercise.active === false);
-    }
-
-    return content;
-  }, [data, statusFilter]);
+  const exercises = useMemo(() => data?.content ?? [], [data]);
 
   const handleDelete = () => {
     if (!exerciseToDelete) return;
@@ -98,7 +84,7 @@ export const ExercisesPage = () => {
       { id: getExerciseId(exerciseToDelete) },
       {
         onSuccess: () => {
-          toast.success("Exercício inativado com sucesso!");
+          toast.success("Exercício excluído com sucesso!");
           setExerciseToDelete(null);
         },
         onError: (e) => {
@@ -129,23 +115,6 @@ export const ExercisesPage = () => {
               }}
             />
           }
-          filters={
-            <SelectField
-              label="Status"
-              id="exerciseStatusFilter"
-              value={statusFilter}
-              onChange={(e) => {
-                setStatusFilter(e.target.value as ExerciseStatusFilter);
-                setPage(0);
-              }}
-              options={[
-                { label: "Ativos", value: "active" },
-                { label: "Inativos", value: "inactive" },
-                { label: "Todos", value: "all" },
-              ]}
-              containerProps={{ className: styles.filterField }}
-            />
-          }
           action={
             <Button
               leftIcon={<PlusCircle size={18} />}
@@ -172,13 +141,12 @@ export const ExercisesPage = () => {
                 <TableHeaderCell>Nome</TableHeaderCell>
                 <TableHeaderCell>Grupo muscular</TableHeaderCell>
                 <TableHeaderCell>Descrição</TableHeaderCell>
-                <TableHeaderCell center>Status</TableHeaderCell>
                 <TableHeaderCell center>Ações</TableHeaderCell>
               </TableRow>
             </TableHead>
 
             <TableBody>
-              {tableLoading && <TableSkeletonRows columns={5} />}
+              {tableLoading && <TableSkeletonRows columns={4} />}
 
               {!tableLoading &&
                 exercises.map((exercise) => {
@@ -200,17 +168,6 @@ export const ExercisesPage = () => {
                         </span>
                       </TableCell>
                       <TableCell center>
-                        <span
-                          className={`${styles.statusBadge} ${
-                            exercise.active === false
-                              ? styles.statusInactive
-                              : styles.statusActive
-                          }`}
-                        >
-                          {exercise.active === false ? "Inativo" : "Ativo"}
-                        </span>
-                      </TableCell>
-                      <TableCell center>
                         <Dropdown
                           items={[
                             {
@@ -223,7 +180,7 @@ export const ExercisesPage = () => {
                                 }),
                             },
                             {
-                              label: "Inativar",
+                              label: "Excluir",
                               icon: <Trash2 size={15} />,
                               danger: true,
                               disabled: !exerciseId || isDeleting,
@@ -238,7 +195,7 @@ export const ExercisesPage = () => {
 
               {!tableLoading && exercises.length === 0 && (
                 <TableEmptyState
-                  colSpan={5}
+                  colSpan={4}
                   message="Nenhum exercício encontrado."
                 />
               )}
@@ -260,13 +217,13 @@ export const ExercisesPage = () => {
 
       <ConfirmDialog
         open={!!exerciseToDelete}
-        title="Inativar exercício?"
+        title="Excluir exercício?"
         description={
           exerciseToDelete
-            ? `O exercício ${exerciseToDelete.name} deixará de estar disponível para novas fichas.`
+            ? `O exercício ${exerciseToDelete.name} será excluído. Confirme antes de continuar.`
             : ""
         }
-        confirmLabel="Inativar exercício"
+        confirmLabel="Excluir exercício"
         loading={isDeleting}
         onCancel={() => setExerciseToDelete(null)}
         onConfirm={handleDelete}

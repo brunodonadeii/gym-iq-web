@@ -4,7 +4,11 @@ import { Form } from "@/components/Form/Form";
 import { TextField } from "@/components/TextField/TextField";
 import { useFormInputs } from "@/hooks/useFormInputs";
 import { useUpdateExercise } from "@/mutations/useUpdateExercise";
-import type { Exercise, ExerciseFormData } from "@/pages/Exercises/types";
+import {
+  EXERCISE_LIMITS,
+  type Exercise,
+  type ExerciseFormData,
+} from "@/pages/Exercises/types";
 import { useGetExerciseById } from "@/queries/useGetExerciseById";
 import { getApiFieldErrors } from "@/utils/apiError";
 import { useNavigate, useParams } from "@tanstack/react-router";
@@ -38,7 +42,9 @@ const ExercisesEditForm = ({
   loading,
 }: ExercisesEditFormProps) => {
   const [data, setData] = useState<ExerciseFormData>(initialData);
-  const [errors, setErrors] = useState<Partial<Record<keyof ExerciseFormData, string>>>({});
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof ExerciseFormData, string>>
+  >({});
   const { set } = useFormInputs(setData);
   const navigate = useNavigate();
   const { mutate, isPending } = useUpdateExercise();
@@ -46,9 +52,20 @@ const ExercisesEditForm = ({
   const validate = () => {
     const nextErrors: Partial<Record<keyof ExerciseFormData, string>> = {};
 
-    if (!data.name.trim()) nextErrors.name = "Informe o nome.";
+    if (!data.name.trim()) {
+      nextErrors.name = "Informe o nome.";
+    } else if (data.name.length > EXERCISE_LIMITS.name) {
+      nextErrors.name = `Use no máximo ${EXERCISE_LIMITS.name} caracteres.`;
+    }
+
     if (!data.muscleGroup.trim()) {
       nextErrors.muscleGroup = "Informe o grupo muscular.";
+    } else if (data.muscleGroup.length > EXERCISE_LIMITS.muscleGroup) {
+      nextErrors.muscleGroup = `Use no máximo ${EXERCISE_LIMITS.muscleGroup} caracteres.`;
+    }
+
+    if (data.description.length > EXERCISE_LIMITS.description) {
+      nextErrors.description = `Use no máximo ${EXERCISE_LIMITS.description} caracteres.`;
     }
 
     setErrors(nextErrors);
@@ -62,7 +79,7 @@ const ExercisesEditForm = ({
       { id: String(exerciseId), data },
       {
         onSuccess: () => {
-        toast.success("Exercício editado com sucesso!");
+          toast.success("Exercício editado com sucesso!");
           navigate({ to: "/exercises" });
         },
         onError: (e) => {
@@ -114,6 +131,7 @@ const ExercisesEditForm = ({
             setErrors((prev) => ({ ...prev, name: undefined }));
           }}
           error={errors.name}
+          maxLength={EXERCISE_LIMITS.name}
           required
         />
         <TextField
@@ -125,6 +143,7 @@ const ExercisesEditForm = ({
             setErrors((prev) => ({ ...prev, muscleGroup: undefined }));
           }}
           error={errors.muscleGroup}
+          maxLength={EXERCISE_LIMITS.muscleGroup}
           required
         />
       </div>
@@ -134,7 +153,13 @@ const ExercisesEditForm = ({
           label="Descrição"
           id="description"
           value={data.description}
-          onChange={set("description")}
+          onChange={(event) => {
+            set("description")(event);
+            setErrors((prev) => ({ ...prev, description: undefined }));
+          }}
+          maxLength={EXERCISE_LIMITS.description}
+          helperText={`${data.description.length}/${EXERCISE_LIMITS.description} caracteres.`}
+          error={errors.description}
           optional
         />
       </div>

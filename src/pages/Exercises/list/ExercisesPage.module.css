@@ -20,10 +20,6 @@
   width: 100%;
 }
 
-.filterField {
-  min-width: 180px;
-}
-
 .tableSection {
   overflow: hidden;
 }
@@ -65,31 +61,7 @@
   font-size: 0.88rem;
 }
 
-.statusBadge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px 12px;
-  border-radius: 999px;
-  font-size: 0.82rem;
-  font-weight: 700;
-}
-
-.statusActive {
-  background: rgba(34, 197, 94, 0.14);
-  color: #15803d;
-}
-
-.statusInactive {
-  background: rgba(100, 116, 139, 0.16);
-  color: var(--text-secondary);
-}
-
 @media (max-width: 768px) {
-  .filterField {
-    min-width: 0;
-  }
-
   .tableWrap {
     padding: 16px;
   }

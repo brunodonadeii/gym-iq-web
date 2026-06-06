@@ -38,12 +38,11 @@ import { toast } from "sonner";
 import styles from "./EnrollmentsPage.module.css";
 
 const enrollmentColumns = [
+  { width: "26%" },
   { width: "22%" },
-  { width: "18%" },
+  { width: "14%" },
+  { width: "16%" },
   { width: "12%" },
-  { width: "14%" },
-  { width: "10%" },
-  { width: "14%" },
   { width: "10%" },
 ];
 
@@ -391,15 +390,14 @@ export const EnrollmentsPage = () => {
           <div>
             <h3 className={styles.sectionTitle}>Lista principal</h3>
             <p className={styles.sectionDescription}>
-              Consulte aluno, plano, vigência, status de acesso e data de
-              criação em uma visão única. Exibindo {enrollments.length} registro(s)
-              nesta página.
+              Consulte aluno, plano, vigência e status de acesso. Exibindo{" "}
+              {enrollments.length} registro(s) nesta página.
             </p>
           </div>
         </div>
 
         <div className={styles.tableWrap}>
-          <Table columns={enrollmentColumns} minWidth="1180px">
+          <Table columns={enrollmentColumns} minWidth="1040px">
             <TableHead>
               <TableRow>
                 <TableHeaderCell>Aluno</TableHeaderCell>
@@ -407,13 +405,12 @@ export const EnrollmentsPage = () => {
                 <TableHeaderCell>Início</TableHeaderCell>
                 <TableHeaderCell>Fim</TableHeaderCell>
                 <TableHeaderCell center>Status</TableHeaderCell>
-                <TableHeaderCell>Criação</TableHeaderCell>
                 <TableHeaderCell center>Ações</TableHeaderCell>
               </TableRow>
             </TableHead>
 
             <TableBody>
-              {tableLoading && <TableSkeletonRows columns={7} />}
+              {tableLoading && <TableSkeletonRows columns={6} />}
 
               {!tableLoading &&
                 enrollments.map((enrollment) => (
@@ -444,7 +441,6 @@ export const EnrollmentsPage = () => {
                         {statusLabels[enrollment.status]}
                       </span>
                     </TableCell>
-                    <TableCell>{formatDate(enrollment.createdAt)}</TableCell>
                     <TableCell center>
                       <Dropdown items={getEnrollmentActions(enrollment)} />
                     </TableCell>
@@ -453,7 +449,7 @@ export const EnrollmentsPage = () => {
 
               {!tableLoading && enrollments.length === 0 && (
                 <TableEmptyState
-                  colSpan={7}
+                  colSpan={6}
                   message="Nenhuma matrícula encontrada."
                 />
               )}
@@ -475,5 +471,3 @@ export const EnrollmentsPage = () => {
     </div>
   );
 };
-
-

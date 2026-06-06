@@ -29,13 +29,14 @@ import { useGetEnrollments } from "@/queries/useGetEnrollments";
 import { useGetPayments } from "@/queries/useGetPayments";
 import { useGetStudentOptions } from "@/queries/useGetStudentOptions";
 import { getApiFieldErrors } from "@/utils/apiError";
+import { useSearch } from "@tanstack/react-router";
 import { CheckCircle2, ClockAlert, RefreshCcw, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import styles from "./PaymentsPage.module.css";
 
-type PaymentFilterMode = "all" | "student" | "enrollment" | "overdue";
-type PaymentStatusFilter = "all" | PaymentStatus;
+export type PaymentFilterMode = "all" | "student" | "enrollment" | "overdue";
+export type PaymentStatusFilter = "all" | PaymentStatus;
 
 const EMPTY_PAY_FORM: PaymentPayFormData = {
   paidAt: "",
@@ -113,11 +114,24 @@ const isKnownPaymentMethod = (value?: string | null): value is PaymentMethod =>
   !!value && Object.prototype.hasOwnProperty.call(paymentMethodLabels, value);
 
 export const PaymentsPage = () => {
-  const [filterMode, setFilterMode] = useState<PaymentFilterMode>("all");
-  const [statusFilter, setStatusFilter] = useState<PaymentStatusFilter>("all");
-  const [studentId, setStudentId] = useState("");
-  const [studentSearch, setStudentSearch] = useState("");
-  const [enrollmentId, setEnrollmentId] = useState("");
+  const search = useSearch({ strict: false }) as {
+    mode?: PaymentFilterMode;
+    status?: PaymentStatusFilter;
+    studentId?: string;
+    studentName?: string;
+    enrollmentId?: string;
+  };
+  const [filterMode, setFilterMode] = useState<PaymentFilterMode>(
+    search.mode ?? "all",
+  );
+  const [statusFilter, setStatusFilter] = useState<PaymentStatusFilter>(
+    search.status ?? "all",
+  );
+  const [studentId, setStudentId] = useState(search.studentId ?? "");
+  const [studentSearch, setStudentSearch] = useState(
+    search.studentName ?? (search.studentId ? `Aluno #${search.studentId}` : ""),
+  );
+  const [enrollmentId, setEnrollmentId] = useState(search.enrollmentId ?? "");
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
   const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);

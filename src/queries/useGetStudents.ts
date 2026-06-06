@@ -13,12 +13,17 @@ const DEFAULT_STUDENTS_PAGE: PageRequest = {
 
 export const STUDENTS_QUERY_STALE_TIME = 5 * 60 * 1000;
 export const STUDENTS_QUERY_GC_TIME = 15 * 60 * 1000;
+export type StudentStatusQuery = "ALL" | "ACTIVE" | "INACTIVE";
 
 export async function fetchStudents(
   search: string,
+  status: StudentStatusQuery,
   pagination: PageRequest,
 ): Promise<PageResponse<Student>> {
-  const query = buildPaginationParams(pagination, search ? { q: search } : {});
+  const query = buildPaginationParams(pagination, {
+    ...(search ? { q: search } : {}),
+    status,
+  });
   const url = search ? `students/search?${query}` : `students?${query}`;
   const response = await authFetch(url);
 
@@ -27,11 +32,12 @@ export async function fetchStudents(
 
 export function useGetStudents(
   search: string,
+  status: StudentStatusQuery,
   pagination: PageRequest = DEFAULT_STUDENTS_PAGE,
 ) {
   return useQuery({
-    queryKey: ["students", search, pagination],
-    queryFn: () => fetchStudents(search, pagination),
+    queryKey: ["students", search, status, pagination],
+    queryFn: () => fetchStudents(search, status, pagination),
     placeholderData: keepPreviousData,
     staleTime: STUDENTS_QUERY_STALE_TIME,
     gcTime: STUDENTS_QUERY_GC_TIME,

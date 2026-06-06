@@ -3,7 +3,10 @@ import { Form } from "@/components/Form/Form";
 import { TextField } from "@/components/TextField/TextField";
 import { useFormInputs } from "@/hooks/useFormInputs";
 import { useCreateExercise } from "@/mutations/useCreateExercise";
-import type { ExerciseFormData } from "@/pages/Exercises/types";
+import {
+  EXERCISE_LIMITS,
+  type ExerciseFormData,
+} from "@/pages/Exercises/types";
 import { getApiFieldErrors } from "@/utils/apiError";
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
@@ -20,7 +23,9 @@ const EXERCISE_FIELDS = ["name", "muscleGroup", "description"] as const;
 
 export const ExercisesCreate = () => {
   const [data, setData] = useState<ExerciseFormData>(EMPTY_FORM);
-  const [errors, setErrors] = useState<Partial<Record<keyof ExerciseFormData, string>>>({});
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof ExerciseFormData, string>>
+  >({});
   const { set } = useFormInputs(setData);
   const navigate = useNavigate();
   const { mutate, isPending } = useCreateExercise();
@@ -28,9 +33,20 @@ export const ExercisesCreate = () => {
   const validate = () => {
     const nextErrors: Partial<Record<keyof ExerciseFormData, string>> = {};
 
-    if (!data.name.trim()) nextErrors.name = "Informe o nome.";
+    if (!data.name.trim()) {
+      nextErrors.name = "Informe o nome.";
+    } else if (data.name.length > EXERCISE_LIMITS.name) {
+      nextErrors.name = `Use no máximo ${EXERCISE_LIMITS.name} caracteres.`;
+    }
+
     if (!data.muscleGroup.trim()) {
       nextErrors.muscleGroup = "Informe o grupo muscular.";
+    } else if (data.muscleGroup.length > EXERCISE_LIMITS.muscleGroup) {
+      nextErrors.muscleGroup = `Use no máximo ${EXERCISE_LIMITS.muscleGroup} caracteres.`;
+    }
+
+    if (data.description.length > EXERCISE_LIMITS.description) {
+      nextErrors.description = `Use no máximo ${EXERCISE_LIMITS.description} caracteres.`;
     }
 
     setErrors(nextErrors);
@@ -44,7 +60,7 @@ export const ExercisesCreate = () => {
       { data },
       {
         onSuccess: () => {
-        toast.success("Exercício criado com sucesso!");
+          toast.success("Exercício criado com sucesso!");
           navigate({ to: "/exercises" });
         },
         onError: (e) => {
@@ -95,6 +111,7 @@ export const ExercisesCreate = () => {
             setErrors((prev) => ({ ...prev, name: undefined }));
           }}
           error={errors.name}
+          maxLength={EXERCISE_LIMITS.name}
           required
         />
         <TextField
@@ -107,6 +124,7 @@ export const ExercisesCreate = () => {
           }}
           placeholder="Peito, costas, pernas..."
           error={errors.muscleGroup}
+          maxLength={EXERCISE_LIMITS.muscleGroup}
           required
         />
       </div>
@@ -116,8 +134,14 @@ export const ExercisesCreate = () => {
           label="Descrição"
           id="description"
           value={data.description}
-          onChange={set("description")}
+          onChange={(event) => {
+            set("description")(event);
+            setErrors((prev) => ({ ...prev, description: undefined }));
+          }}
+          maxLength={EXERCISE_LIMITS.description}
           placeholder="Observação curta"
+          helperText={`${data.description.length}/${EXERCISE_LIMITS.description} caracteres.`}
+          error={errors.description}
           optional
         />
       </div>

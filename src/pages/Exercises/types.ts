@@ -14,3 +14,9 @@ export type ExerciseFormData = {
   description: string;
 };
 
+export const EXERCISE_LIMITS = {
+  name: 100,
+  muscleGroup: 80,
+  description: 255,
+} as const;
+

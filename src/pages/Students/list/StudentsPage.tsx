@@ -24,6 +24,7 @@ import {
   fetchStudents,
   STUDENTS_QUERY_GC_TIME,
   STUDENTS_QUERY_STALE_TIME,
+  type StudentStatusQuery,
   useGetStudents,
 } from "@/queries/useGetStudents";
 import { useQueryClient } from "@tanstack/react-query";
@@ -53,6 +54,12 @@ type ConfirmAction =
 
 type StudentStatusFilter = "all" | "active" | "inactive";
 
+const studentStatusQueryMap: Record<StudentStatusFilter, StudentStatusQuery> = {
+  all: "ALL",
+  active: "ACTIVE",
+  inactive: "INACTIVE",
+};
+
 const formatDate = (value?: string | null) =>
   value
     ? new Date(value).toLocaleDateString("pt-BR", {
@@ -61,6 +68,13 @@ const formatDate = (value?: string | null) =>
         year: "numeric",
       })
     : "-";
+
+const hasFinancialPendingDeleteError = (error: {
+  error?: string;
+  message?: string;
+}) =>
+  error.error === "BUSINESS_RULE_VIOLATION" &&
+  (error.message ?? "").toLowerCase().includes("pendências financeiras");
 
 export const StudentsPage = () => {
   const navigate = useNavigate();
@@ -78,9 +92,11 @@ export const StudentsPage = () => {
     size,
     sort: "user.name,asc",
   };
+  const statusQuery = studentStatusQueryMap[statusFilter];
 
   const { data, isLoading, isFetching } = useGetStudents(
     debouncedSearch,
+    statusQuery,
     pagination,
   );
   const { mutate: deactivateStudent, isPending: isDeactivatingStudent } =
@@ -91,14 +107,7 @@ export const StudentsPage = () => {
     mutate: deleteStudentPersonalData,
     isPending: isDeletingStudentPersonalData,
   } = useDeleteStudentPersonalData();
-  const students = data?.content ?? [];
-  const visibleStudents = students.filter((student) =>
-    statusFilter === "active"
-      ? student.active
-      : statusFilter === "inactive"
-        ? !student.active
-        : true,
-  );
+  const visibleStudents = data?.content ?? [];
   const tableLoading = isLoading;
 
   const handleDeactivateStudent = (studentId: string) => {
@@ -124,7 +133,23 @@ export const StudentsPage = () => {
     );
   };
 
-  const handleDeleteStudentPersonalData = (studentId: string) => {
+  const handleViewStudentPayments = (studentId: string, studentName: string) => {
+    navigate({
+      to: "/payments",
+      search: {
+        mode: "student",
+        status: "all",
+        studentId,
+        studentName,
+        enrollmentId: "",
+      },
+    });
+  };
+
+  const handleDeleteStudentPersonalData = (
+    studentId: string,
+    studentName: string,
+  ) => {
     deleteStudentPersonalData(
       { id: studentId },
       {
@@ -133,6 +158,32 @@ export const StudentsPage = () => {
           setConfirmAction(null);
         },
         onError: (e) => {
+          if (hasFinancialPendingDeleteError(e)) {
+            const toastId = toast.error(
+              <div className={styles.pendingToast}>
+                <div>
+                  <strong>{e?.error ?? "Erro"}</strong>
+                  <br />
+                  <span>
+                    {e?.message ??
+                      "Não foi possível excluir os dados do aluno."}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  className={styles.pendingToastAction}
+                  onClick={() => {
+                    toast.dismiss(toastId);
+                    handleViewStudentPayments(studentId, studentName);
+                  }}
+                >
+                  Ver pendências
+                </button>
+              </div>,
+            );
+            return;
+          }
+
           toast.error(
             <div>
               <strong>{e?.error ?? "Erro"}</strong>
@@ -177,12 +228,12 @@ export const StudentsPage = () => {
     };
 
     queryClient.prefetchQuery({
-      queryKey: ["students", debouncedSearch, nextPagination],
-      queryFn: () => fetchStudents(debouncedSearch, nextPagination),
+      queryKey: ["students", debouncedSearch, statusQuery, nextPagination],
+      queryFn: () => fetchStudents(debouncedSearch, statusQuery, nextPagination),
       staleTime: STUDENTS_QUERY_STALE_TIME,
       gcTime: STUDENTS_QUERY_GC_TIME,
     });
-  }, [data, data?.last, debouncedSearch, page, queryClient, size]);
+  }, [data, data?.last, debouncedSearch, page, queryClient, size, statusQuery]);
 
   const handleConfirmAction = () => {
     if (!confirmAction) return;
@@ -192,7 +243,10 @@ export const StudentsPage = () => {
       return;
     }
 
-    handleDeleteStudentPersonalData(confirmAction.studentId);
+    handleDeleteStudentPersonalData(
+      confirmAction.studentId,
+      confirmAction.studentName,
+    );
   };
 
   return (

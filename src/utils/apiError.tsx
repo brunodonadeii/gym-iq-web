@@ -227,7 +227,9 @@ export function getApiFieldErrors<Field extends string>(
       Boolean(entry[1].trim()),
   );
 
-  return entries.length ? Object.fromEntries(entries) : null;
+  return entries.length
+    ? (Object.fromEntries(entries) as Partial<Record<Field, string>>)
+    : null;
 }
 
 
