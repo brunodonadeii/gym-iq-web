@@ -37,6 +37,18 @@ export type WorkoutSheetFormData = {
   exercises: WorkoutSheetExerciseFormData[];
 };
 
+export type WorkoutSheetSectionFormData = {
+  name: string;
+  exercises: WorkoutSheetExerciseFormData[];
+};
+
+export type WorkoutSheetSectionsFormData = Omit<
+  WorkoutSheetFormData,
+  "exercises"
+> & {
+  sections: WorkoutSheetSectionFormData[];
+};
+
 export type WorkoutSheetExercise = {
   workoutSheetExerciseId: string;
   exerciseId: number;

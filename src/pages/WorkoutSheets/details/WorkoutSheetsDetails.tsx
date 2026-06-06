@@ -34,7 +34,7 @@ import { useGetStudentOptions } from "@/queries/useGetStudentOptions";
 import { useGetWorkoutSheetById } from "@/queries/useGetWorkoutSheetById";
 import { useGetWorkoutSheetExercises } from "@/queries/useGetWorkoutSheetExercises";
 import { useNavigate, useParams } from "@tanstack/react-router";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, PlusCircle, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import type { ApiError } from "@/utils/apiError";
@@ -63,6 +63,8 @@ const EMPTY_EXERCISE_FORM: WorkoutSheetExerciseFormData = {
   executionOrder: "",
   notes: "",
 };
+
+const DEFAULT_TRAINING_SECTIONS = ["Treino A", "Treino B", "Treino C"];
 
 type SheetFormField = Exclude<keyof WorkoutSheetFormData, "exercises">;
 type SheetFormErrors = Partial<Record<SheetFormField, string>>;
@@ -110,6 +112,14 @@ const resolveExerciseName = (exercise: WorkoutSheetExercise) =>
 
 const resolveExerciseId = (exercise: WorkoutSheetExercise) =>
   String(exercise.exerciseId);
+
+const getInitialTrainingSections = (details?: WorkoutSheet) => {
+  const sections = details?.exercises
+    ?.map((exercise) => exercise.trainingSection)
+    .filter((section): section is string => Boolean(section?.trim()));
+
+  return sections?.length ? Array.from(new Set(sections)) : DEFAULT_TRAINING_SECTIONS;
+};
 
 const mapWorkoutSheetToForm = (
   details?: WorkoutSheet,
@@ -169,6 +179,13 @@ const WorkoutSheetsDetailsContent = ({
   );
   const [exerciseSearch, setExerciseSearch] = useState("");
   const [editingExerciseId, setEditingExerciseId] = useState("");
+  const [trainingSections, setTrainingSections] = useState(() =>
+    getInitialTrainingSections(details),
+  );
+  const [activeTrainingSection, setActiveTrainingSection] = useState(
+    () => getInitialTrainingSections(details)[0] ?? "Treino A",
+  );
+  const [newTrainingSection, setNewTrainingSection] = useState("");
   const [exercisePage, setExercisePage] = useState(0);
   const [exerciseSize, setExerciseSize] = useState(10);
   const debouncedStudentSearch = useDebouncedValue(studentSearch);
@@ -246,6 +263,17 @@ const WorkoutSheetsDetailsContent = ({
     setEditingExerciseId("");
   };
 
+  const handleAddTrainingSection = () => {
+    const nextSection = newTrainingSection.trim();
+    if (!nextSection) return;
+
+    setTrainingSections((prev) =>
+      prev.includes(nextSection) ? prev : [...prev, nextSection],
+    );
+    setActiveTrainingSection(nextSection);
+    setNewTrainingSection("");
+  };
+
   const handleUpdateSheet = () => {
     const existingExercises =
       sheetForm.exercises.length > 0
@@ -308,8 +336,8 @@ const WorkoutSheetsDetailsContent = ({
       return;
     }
 
-    if (!exerciseForm.trainingSection) {
-      focusById("trainingSection");
+    if (!activeTrainingSection.trim()) {
+      focusById("newTrainingSection");
       return;
     }
 
@@ -320,7 +348,10 @@ const WorkoutSheetsDetailsContent = ({
 
     const payload = {
       workoutSheetId: String(workoutSheetId),
-      data: exerciseForm,
+      data: {
+        ...exerciseForm,
+        trainingSection: activeTrainingSection,
+      },
     };
 
     const callbacks = {
@@ -365,6 +396,8 @@ const WorkoutSheetsDetailsContent = ({
   };
 
   const handleEditExercise = (exercise: WorkoutSheetExercise) => {
+    const sectionName = exercise.trainingSection ?? "Treino A";
+
     setEditingExerciseId(getSheetExerciseId(exercise));
     setExerciseForm({
       exerciseId: resolveExerciseId(exercise),
@@ -372,10 +405,14 @@ const WorkoutSheetsDetailsContent = ({
       repetitions: String(exercise.repetitions ?? ""),
       loadKg: String(exercise.loadKg ?? ""),
       restSeconds: String(exercise.restSeconds ?? ""),
-      trainingSection: exercise.trainingSection ?? "Treino A",
+      trainingSection: sectionName,
       executionOrder: String(exercise.executionOrder ?? ""),
       notes: exercise.notes ?? "",
     });
+    setActiveTrainingSection(sectionName);
+    setTrainingSections((prev) =>
+      prev.includes(sectionName) ? prev : [...prev, sectionName],
+    );
     setExerciseSearch(resolveExerciseName(exercise));
   };
 
@@ -599,8 +636,47 @@ const WorkoutSheetsDetailsContent = ({
           <div>
               <h3 className={styles.sectionTitle}>Exercícios da ficha</h3>
             <p className={styles.sectionDescription}>
-              Adicione ou edite exercício, bloco, séries, repetições, descanso e ordem.
+              Escolha um bloco e adicione os exercícios dentro dele.
             </p>
+          </div>
+        </div>
+
+        <div className={styles.trainingSectionPanel}>
+          <div className={styles.trainingSectionList}>
+            {trainingSections.map((section) => (
+              <button
+                key={section}
+                type="button"
+                className={`${styles.trainingSectionTab} ${
+                  activeTrainingSection === section
+                    ? styles.trainingSectionTabActive
+                    : ""
+                }`}
+                onClick={() => setActiveTrainingSection(section)}
+              >
+                {section}
+              </button>
+            ))}
+          </div>
+
+          <div className={styles.trainingSectionForm}>
+            <TextField
+              label="Novo bloco"
+              id="newTrainingSection"
+              value={newTrainingSection}
+              onChange={(event) => setNewTrainingSection(event.target.value)}
+              placeholder="Treino D"
+              optional
+            />
+            <Button
+              type="button"
+              variant="secondary"
+              leftIcon={<PlusCircle size={18} />}
+              onClick={handleAddTrainingSection}
+              disabled={!newTrainingSection.trim()}
+            >
+              Adicionar bloco
+            </Button>
           </div>
         </div>
 
@@ -664,21 +740,6 @@ const WorkoutSheetsDetailsContent = ({
             required
             error={exerciseErrors.repetitions}
           />
-          <TextField
-            label="Bloco do treino"
-            id="trainingSection"
-            value={exerciseForm.trainingSection}
-            onChange={(event) => {
-              setExerciseField("trainingSection")(event);
-              setExerciseErrors((prev) => ({
-                ...prev,
-                trainingSection: undefined,
-              }));
-            }}
-            placeholder="Treino A"
-            required
-            error={exerciseErrors.trainingSection}
-          />
         </div>
 
         <div className={styles.grid}>
@@ -740,7 +801,9 @@ const WorkoutSheetsDetailsContent = ({
             </Button>
           )}
           <Button type="submit" loading={isExerciseSubmitting}>
-            {editingExerciseId ? "Salvar exercício" : "Adicionar exercício"}
+            {editingExerciseId
+              ? `Salvar em ${activeTrainingSection}`
+              : `Adicionar em ${activeTrainingSection}`}
           </Button>
         </div>
       </form>

@@ -53,6 +53,51 @@
   grid-column: span 2;
 }
 
+.trainingSectionPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 18px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface-alt);
+}
+
+.trainingSectionList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.trainingSectionTab {
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text-secondary);
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.trainingSectionTab:hover,
+.trainingSectionTabActive {
+  border-color: var(--border-strong);
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.trainingSectionForm {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: end;
+}
+
 .actions {
   display: flex;
   justify-content: flex-end;
@@ -105,6 +150,10 @@
 
   .fieldWide {
     grid-column: auto;
+  }
+
+  .trainingSectionForm {
+    grid-template-columns: 1fr;
   }
 
   .actions {

@@ -48,11 +48,32 @@
   margin-top: 18px;
 }
 
-.exerciseCard {
+.sectionCard {
   padding: 18px;
   border: 1px solid var(--border);
   border-radius: 16px;
   background: var(--surface-alt);
+}
+
+.sectionCardHeader {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: end;
+  margin-bottom: 16px;
+}
+
+.sectionExerciseList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.exerciseCard {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
 }
 
 .exerciseCardHeader {
@@ -66,8 +87,13 @@
   }
 
   .exercisesHeader,
-  .exerciseCardHeader {
+  .exerciseCardHeader,
+  .sectionCardHeader {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .sectionCardHeader {
+    display: flex;
   }
 }
