@@ -1,9 +1,17 @@
 ﻿import { Button } from "@/components/Button/Button";
 import { Form } from "@/components/Form/Form";
+import { SelectField } from "@/components/SelectField/SelectField";
 import { TextField } from "@/components/TextField/TextField";
-import { SpecialtySelector } from "@/pages/Instructors/components/SpecialtySelector";
 import { useFormInputs } from "@/hooks/useFormInputs";
 import { useCreateInstructor } from "@/mutations/useCreateInstructor";
+import {
+  formatCrefInput,
+  getInstructorApiFieldErrors,
+  INSTRUCTOR_LIMITS,
+  type InstructorFormErrors,
+  validateInstructorCreate,
+} from "@/pages/Instructors/instructorValidation";
+import { INSTRUCTOR_SPECIALTY_OPTIONS } from "@/pages/Instructors/specialties";
 import type { InstructorCreateFormData } from "@/pages/Instructors/types";
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
@@ -23,15 +31,22 @@ const EMPTY_FORM: InstructorCreateFormData = {
 export const InstructorsCreate = () => {
   const navigate = useNavigate();
   const [data, setData] = useState<InstructorCreateFormData>(EMPTY_FORM);
-  const [errors, setErrors] = useState<Partial<Record<string, string>>>({});
+  const [errors, setErrors] = useState<InstructorFormErrors>({});
   const { set, setMasked } = useFormInputs(setData);
   const { mutate, isPending } = useCreateInstructor();
 
   const focusFirstError = (
-    nextErrors: Partial<Record<string, string>>,
+    nextErrors: InstructorFormErrors,
   ) => {
     const firstField = Object.keys(nextErrors)[0];
     if (!firstField) return;
+
+    if (firstField === "specialty") {
+      document.querySelector<HTMLButtonElement>(
+        'button[aria-label="Especialidade"]',
+      )?.focus();
+      return;
+    }
 
     if (firstField === "lgpdAccepted") {
       document.getElementById("lgpdAccepted")?.focus();
@@ -42,17 +57,7 @@ export const InstructorsCreate = () => {
   };
 
   const validate = () => {
-    const nextErrors: Partial<Record<string, string>> = {};
-
-    if (!data.name.trim()) nextErrors.name = "Informe o nome.";
-    if (!data.email.trim()) nextErrors.email = "Informe o e-mail.";
-    if (!data.password) nextErrors.password = "Informe a senha.";
-    if (!data.cref.trim()) nextErrors.cref = "Informe o CREF.";
-    if (!data.phone.trim()) nextErrors.phone = "Informe o telefone.";
-    if (!data.lgpdAccepted) {
-      nextErrors.lgpdAccepted = "Confirme o aceite para continuar.";
-    }
-
+    const nextErrors = validateInstructorCreate(data);
     setErrors(nextErrors);
     return nextErrors;
   };
@@ -64,21 +69,39 @@ export const InstructorsCreate = () => {
       return;
     }
 
-    mutate(data, {
-      onSuccess: () => {
-        toast.success("Instrutor criado com sucesso!");
-        navigate({ to: "/instructors" });
+    mutate(
+      {
+        ...data,
+        name: data.name.trim(),
+        email: data.email.trim(),
+        cref: data.cref.trim(),
+        phone: data.phone.trim(),
+        specialty: data.specialty.trim(),
       },
-      onError: (e) => {
-        toast.error(
-          <div>
-            <strong>{e?.error ?? "Erro"}</strong>
-            <br />
-            <span>{e?.message ?? "Erro inesperado"}</span>
-          </div>,
-        );
+      {
+        onSuccess: () => {
+          toast.success("Instrutor criado com sucesso!");
+          navigate({ to: "/instructors" });
+        },
+        onError: (e) => {
+          const fieldErrors = getInstructorApiFieldErrors(e);
+
+          if (fieldErrors) {
+            setErrors(fieldErrors);
+            focusFirstError(fieldErrors);
+            return;
+          }
+
+          toast.error(
+            <div>
+              <strong>{e?.error ?? "Erro"}</strong>
+              <br />
+              <span>{e?.message ?? "Erro inesperado"}</span>
+            </div>,
+          );
+        },
       },
-    });
+    );
   };
 
   return (
@@ -108,6 +131,9 @@ export const InstructorsCreate = () => {
             set("name")(event);
             setErrors((prev) => ({ ...prev, name: undefined }));
           }}
+          minLength={INSTRUCTOR_LIMITS.name.minLength}
+          maxLength={INSTRUCTOR_LIMITS.name.maxLength}
+          helperText={`${data.name.length}/${INSTRUCTOR_LIMITS.name.maxLength} caracteres. Mínimo de ${INSTRUCTOR_LIMITS.name.minLength}.`}
           error={errors.name}
           required
         />
@@ -135,6 +161,8 @@ export const InstructorsCreate = () => {
             set("password")(event);
             setErrors((prev) => ({ ...prev, password: undefined }));
           }}
+          minLength={INSTRUCTOR_LIMITS.password.minLength}
+          helperText="Mínimo de 6 caracteres."
           error={errors.password}
           required
         />
@@ -146,10 +174,16 @@ export const InstructorsCreate = () => {
           id="cref"
           value={data.cref}
           onChange={(event) => {
-            set("cref")(event);
+            setData((prev) => ({
+              ...prev,
+              cref: formatCrefInput(event.target.value),
+            }));
             setErrors((prev) => ({ ...prev, cref: undefined }));
           }}
+          maxLength={INSTRUCTOR_LIMITS.cref.maxLength}
+          pattern="[0-9]{6}-[A-Za-z]/[A-Za-z]{2}"
           placeholder="123456-G/SP"
+          helperText={`${data.cref.length}/${INSTRUCTOR_LIMITS.cref.maxLength} caracteres. Formato: 123456-G/SP.`}
           error={errors.cref}
           required
         />
@@ -161,6 +195,7 @@ export const InstructorsCreate = () => {
             setMasked("phone", "(##) #####-####")(event);
             setErrors((prev) => ({ ...prev, phone: undefined }));
           }}
+          maxLength={INSTRUCTOR_LIMITS.phone.maxLength}
           placeholder="(11) 99999-9999"
           error={errors.phone}
           required
@@ -168,18 +203,41 @@ export const InstructorsCreate = () => {
       </div>
 
       <div className={styles.row}>
-        <SpecialtySelector
+        <SelectField
+          label="Especialidade"
+          id="specialty"
           value={data.specialty}
-          onChange={(value) =>
+          onChange={(event) => {
             setData((prev) => ({
               ...prev,
-              specialty: value,
-            }))
-          }
+              specialty: event.target.value,
+            }));
+            setErrors((prev) => ({ ...prev, specialty: undefined }));
+          }}
+          options={[
+            {
+              label: "Selecione uma especialidade",
+              value: "",
+              disabled: true,
+            },
+            ...INSTRUCTOR_SPECIALTY_OPTIONS.map((specialty) => ({
+              label: specialty,
+              value: specialty,
+            })),
+          ]}
+          error={errors.specialty}
+          required
         />
       </div>
 
-      <label className={styles.lgpdBox}>
+      <label
+        className={[
+          styles.lgpdBox,
+          errors.lgpdAccepted && styles.lgpdBoxError,
+        ]
+          .filter(Boolean)
+          .join(" ")}
+      >
         <input
           id="lgpdAccepted"
           type="checkbox"
@@ -191,6 +249,10 @@ export const InstructorsCreate = () => {
             }));
             setErrors((prev) => ({ ...prev, lgpdAccepted: undefined }));
           }}
+          aria-invalid={Boolean(errors.lgpdAccepted)}
+          aria-describedby={
+            errors.lgpdAccepted ? "lgpdAccepted-error" : undefined
+          }
           required
         />
         <span>
@@ -199,7 +261,9 @@ export const InstructorsCreate = () => {
         </span>
       </label>
       {errors.lgpdAccepted && (
-        <div className={styles.checkboxError}>{errors.lgpdAccepted}</div>
+        <div className={styles.checkboxError} id="lgpdAccepted-error">
+          {errors.lgpdAccepted}
+        </div>
       )}
     </Form>
   );

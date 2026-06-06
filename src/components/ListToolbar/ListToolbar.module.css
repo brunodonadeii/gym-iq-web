@@ -14,8 +14,14 @@
   min-width: 0;
 }
 
+.searchSlot > * {
+  width: 100%;
+  min-width: 0;
+}
+
 .trailingSlot {
   display: flex;
+  flex-wrap: wrap;
   align-items: end;
   justify-content: flex-end;
   gap: 16px;
@@ -24,6 +30,8 @@
 
 .filtersSlot {
   display: flex;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
   align-items: end;
   justify-content: flex-end;
   gap: 12px;
@@ -31,7 +39,8 @@
 }
 
 .filtersSlot > * {
-  flex: 0 0 auto;
+  flex: 0 1 auto;
+  min-width: 0;
 }
 
 .actionSlot {
@@ -39,13 +48,40 @@
   align-items: end;
   justify-content: flex-end;
   flex: 0 0 auto;
+  min-width: 0;
+}
+
+@media (max-width: 1120px) {
+  .toolbar {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .searchSlot,
+  .trailingSlot {
+    width: 100%;
+  }
+
+  .trailingSlot {
+    justify-content: space-between;
+  }
+
+  .filtersSlot {
+    justify-content: flex-start;
+  }
+
+  .toolbar .searchSlot > * {
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+  }
+
+  .toolbar .filtersSlot > * {
+    flex: 1 1 180px;
+    min-width: 0;
+  }
 }
 
 @media (max-width: 768px) {
-  .toolbar {
-    grid-template-columns: 1fr;
-  }
-
   .trailingSlot,
   .filtersSlot,
   .actionSlot {
@@ -55,5 +91,11 @@
 
   .trailingSlot {
     gap: 12px;
+  }
+
+  .filtersSlot > *,
+  .actionSlot > * {
+    width: 100%;
+    min-width: 0;
   }
 }

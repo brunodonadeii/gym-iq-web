@@ -9,13 +9,7 @@
   "Treinamento esportivo",
 ] as const;
 
-export const parseInstructorSpecialties = (value?: string | null) =>
-  (value ?? "")
-    .split(",")
-    .map((item) => item.trim())
-    .filter(Boolean);
-
-export const stringifyInstructorSpecialties = (values: string[]) =>
-  values.join(", ");
+export const normalizeInstructorSpecialty = (value?: string | null) =>
+  (value ?? "").split(",")[0]?.trim() ?? "";
 
 

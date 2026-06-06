@@ -1,10 +1,21 @@
 import { Button } from "@/components/Button/Button";
 import { DetailLoadState } from "@/components/DetailLoadState/DetailLoadState";
 import { Form } from "@/components/Form/Form";
+import { SelectField } from "@/components/SelectField/SelectField";
 import { TextField } from "@/components/TextField/TextField";
 import { useFormInputs } from "@/hooks/useFormInputs";
 import { useUpdateInstructor } from "@/mutations/useUpdateInstructor";
-import { SpecialtySelector } from "@/pages/Instructors/components/SpecialtySelector";
+import {
+  formatCrefInput,
+  getInstructorApiFieldErrors,
+  INSTRUCTOR_LIMITS,
+  type InstructorFormErrors,
+  validateInstructorUpdate,
+} from "@/pages/Instructors/instructorValidation";
+import {
+  INSTRUCTOR_SPECIALTY_OPTIONS,
+  normalizeInstructorSpecialty,
+} from "@/pages/Instructors/specialties";
 import type {
   Instructor,
   InstructorUpdateFormData,
@@ -43,7 +54,7 @@ const getInitialFormData = (
         email: details.email,
         cref: details.cref,
         phone: details.phone,
-        specialty: details.specialty ?? "",
+        specialty: normalizeInstructorSpecialty(details.specialty),
         lgpdAccepted: details.lgpdAccepted,
       }
     : EMPTY_FORM;
@@ -64,32 +75,62 @@ const InstructorsEditForm = ({
   const isAdmin = auth.hasAnyRole(["ADMIN"]);
   const navigate = useNavigate();
   const [data, setData] = useState<InstructorUpdateFormData>(initialData);
-  const [errors, setErrors] = useState<Partial<Record<string, string>>>({});
+  const [errors, setErrors] = useState<InstructorFormErrors>({});
   const { set, setMasked } = useFormInputs(setData);
   const { mutate, isPending } = useUpdateInstructor();
 
+  const focusFirstError = (nextErrors: InstructorFormErrors) => {
+    const firstField = Object.keys(nextErrors)[0];
+    if (!firstField) return;
+
+    if (firstField === "specialty") {
+      document.querySelector<HTMLButtonElement>(
+        'button[aria-label="Especialidade"]',
+      )?.focus();
+      return;
+    }
+
+    document.getElementById(firstField)?.focus();
+  };
+
   const validate = () => {
-    const nextErrors: Partial<Record<string, string>> = {};
-
-    if (!data.name.trim()) nextErrors.name = "Informe o nome.";
-    if (!data.email.trim()) nextErrors.email = "Informe o e-mail.";
-    if (!data.cref.trim()) nextErrors.cref = "Informe o CREF.";
-    if (!data.phone.trim()) nextErrors.phone = "Informe o telefone.";
-
+    const nextErrors = validateInstructorUpdate(data);
     setErrors(nextErrors);
-    return Object.keys(nextErrors).length === 0;
+    return nextErrors;
   };
 
   const handleSubmit = () => {
-    if (!validate()) return;
+    const nextErrors = validate();
+    if (Object.keys(nextErrors).length > 0) {
+      focusFirstError(nextErrors);
+      return;
+    }
 
     mutate(
-      { id: instructorId, data },
+      {
+        id: instructorId,
+        data: {
+          ...data,
+          name: data.name.trim(),
+          email: data.email.trim(),
+          cref: data.cref.trim(),
+          phone: data.phone.trim(),
+          specialty: data.specialty.trim(),
+        },
+      },
       {
         onSuccess: () => {
           toast.success("Instrutor editado com sucesso!");
         },
         onError: (e) => {
+          const fieldErrors = getInstructorApiFieldErrors(e);
+
+          if (fieldErrors) {
+            setErrors(fieldErrors);
+            focusFirstError(fieldErrors);
+            return;
+          }
+
           toast.error(
             <div>
               <strong>{e?.error ?? "Erro"}</strong>
@@ -153,6 +194,9 @@ const InstructorsEditForm = ({
             set("name")(event);
             setErrors((prev) => ({ ...prev, name: undefined }));
           }}
+          minLength={INSTRUCTOR_LIMITS.name.minLength}
+          maxLength={INSTRUCTOR_LIMITS.name.maxLength}
+          helperText={`${data.name.length}/${INSTRUCTOR_LIMITS.name.maxLength} caracteres. Mínimo de ${INSTRUCTOR_LIMITS.name.minLength}.`}
           disabled={!isAdmin}
           error={errors.name}
           required
@@ -181,10 +225,16 @@ const InstructorsEditForm = ({
           id="cref"
           value={data.cref}
           onChange={(event) => {
-            set("cref")(event);
+            setData((prev) => ({
+              ...prev,
+              cref: formatCrefInput(event.target.value),
+            }));
             setErrors((prev) => ({ ...prev, cref: undefined }));
           }}
+          maxLength={INSTRUCTOR_LIMITS.cref.maxLength}
+          pattern="[0-9]{6}-[A-Za-z]/[A-Za-z]{2}"
           placeholder="123456-G/SP"
+          helperText={`${data.cref.length}/${INSTRUCTOR_LIMITS.cref.maxLength} caracteres. Formato: 123456-G/SP.`}
           disabled={!isAdmin}
           error={errors.cref}
           required
@@ -197,6 +247,7 @@ const InstructorsEditForm = ({
             setMasked("phone", "(##) #####-####")(event);
             setErrors((prev) => ({ ...prev, phone: undefined }));
           }}
+          maxLength={INSTRUCTOR_LIMITS.phone.maxLength}
           placeholder="(11) 99999-9999"
           disabled={!isAdmin}
           error={errors.phone}
@@ -205,17 +256,70 @@ const InstructorsEditForm = ({
       </div>
 
       <div className={styles.row}>
-        <SpecialtySelector
+        <SelectField
+          label="Especialidade"
+          id="specialty"
           value={data.specialty}
-          onChange={(value) =>
+          onChange={(event) => {
             setData((prev) => ({
               ...prev,
-              specialty: value,
-            }))
-          }
+              specialty: event.target.value,
+            }));
+            setErrors((prev) => ({ ...prev, specialty: undefined }));
+          }}
+          options={[
+            {
+              label: "Selecione uma especialidade",
+              value: "",
+              disabled: true,
+            },
+            ...INSTRUCTOR_SPECIALTY_OPTIONS.map((specialty) => ({
+              label: specialty,
+              value: specialty,
+            })),
+          ]}
           disabled={!isAdmin}
+          error={errors.specialty}
+          required
         />
       </div>
+
+      <label
+        className={[
+          styles.lgpdBox,
+          errors.lgpdAccepted && styles.lgpdBoxError,
+        ]
+          .filter(Boolean)
+          .join(" ")}
+      >
+        <input
+          id="lgpdAccepted"
+          type="checkbox"
+          checked={data.lgpdAccepted}
+          onChange={(event) => {
+            setData((prev) => ({
+              ...prev,
+              lgpdAccepted: event.target.checked,
+            }));
+            setErrors((prev) => ({ ...prev, lgpdAccepted: undefined }));
+          }}
+          disabled={!isAdmin}
+          aria-invalid={Boolean(errors.lgpdAccepted)}
+          aria-describedby={
+            errors.lgpdAccepted ? "lgpdAccepted-error" : undefined
+          }
+          required
+        />
+        <span>
+          Confirmo o aceite dos termos de LGPD para atualizar o cadastro deste
+          instrutor.
+        </span>
+      </label>
+      {errors.lgpdAccepted && (
+        <div className={styles.checkboxError} id="lgpdAccepted-error">
+          {errors.lgpdAccepted}
+        </div>
+      )}
 
     </Form>
   );

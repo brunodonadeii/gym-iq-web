@@ -90,6 +90,7 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  min-width: 0;
 }
 
 .topBarTitle,
@@ -108,6 +109,7 @@
 
 .topBarActions {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-end;
   gap: 12px;
   justify-content: flex-end;
@@ -115,7 +117,8 @@
 }
 
 .topBarActions > * {
-  flex: 0 0 auto;
+  flex: 0 1 auto;
+  min-width: 0;
 }
 
 .filterField {
@@ -124,6 +127,20 @@
 
 .filterFieldLarge {
   min-width: 280px;
+}
+
+@media (max-width: 1120px) {
+  .topBar {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .topBarActions {
+    justify-content: flex-start;
+  }
+
+  .filterFieldLarge {
+    flex: 1 1 320px;
+  }
 }
 
 .tableSection {
@@ -334,6 +351,7 @@
 
   .filterField,
   .filterFieldLarge {
+    width: 100%;
     min-width: 0;
   }
 

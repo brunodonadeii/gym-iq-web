@@ -3,6 +3,11 @@ import { Form } from "@/components/Form/Form";
 import { TextField } from "@/components/TextField/TextField";
 import { useFormInputs } from "@/hooks/useFormInputs";
 import { useCreatePlan } from "@/mutations/useCreatePlan";
+import {
+  PLAN_LIMITS,
+  type PlanFormErrors,
+  validatePlanForm,
+} from "@/pages/Plans/planValidation";
 import type { PlanFormData } from "@/pages/Plans/types";
 import { formatCurrencyInput, parseCurrencyInput } from "@/utils/currency";
 import { useNavigate } from "@tanstack/react-router";
@@ -19,23 +24,13 @@ const EMPTY_FORM: PlanFormData = {
 
 export const PlansCreate = () => {
   const [data, setData] = useState<PlanFormData>(EMPTY_FORM);
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<PlanFormErrors>({});
   const { set } = useFormInputs(setData);
   const { mutate, isPending } = useCreatePlan();
   const navigate = useNavigate();
 
   const validate = () => {
-    const nextErrors: Record<string, string> = {};
-
-    if (!data.name.trim()) nextErrors.name = "Informe o nome.";
-    if (!data.description.trim()) nextErrors.description = "Informe a descricao.";
-    if (!data.monthlyPrice || Number(data.monthlyPrice) <= 0) {
-      nextErrors.monthlyPrice = "Informe um valor mensal maior que zero.";
-    }
-    if (!data.durationMonths || Number(data.durationMonths) <= 0) {
-      nextErrors.durationMonths = "Informe uma dura��o maior que zero.";
-    }
-
+    const nextErrors = validatePlanForm(data);
     setErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
   };
@@ -44,7 +39,13 @@ export const PlansCreate = () => {
     if (!validate()) return;
 
     mutate(
-      { data },
+      {
+        data: {
+          ...data,
+          name: data.name.trim(),
+          description: data.description.trim(),
+        },
+      },
       {
         onSuccess: () => {
           toast.success("Plano criado com sucesso!");
@@ -66,7 +67,7 @@ export const PlansCreate = () => {
   return (
     <Form
       title="Dados do plano"
-      description="Informa��es base para identificar e criar um plano."
+      description="Informações base para identificar e criar um plano."
       actions={
         <>
           <Button
@@ -88,8 +89,11 @@ export const PlansCreate = () => {
           value={data.name}
           onChange={(event) => {
             set("name")(event);
-            setErrors((prev) => ({ ...prev, name: "" }));
+            setErrors((prev) => ({ ...prev, name: undefined }));
           }}
+          minLength={PLAN_LIMITS.name.minLength}
+          maxLength={PLAN_LIMITS.name.maxLength}
+          helperText={`${data.name.length}/${PLAN_LIMITS.name.maxLength} caracteres. Mínimo de ${PLAN_LIMITS.name.minLength}.`}
           error={errors.name}
           required
         />
@@ -97,13 +101,15 @@ export const PlansCreate = () => {
 
       <div className={styles.row}>
         <TextField
-          label="Descricao"
+          label="Descrição"
           id="description"
           value={data.description}
           onChange={(event) => {
             set("description")(event);
-            setErrors((prev) => ({ ...prev, description: "" }));
+            setErrors((prev) => ({ ...prev, description: undefined }));
           }}
+          maxLength={PLAN_LIMITS.description.maxLength}
+          helperText={`${data.description.length}/${PLAN_LIMITS.description.maxLength} caracteres.`}
           error={errors.description}
           required
         />
@@ -116,24 +122,44 @@ export const PlansCreate = () => {
           inputMode="numeric"
           value={formatCurrencyInput(data.monthlyPrice)}
           onChange={(event) => {
+            const monthlyPrice = parseCurrencyInput(event.target.value);
+            if (monthlyPrice > PLAN_LIMITS.monthlyPrice.max) return;
+
             setData((prev) => ({
               ...prev,
-              monthlyPrice: parseCurrencyInput(event.target.value),
+              monthlyPrice,
             }));
-            setErrors((prev) => ({ ...prev, monthlyPrice: "" }));
+            setErrors((prev) => ({ ...prev, monthlyPrice: undefined }));
           }}
+          maxLength={6}
           placeholder="50,00"
+          helperText="Valor entre R$ 0,01 e R$ 500,00."
           error={errors.monthlyPrice}
           required
         />
         <TextField
-          label="Dura��o em meses"
+          label="Duração em meses"
           id="durationMonths"
-          value={data.durationMonths}
+          type="text"
+          inputMode="numeric"
+          pattern="[0-9]*"
+          minLength={1}
+          maxLength={2}
+          value={data.durationMonths || ""}
           onChange={(event) => {
-            set("durationMonths")(event);
-            setErrors((prev) => ({ ...prev, durationMonths: "" }));
+            const value = event.target.value;
+            if (!/^\d{0,2}$/.test(value)) return;
+
+            const durationMonths = value ? Number(value) : 0;
+            if (durationMonths > PLAN_LIMITS.durationMonths.max) return;
+
+            setData((prev) => ({ ...prev, durationMonths }));
+            setErrors((prev) => ({
+              ...prev,
+              durationMonths: undefined,
+            }));
           }}
+          helperText="Número inteiro entre 1 e 24 meses."
           error={errors.durationMonths}
           required
         />

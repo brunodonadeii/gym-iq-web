@@ -36,11 +36,31 @@
 .lgpdBox {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface-alt);
   color: var(--text-secondary);
   line-height: 1.5;
 }
 
 .lgpdBox input {
+  width: 18px;
+  height: 18px;
   margin-top: 3px;
+  accent-color: var(--primary);
+}
+
+.lgpdBoxError {
+  border-color: #ef4444;
+  color: #ef4444;
+  box-shadow: 0 0 0 3px color-mix(in srgb, #ef4444 14%, transparent);
+}
+
+.checkboxError {
+  margin-top: -6px;
+  color: #ef4444;
+  font-size: 0.875rem;
+  line-height: 1.4;
 }
