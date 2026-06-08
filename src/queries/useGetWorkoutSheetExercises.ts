@@ -5,7 +5,7 @@ import type { PageRequest, PageResponse } from "@/types/pagination";
 import { buildPaginationParams } from "@/utils/pagination";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
-async function fetchWorkoutSheetExercises(
+export async function fetchWorkoutSheetExercises(
   workoutSheetId: string,
   pagination: PageRequest,
 ): Promise<PageResponse<WorkoutSheetExercise>> {
@@ -25,11 +25,12 @@ async function fetchWorkoutSheetExercises(
 export function useGetWorkoutSheetExercises(
   workoutSheetId?: string,
   pagination: PageRequest = { page: 0, size: 10 },
+  enabled = true,
 ) {
   return useQuery({
     queryKey: ["workout-sheets", workoutSheetId, "exercises", pagination],
     queryFn: () => fetchWorkoutSheetExercises(String(workoutSheetId), pagination),
-    enabled: !!workoutSheetId,
+    enabled: enabled && !!workoutSheetId,
     placeholderData: keepPreviousData,
     staleTime: 5 * 60 * 1000,
     gcTime: 15 * 60 * 1000,
