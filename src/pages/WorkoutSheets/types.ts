@@ -1,4 +1,4 @@
-﻿export type WorkoutSheet = {
+export type WorkoutSheetSummary = {
   workoutSheetId: string;
   studentId: string;
   studentName: string;
@@ -10,7 +10,6 @@
   endDate?: string | null;
   active: boolean;
   notes?: string | null;
-  exercises?: WorkoutSheetExercise[];
   createdAt: string;
   updatedAt: string;
   studentEmail?: string;
@@ -24,6 +23,10 @@
     name?: string;
     email?: string;
   };
+};
+
+export type WorkoutSheet = WorkoutSheetSummary & {
+  exercises?: WorkoutSheetExercise[];
 };
 
 export type WorkoutSheetFormData = {
@@ -73,4 +76,3 @@ export type WorkoutSheetExerciseFormData = {
   executionOrder: string;
   notes: string;
 };
-

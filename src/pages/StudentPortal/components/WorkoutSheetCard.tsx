@@ -1,6 +1,6 @@
 import { Button } from "@/components/Button/Button";
 import { Skeleton } from "@/components/Skeleton/Skeleton";
-import type { WorkoutSheet } from "@/pages/WorkoutSheets/types";
+import type { WorkoutSheetSummary } from "@/pages/WorkoutSheets/types";
 import {
   fetchWorkoutSheetExercises,
   useGetWorkoutSheetExercises,
@@ -22,7 +22,7 @@ const EXERCISES_PAGE = {
 type WorkoutSheetCardProps = {
   expanded: boolean;
   onToggle: () => void;
-  sheet: WorkoutSheet;
+  sheet: WorkoutSheetSummary;
 };
 
 export const WorkoutSheetCard = ({

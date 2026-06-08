@@ -22,3 +22,21 @@ export type AuditLogFilters = {
 
 export type AuditLogApiResponse = AuditLog[] | PageResponse<AuditLog>;
 
+export type AuditLogFilterOption = {
+  value: string;
+  label: string;
+};
+
+export type AuditLogActorFilterOption = {
+  actorUserId: string;
+  actorEmail?: string | null;
+  actorRole?: string | null;
+  label: string;
+};
+
+export type AuditLogFilterOptions = {
+  actions: AuditLogFilterOption[];
+  resourceTypes: AuditLogFilterOption[];
+  actors: AuditLogActorFilterOption[];
+};
+

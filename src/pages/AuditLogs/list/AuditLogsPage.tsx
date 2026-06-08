@@ -1,5 +1,7 @@
-﻿import { Button } from "@/components/Button/Button";
+import { Autocomplete } from "@/components/Autocomplete/Autocomplete";
+import { Button } from "@/components/Button/Button";
 import { Pagination } from "@/components/Pagination/Pagination";
+import { SelectField } from "@/components/SelectField/SelectField";
 import {
   Table,
   TableBody,
@@ -12,9 +14,12 @@ import {
 } from "@/components/Table/Table";
 import { TextField } from "@/components/TextField/TextField";
 import type { AuditLog, AuditLogFilters } from "@/pages/AuditLogs/types";
+import { useGetAuditLogFilterOptions } from "@/queries/useGetAuditLogFilterOptions";
 import { useGetAuditLogs } from "@/queries/useGetAuditLogs";
+import { normalizeApiError } from "@/utils/apiError";
 import { FilterX, Search } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 import styles from "./AuditLogsPage.module.css";
 
 const logColumns = [
@@ -30,19 +35,6 @@ const EMPTY_FILTERS: AuditLogFilters = {
   actorId: "",
   resourceType: "",
   resourceId: "",
-};
-
-const resourceTypeLabels: Record<string, string> = {
-  USER: "Usuário",
-  STUDENT: "Aluno",
-  INSTRUCTOR: "Instrutor",
-  PLAN: "Plano",
-  ENROLLMENT: "Matrícula",
-  PAYMENT: "Pagamento",
-  EXERCISE: "Exercício",
-  WORKOUT_SHEET: "Ficha",
-  WORKOUT_SHEET_EXERCISE: "Exercício da ficha",
-  JOB: "Job do sistema",
 };
 
 const formatDateTime = (value?: string | null) =>
@@ -70,7 +62,10 @@ const getActorLabel = (log: AuditLog) => {
   if (log.actorUserId || log.actorEmail || log.actorRole) {
     return {
       primary: log.actorEmail?.trim() || `Usuário #${log.actorUserId ?? "-"}`,
-      secondary: [log.actorRole?.trim(), log.actorUserId ? `ID ${log.actorUserId}` : null]
+      secondary: [
+        log.actorRole?.trim(),
+        log.actorUserId ? `ID ${log.actorUserId}` : null,
+      ]
         .filter(Boolean)
         .join(" • "),
     };
@@ -89,7 +84,10 @@ const getActorLabel = (log: AuditLog) => {
   };
 };
 
-const getResourceLabel = (log: AuditLog) => {
+const getResourceLabel = (
+  log: AuditLog,
+  resourceTypeLabels: Record<string, string>,
+) => {
   if (log.resourceType === "JOB") {
     return "Job do sistema";
   }
@@ -102,19 +100,83 @@ const getResourceLabel = (log: AuditLog) => {
 };
 
 export const AuditLogsPage = () => {
-  const [draftFilters, setDraftFilters] = useState<AuditLogFilters>(EMPTY_FILTERS);
+  const [draftFilters, setDraftFilters] =
+    useState<AuditLogFilters>(EMPTY_FILTERS);
   const [filters, setFilters] = useState<AuditLogFilters>(EMPTY_FILTERS);
+  const [actorSearch, setActorSearch] = useState("");
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
-
-  const { data, isLoading, isFetching } = useGetAuditLogs(filters, {
-    page,
-    size,
-    sort: "createdAt,desc",
-  });
+  const { data: filterOptions, isLoading: isLoadingFilterOptions } =
+    useGetAuditLogFilterOptions();
+  const { data, error, isError, isLoading, isFetching } = useGetAuditLogs(
+    filters,
+    {
+      page,
+      size,
+      sort: "createdAt,desc",
+    },
+  );
 
   const logs = data?.content ?? [];
   const tableLoading = isLoading || isFetching;
+  const apiError = useMemo(
+    () => (isError ? normalizeApiError(error) : null),
+    [error, isError],
+  );
+  const invalidFilterError = apiError?.status === 400;
+  const actionOptions = [
+    { label: "Todas", value: "" },
+    ...(filterOptions?.actions ?? []),
+  ];
+  const resourceTypeOptions = [
+    { label: "Todos", value: "" },
+    ...(filterOptions?.resourceTypes ?? []),
+  ];
+  const actorOptions = useMemo(() => {
+    const normalizedSearch = actorSearch.trim().toLowerCase();
+
+    return (filterOptions?.actors ?? [])
+      .filter((actor) => {
+        if (!normalizedSearch) return true;
+
+        return [
+          actor.label,
+          actor.actorEmail,
+          actor.actorRole,
+          actor.actorUserId,
+        ]
+          .filter(Boolean)
+          .some((value) =>
+            String(value).toLowerCase().includes(normalizedSearch),
+          );
+      })
+      .map((actor) => ({
+        label: actor.label,
+        value: String(actor.actorUserId),
+        description: [actor.actorRole, actor.actorEmail]
+          .filter(Boolean)
+          .join(" • "),
+      }));
+  }, [actorSearch, filterOptions?.actors]);
+  const resourceTypeLabels = useMemo(
+    () =>
+      Object.fromEntries(
+        (filterOptions?.resourceTypes ?? []).map((option) => [
+          option.value,
+          option.label,
+        ]),
+      ),
+    [filterOptions?.resourceTypes],
+  );
+
+  useEffect(() => {
+    if (!apiError || !invalidFilterError) return;
+
+    toast.error(
+      apiError.message ||
+        "Filtro inválido. Confira as opções disponíveis e tente novamente.",
+    );
+  }, [apiError, invalidFilterError]);
 
   const handleApplyFilters = () => {
     setFilters({
@@ -129,6 +191,7 @@ export const AuditLogsPage = () => {
   const handleClearFilters = () => {
     setDraftFilters(EMPTY_FILTERS);
     setFilters(EMPTY_FILTERS);
+    setActorSearch("");
     setPage(0);
   };
 
@@ -144,25 +207,41 @@ export const AuditLogsPage = () => {
         </div>
 
         <div className={styles.filters}>
-          <TextField
+          <SelectField
             label="Ação"
             id="auditAction"
             value={draftFilters.action}
             onChange={(event) =>
-              setDraftFilters((prev) => ({ ...prev, action: event.target.value }))
+              setDraftFilters((prev) => ({
+                ...prev,
+                action: event.target.value,
+              }))
             }
-            placeholder="LOGIN"
+            options={actionOptions}
+            disabled={isLoadingFilterOptions}
           />
-          <TextField
-            label="ID de quem executou"
+          <Autocomplete
+            label="Quem executou"
             id="auditActorId"
-            value={draftFilters.actorId}
-            onChange={(event) =>
-              setDraftFilters((prev) => ({ ...prev, actorId: event.target.value }))
-            }
-            placeholder="1"
+            search={actorSearch}
+            onSearchChange={(value) => {
+              setActorSearch(value);
+              setDraftFilters((prev) => ({ ...prev, actorId: "" }));
+            }}
+            onSelect={(option) => {
+              setActorSearch(option.label);
+              setDraftFilters((prev) => ({ ...prev, actorId: option.value }));
+            }}
+            onClear={() => {
+              setActorSearch("");
+              setDraftFilters((prev) => ({ ...prev, actorId: "" }));
+            }}
+            options={actorOptions}
+            loading={isLoadingFilterOptions}
+            placeholder="Busque por usuário, e-mail ou perfil"
+            emptyMessage="Nenhum ator encontrado."
           />
-          <TextField
+          <SelectField
             label="Tipo de registro afetado"
             id="auditResourceType"
             value={draftFilters.resourceType}
@@ -172,7 +251,8 @@ export const AuditLogsPage = () => {
                 resourceType: event.target.value,
               }))
             }
-            placeholder="USER, STUDENT, INSTRUCTOR..."
+            options={resourceTypeOptions}
+            disabled={isLoadingFilterOptions}
           />
           <TextField
             label="ID do registro afetado"
@@ -241,13 +321,17 @@ export const AuditLogsPage = () => {
                       </TableCell>
                       <TableCell>
                         <div className={styles.cellStack}>
-                          <span className={styles.cellPrimary}>{actor.primary}</span>
+                          <span className={styles.cellPrimary}>
+                            {actor.primary}
+                          </span>
                           <span className={styles.cellSecondary}>
                             {actor.secondary || "-"}
                           </span>
                         </div>
                       </TableCell>
-                      <TableCell>{getResourceLabel(log)}</TableCell>
+                      <TableCell>
+                        {getResourceLabel(log, resourceTypeLabels)}
+                      </TableCell>
                       <TableCell>
                         <div className={styles.cellStack}>
                           <span className={styles.cellSecondary}>
@@ -267,7 +351,11 @@ export const AuditLogsPage = () => {
               {!tableLoading && logs.length === 0 && (
                 <TableEmptyState
                   colSpan={5}
-                  message="Nenhum log encontrado para os filtros atuais."
+                  message={
+                    invalidFilterError
+                      ? "Filtro inválido. Use as opções disponíveis nos campos acima e tente novamente."
+                      : "Nenhum log encontrado para os filtros atuais."
+                  }
                 />
               )}
             </TableBody>
@@ -288,5 +376,3 @@ export const AuditLogsPage = () => {
     </div>
   );
 };
-
-

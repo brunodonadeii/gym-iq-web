@@ -1,4 +1,4 @@
-﻿import type { WorkoutSheet } from "@/pages/WorkoutSheets/types";
+import type { WorkoutSheetSummary } from "@/pages/WorkoutSheets/types";
 import { authFetch } from "@/services/api";
 import type { PageRequest, PageResponse } from "@/types/pagination";
 import { parseApiResponse } from "@/utils/apiError";
@@ -25,7 +25,7 @@ const getWorkoutSheetsUrl = (query: WorkoutSheetsQuery) => {
 export async function fetchWorkoutSheets(
   query: WorkoutSheetsQuery,
   pagination: PageRequest,
-): Promise<PageResponse<WorkoutSheet>> {
+): Promise<PageResponse<WorkoutSheetSummary>> {
   const params = buildPaginationParams(
     { sort: "createdAt,desc", ...pagination },
     query.mode === "student" ? { onlyActive: query.onlyActive } : undefined,
@@ -50,4 +50,3 @@ export function useGetWorkoutSheets(
     refetchOnWindowFocus: false,
   });
 }
-

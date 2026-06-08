@@ -17,7 +17,7 @@ import {
 } from "@/components/Table/Table";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useDeleteWorkoutSheet } from "@/mutations/useDeleteWorkoutSheet";
-import type { WorkoutSheet } from "@/pages/WorkoutSheets/types";
+import type { WorkoutSheetSummary } from "@/pages/WorkoutSheets/types";
 import { useGetInstructors } from "@/queries/useGetInstructors";
 import { useGetStudentOptions } from "@/queries/useGetStudentOptions";
 import { fetchWorkoutSheets, useGetWorkoutSheets } from "@/queries/useGetWorkoutSheets";
@@ -52,12 +52,12 @@ const formatDate = (value?: string | null) =>
       })
     : "-";
 
-const getWorkoutSheetId = (sheet: WorkoutSheet) => String(sheet.workoutSheetId);
+const getWorkoutSheetId = (sheet: WorkoutSheetSummary) => String(sheet.workoutSheetId);
 
-const resolveStudentName = (sheet: WorkoutSheet) =>
+const resolveStudentName = (sheet: WorkoutSheetSummary) =>
   sheet.student?.name ?? sheet.studentName ?? `Aluno #${sheet.studentId}`;
 
-const resolveInstructorName = (sheet: WorkoutSheet) =>
+const resolveInstructorName = (sheet: WorkoutSheetSummary) =>
   sheet.instructor?.name ??
   sheet.instructorName ??
   `Instrutor #${sheet.instructorId}`;
@@ -75,7 +75,7 @@ export const WorkoutSheetsPage = () => {
     useState<WorkoutSheetStatusFilter>("all");
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
-  const [sheetToDelete, setSheetToDelete] = useState<WorkoutSheet | null>(null);
+  const [sheetToDelete, setSheetToDelete] = useState<WorkoutSheetSummary | null>(null);
   const debouncedStudentSearch = useDebouncedValue(studentSearch);
   const debouncedInstructorSearch = useDebouncedValue(instructorSearch);
 

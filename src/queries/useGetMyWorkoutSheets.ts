@@ -1,4 +1,4 @@
-﻿import type { WorkoutSheet } from "@/pages/WorkoutSheets/types";
+import type { WorkoutSheetSummary } from "@/pages/WorkoutSheets/types";
 import { authFetch } from "@/services/api";
 import type { PageRequest, PageResponse } from "@/types/pagination";
 import { parseApiResponse } from "@/utils/apiError";
@@ -13,7 +13,7 @@ const DEFAULT_MY_WORKOUT_SHEETS_PAGE: PageRequest = {
 
 async function fetchMyWorkoutSheets(
   pagination: PageRequest,
-): Promise<PageResponse<WorkoutSheet>> {
+): Promise<PageResponse<WorkoutSheetSummary>> {
   const response = await authFetch(
     `workout-sheets/me?${buildPaginationParams(pagination, {
       onlyActive: true,
@@ -32,4 +32,3 @@ export function useGetMyWorkoutSheets(
     staleTime: 2 * 60 * 1000,
   });
 }
-
