@@ -1,7 +1,7 @@
-﻿import type { Student } from "@/pages/Students/types";
+import type { StudentSummary } from "@/pages/Students/types";
 import { authFetch } from "@/services/api";
-import { parseApiResponse } from "@/utils/apiError";
 import type { PageRequest, PageResponse } from "@/types/pagination";
+import { parseApiResponse } from "@/utils/apiError";
 import { buildPaginationParams } from "@/utils/pagination";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
@@ -19,7 +19,7 @@ export async function fetchStudents(
   search: string,
   status: StudentStatusQuery,
   pagination: PageRequest,
-): Promise<PageResponse<Student>> {
+): Promise<PageResponse<StudentSummary>> {
   const query = buildPaginationParams(pagination, {
     ...(search ? { q: search } : {}),
     status,
@@ -44,6 +44,3 @@ export function useGetStudents(
     refetchOnWindowFocus: false,
   });
 }
-
-
-

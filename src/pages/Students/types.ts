@@ -8,18 +8,21 @@
   address: string;
 };
 
-export type Student = {
+export type StudentSummary = {
   active: boolean;
-  address?: string | null;
-  birthDate?: string | null;
-  cpf: string;
   createdAt: string;
   email: string;
   lgpdAccepted: boolean;
   name: string;
-  phone: string;
   studentId: string;
   userId: string;
+};
+
+export type Student = StudentSummary & {
+  address?: string | null;
+  birthDate?: string | null;
+  cpf: string;
+  phone: string;
   zipCode?: string | null;
 };
 
@@ -51,7 +54,13 @@ const ANONYMIZED_SENTINELS = new Set([
 const hasAnonymizedSentinel = (value?: string | null) =>
   value ? ANONYMIZED_SENTINELS.has(value.trim().toUpperCase()) : false;
 
-export const isAnonymizedStudent = (student?: Student | null) =>
+type AnonymizedStudentCandidate = Partial<
+  Pick<Student, "address" | "birthDate" | "cpf" | "email" | "phone">
+>;
+
+export const isAnonymizedStudent = (
+  student?: AnonymizedStudentCandidate | null,
+) =>
   hasAnonymizedSentinel(student?.phone) ||
   hasAnonymizedSentinel(student?.cpf) ||
   hasAnonymizedSentinel(student?.email) ||
