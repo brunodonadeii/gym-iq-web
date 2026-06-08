@@ -299,6 +299,24 @@
   color: #b91c1c;
 }
 
+.eligibilityBlock {
+  display: grid;
+  gap: 10px;
+}
+
+.eligibilityBlock p {
+  margin: 0;
+}
+
+.eligibilityBlock ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.eligibilityBlock li {
+  margin-top: 4px;
+}
+
 @media (max-width: 1080px) {
   .hero {
     grid-template-columns: 1fr;

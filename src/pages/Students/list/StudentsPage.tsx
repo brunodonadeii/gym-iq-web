@@ -27,6 +27,11 @@ import {
   type StudentStatusQuery,
   useGetStudents,
 } from "@/queries/useGetStudents";
+import {
+  fetchStudentPersonalDataDeletionEligibility,
+  studentDeletionEligibilityKeys,
+  type StudentPersonalDataDeletionEligibility,
+} from "@/queries/useGetStudentPersonalDataDeletionEligibility";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import {
@@ -50,7 +55,12 @@ const studentColumns = [
 
 type ConfirmAction =
   | { type: "deactivate"; studentId: string; studentName: string }
-  | { type: "delete"; studentId: string; studentName: string };
+  | {
+      type: "delete";
+      studentId: string;
+      studentName: string;
+      eligibility: StudentPersonalDataDeletionEligibility;
+    };
 
 type StudentStatusFilter = "all" | "active" | "inactive";
 
@@ -86,6 +96,8 @@ export const StudentsPage = () => {
   const [confirmAction, setConfirmAction] = useState<ConfirmAction | null>(
     null,
   );
+  const [checkingDeletionEligibilityStudentId, setCheckingDeletionEligibilityStudentId] =
+    useState("");
   const debouncedSearch = useDebouncedValue(search);
   const pagination = {
     page,
@@ -155,6 +167,9 @@ export const StudentsPage = () => {
       {
         onSuccess: () => {
           toast.success("Cadastro do aluno excluído com sucesso!");
+          queryClient.invalidateQueries({
+            queryKey: studentDeletionEligibilityKeys.byStudent(studentId),
+          });
           setConfirmAction(null);
         },
         onError: (e) => {
@@ -196,6 +211,43 @@ export const StudentsPage = () => {
         },
       },
     );
+  };
+
+  const handleRequestDeleteStudentPersonalData = async (
+    studentId: string,
+    studentName: string,
+  ) => {
+    setCheckingDeletionEligibilityStudentId(studentId);
+
+    try {
+      const eligibility = await queryClient.fetchQuery({
+        queryKey: studentDeletionEligibilityKeys.byStudent(studentId),
+        queryFn: () => fetchStudentPersonalDataDeletionEligibility(studentId),
+        staleTime: 30 * 1000,
+      });
+
+      setConfirmAction({
+        type: "delete",
+        studentId,
+        studentName,
+        eligibility,
+      });
+    } catch (e) {
+      const error = e as { error?: string; message?: string };
+
+      toast.error(
+        <div>
+          <strong>{error?.error ?? "Erro"}</strong>
+          <br />
+          <span>
+            {error?.message ??
+              "Não foi possível verificar se o aluno pode ser excluído."}
+          </span>
+        </div>,
+      );
+    } finally {
+      setCheckingDeletionEligibilityStudentId("");
+    }
   };
 
   const handleActivateStudent = (studentId: string) => {
@@ -389,13 +441,15 @@ export const StudentsPage = () => {
                                     label: "Excluir",
                                     icon: <EyeOff size={15} />,
                                     disabled:
-                                      isDeletingStudentPersonalData || anonymized,
+                                      isDeletingStudentPersonalData ||
+                                      anonymized ||
+                                      checkingDeletionEligibilityStudentId ===
+                                        String(student.studentId),
                                     onSelect: () =>
-                                      setConfirmAction({
-                                        type: "delete",
-                                        studentId: String(student.studentId),
-                                        studentName: student.name,
-                                      }),
+                                      handleRequestDeleteStudentPersonalData(
+                                        String(student.studentId),
+                                        student.name,
+                                      ),
                                   },
                                 ]
                               : []),
@@ -437,7 +491,35 @@ export const StudentsPage = () => {
         }
         description={
           confirmAction?.type === "delete"
-            ? `Os dados pessoais de ${confirmAction.studentName} serão removidos e o histórico será preservado. Esta ação exige que o aluno já esteja inativo e não será concluída se houver pagamentos pendentes ou atrasados.`
+            ? confirmAction.eligibility.canAnonymize
+              ? `Os dados pessoais de ${confirmAction.studentName} serão removidos e o histórico será preservado. Esta ação não pode ser desfeita.`
+              : (
+                  <div className={styles.eligibilityBlock}>
+                    <p>
+                      Os dados de {confirmAction.studentName} ainda não podem
+                      ser excluídos.
+                    </p>
+                    <ul>
+                      {confirmAction.eligibility.blockers.map((blocker) => (
+                        <li key={blocker}>{blocker}</li>
+                      ))}
+                    </ul>
+                    {confirmAction.eligibility.hasFinancialPendingIssues && (
+                      <button
+                        type="button"
+                        className={styles.pendingToastAction}
+                        onClick={() =>
+                          handleViewStudentPayments(
+                            confirmAction.studentId,
+                            confirmAction.studentName,
+                          )
+                        }
+                      >
+                        Ver pendências
+                      </button>
+                    )}
+                  </div>
+                )
             : confirmAction
               ? `${confirmAction.studentName} perderá o acesso ativo, mas o histórico será preservado.`
               : ""
@@ -446,6 +528,10 @@ export const StudentsPage = () => {
           confirmAction?.type === "delete" ? "Excluir" : "Inativar aluno"
         }
         loading={isDeactivatingStudent || isDeletingStudentPersonalData}
+        confirmDisabled={
+          confirmAction?.type === "delete" &&
+          !confirmAction.eligibility.canAnonymize
+        }
         onCancel={() => setConfirmAction(null)}
         onConfirm={handleConfirmAction}
       />

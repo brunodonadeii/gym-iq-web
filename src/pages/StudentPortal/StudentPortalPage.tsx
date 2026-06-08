@@ -6,6 +6,7 @@ import { useGetMyActiveEnrollment } from "@/queries/useGetMyActiveEnrollment";
 import { useGetMyEnrollments } from "@/queries/useGetMyEnrollments";
 import { useGetMyPayments } from "@/queries/useGetMyPayments";
 import { useGetMyPresences } from "@/queries/useGetMyPresences";
+import { useGetMyStudentPersonalDataDeletionEligibility } from "@/queries/useGetStudentPersonalDataDeletionEligibility";
 import { useGetMyWorkoutSheets } from "@/queries/useGetMyWorkoutSheets";
 import { useGetStudentMe } from "@/queries/useGetStudentMe";
 import { clearAuthStorage } from "@/utils/auth";
@@ -39,8 +40,17 @@ export const StudentPortalPage = () => {
     useGetMyPresences();
   const { data: workoutSheets, isLoading: isLoadingWorkoutSheets } =
     useGetMyWorkoutSheets();
+  const {
+    data: deletionEligibility,
+    isLoading: isLoadingDeletionEligibility,
+  } = useGetMyStudentPersonalDataDeletionEligibility(!isLoadingStudent);
   const { mutate: deleteMyPersonalData, isPending: isDeletingMyPersonalData } =
     useDeleteMyStudentPersonalData();
+  const canDeletePersonalData = deletionEligibility?.canAnonymize === true;
+  const deletePersonalDataDisabled =
+    isDeletingMyPersonalData ||
+    isLoadingDeletionEligibility ||
+    !canDeletePersonalData;
 
   const handleLogout = () => {
     clearAuthStorage();
@@ -122,11 +132,32 @@ export const StudentPortalPage = () => {
                   <Button
                     variant="danger"
                     onClick={() => setConfirmDeleteOpen(true)}
-                    disabled={isDeletingMyPersonalData}
+                    disabled={deletePersonalDataDisabled}
                   >
                     Excluir
                   </Button>
                 </div>
+
+                {!isLoadingDeletionEligibility &&
+                  deletionEligibility &&
+                  !deletionEligibility.canAnonymize && (
+                    <div
+                      className={[
+                        styles.eligibilityNotice,
+                        deletionEligibility.hasFinancialPendingIssues &&
+                          styles.eligibilityNoticeDanger,
+                      ]
+                        .filter(Boolean)
+                        .join(" ")}
+                    >
+                      <strong>Exclusão indisponível no momento</strong>
+                      <ul>
+                        {deletionEligibility.blockers.map((blocker) => (
+                          <li key={blocker}>{blocker}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
               </>
             )}
           </article>
@@ -309,6 +340,7 @@ export const StudentPortalPage = () => {
         description="Seus dados pessoais serão removidos e o histórico será preservado. Esta ação não pode ser desfeita e não será concluída se houver pagamentos pendentes ou atrasados."
         confirmLabel="Excluir"
         loading={isDeletingMyPersonalData}
+        confirmDisabled={!canDeletePersonalData}
         onCancel={() => setConfirmDeleteOpen(false)}
         onConfirm={handleDeleteAccount}
       />

@@ -63,6 +63,31 @@
   justify-content: flex-end;
 }
 
+.eligibilityNotice {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface-alt);
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+
+.eligibilityNotice strong {
+  color: var(--text-primary);
+}
+
+.eligibilityNotice ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.eligibilityNoticeDanger {
+  border-color: color-mix(in srgb, #ef4444 28%, var(--border));
+  background: color-mix(in srgb, #ef4444 8%, var(--surface));
+}
+
 .wide {
   grid-column: 1 / -1;
 }

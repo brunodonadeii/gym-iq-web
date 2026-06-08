@@ -1,14 +1,16 @@
-﻿import { Button } from "@/components/Button/Button";
+import { Button } from "@/components/Button/Button";
 import { AlertTriangle, X } from "lucide-react";
+import type { ReactNode } from "react";
 import styles from "./ConfirmDialog.module.css";
 
 type ConfirmDialogProps = {
   open: boolean;
   title: string;
-  description: string;
+  description: ReactNode;
   confirmLabel?: string;
   cancelLabel?: string;
   loading?: boolean;
+  confirmDisabled?: boolean;
   onConfirm: () => void;
   onCancel: () => void;
 };
@@ -20,6 +22,7 @@ export const ConfirmDialog = ({
   confirmLabel = "Confirmar",
   cancelLabel = "Cancelar",
   loading = false,
+  confirmDisabled = false,
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) => {
@@ -53,16 +56,21 @@ export const ConfirmDialog = ({
           <h2 className={styles.title} id="confirmDialogTitle">
             {title}
           </h2>
-          <p className={styles.description} id="confirmDialogDescription">
+          <div className={styles.description} id="confirmDialogDescription">
             {description}
-          </p>
+          </div>
         </div>
 
         <div className={styles.actions}>
           <Button variant="secondary" onClick={onCancel} disabled={loading}>
             {cancelLabel}
           </Button>
-          <Button variant="danger" onClick={onConfirm} loading={loading}>
+          <Button
+            variant="danger"
+            onClick={onConfirm}
+            loading={loading}
+            disabled={confirmDisabled}
+          >
             {confirmLabel}
           </Button>
         </div>
@@ -70,4 +78,3 @@ export const ConfirmDialog = ({
     </div>
   );
 };
-
