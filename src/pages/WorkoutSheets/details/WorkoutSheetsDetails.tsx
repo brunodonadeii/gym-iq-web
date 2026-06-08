@@ -27,6 +27,11 @@ import type {
   WorkoutSheetExerciseFormData,
   WorkoutSheetFormData,
 } from "@/pages/WorkoutSheets/types";
+import {
+  validateWorkoutSheetExercise,
+  WORKOUT_SHEET_EXERCISE_LIMITS,
+  type WorkoutSheetExerciseFormErrors,
+} from "@/pages/WorkoutSheets/validation";
 import { useGetExercises } from "@/queries/useGetExercises";
 import { useGetInstructors } from "@/queries/useGetInstructors";
 import { useGetMyInstructor } from "@/queries/useGetMyInstructor";
@@ -68,9 +73,7 @@ const DEFAULT_TRAINING_SECTIONS = ["Treino A", "Treino B", "Treino C"];
 
 type SheetFormField = Exclude<keyof WorkoutSheetFormData, "exercises">;
 type SheetFormErrors = Partial<Record<SheetFormField, string>>;
-type ExerciseFormErrors = Partial<
-  Record<keyof WorkoutSheetExerciseFormData, string>
->;
+type ExerciseFormErrors = WorkoutSheetExerciseFormErrors;
 
 const SHEET_FIELDS = [
   "studentId",
@@ -321,28 +324,15 @@ const WorkoutSheetsDetailsContent = ({
   };
 
   const handleSubmitExercise = () => {
-    if (!exerciseForm.exerciseId) {
-      focusById("exerciseId");
-      return;
-    }
+    const nextExerciseErrors = validateWorkoutSheetExercise({
+      ...exerciseForm,
+      trainingSection: activeTrainingSection,
+    });
 
-    if (!exerciseForm.sets) {
-      focusById("sets");
-      return;
-    }
-
-    if (!exerciseForm.repetitions) {
-      focusById("repetitions");
-      return;
-    }
-
-    if (!activeTrainingSection.trim()) {
-      focusById("newTrainingSection");
-      return;
-    }
-
-    if (!exerciseForm.executionOrder) {
-      focusById("executionOrder");
+    if (Object.keys(nextExerciseErrors).length > 0) {
+      setExerciseErrors(nextExerciseErrors);
+      const firstField = Object.keys(nextExerciseErrors)[0];
+      focusById(firstField === "trainingSection" ? "newTrainingSection" : firstField);
       return;
     }
 
@@ -714,6 +704,8 @@ const WorkoutSheetsDetailsContent = ({
             label="Series"
             id="sets"
             type="number"
+            min={WORKOUT_SHEET_EXERCISE_LIMITS.sets.min}
+            max={WORKOUT_SHEET_EXERCISE_LIMITS.sets.max}
             value={exerciseForm.sets}
             onChange={(event) => {
               setExerciseField("sets")(event);
@@ -747,6 +739,8 @@ const WorkoutSheetsDetailsContent = ({
             label="Descanso em segundos"
             id="restSeconds"
             type="number"
+            min={WORKOUT_SHEET_EXERCISE_LIMITS.restSeconds.min}
+            max={WORKOUT_SHEET_EXERCISE_LIMITS.restSeconds.max}
             value={exerciseForm.restSeconds}
             onChange={(event) => {
               setExerciseField("restSeconds")(event);
@@ -765,6 +759,8 @@ const WorkoutSheetsDetailsContent = ({
             label="Ordem"
             id="executionOrder"
             type="number"
+            min={WORKOUT_SHEET_EXERCISE_LIMITS.executionOrder.min}
+            max={WORKOUT_SHEET_EXERCISE_LIMITS.executionOrder.max}
             value={exerciseForm.executionOrder}
             onChange={(event) => {
               setExerciseField("executionOrder")(event);

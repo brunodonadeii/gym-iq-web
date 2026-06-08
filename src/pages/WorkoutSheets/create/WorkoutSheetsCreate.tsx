@@ -10,6 +10,10 @@ import type {
   WorkoutSheetFormData,
   WorkoutSheetSectionsFormData,
 } from "@/pages/WorkoutSheets/types";
+import {
+  validateWorkoutSheetExercise,
+  WORKOUT_SHEET_EXERCISE_LIMITS,
+} from "@/pages/WorkoutSheets/validation";
 import { useGetExercises } from "@/queries/useGetExercises";
 import { useGetInstructors } from "@/queries/useGetInstructors";
 import { useGetMyInstructor } from "@/queries/useGetMyInstructor";
@@ -94,21 +98,12 @@ const validate = (data: WorkoutSheetSectionsFormData) => {
     section.exercises.forEach((exercise, exerciseIndex) => {
       const current: Partial<Record<ExerciseField, string>> = {};
 
-      if (!exercise.exerciseId) {
-        current.exerciseId = "Selecione o exercício.";
-      }
-
-      if (!exercise.sets || Number(exercise.sets) <= 0) {
-        current.sets = "Informe um número de séries maior que zero.";
-      }
-
-      if (!exercise.repetitions.trim()) {
-        current.repetitions = "Informe as repeticoes.";
-      }
-
-      if (!exercise.executionOrder || Number(exercise.executionOrder) <= 0) {
-        current.executionOrder = "Informe uma ordem maior que zero.";
-      }
+      Object.assign(
+        current,
+        validateWorkoutSheetExercise(exercise, {
+          requireTrainingSection: false,
+        }),
+      );
 
       if (Object.keys(current).length > 0) {
         exerciseErrors[exerciseIndex] = current;
@@ -735,6 +730,8 @@ export const WorkoutSheetsCreate = () => {
                             label="Series"
                             id={`section-${sectionIndex}-exercise-${index}-sets`}
                             type="number"
+                            min={WORKOUT_SHEET_EXERCISE_LIMITS.sets.min}
+                            max={WORKOUT_SHEET_EXERCISE_LIMITS.sets.max}
                             value={exercise.sets}
                             onChange={(event) =>
                               updateExercise(
@@ -770,6 +767,8 @@ export const WorkoutSheetsCreate = () => {
                             label="Descanso em segundos"
                             id={`section-${sectionIndex}-exercise-${index}-restSeconds`}
                             type="number"
+                            min={WORKOUT_SHEET_EXERCISE_LIMITS.restSeconds.min}
+                            max={WORKOUT_SHEET_EXERCISE_LIMITS.restSeconds.max}
                             value={exercise.restSeconds}
                             optional
                             onChange={(event) =>
@@ -780,6 +779,7 @@ export const WorkoutSheetsCreate = () => {
                                 event.target.value,
                               )
                             }
+                            error={currentErrors.restSeconds}
                           />
                         </div>
 
@@ -788,6 +788,8 @@ export const WorkoutSheetsCreate = () => {
                             label="Ordem"
                             id={`section-${sectionIndex}-exercise-${index}-executionOrder`}
                             type="number"
+                            min={WORKOUT_SHEET_EXERCISE_LIMITS.executionOrder.min}
+                            max={WORKOUT_SHEET_EXERCISE_LIMITS.executionOrder.max}
                             value={exercise.executionOrder}
                             onChange={(event) =>
                               updateExercise(
