@@ -41,6 +41,8 @@ const createEmptyExercise = (
 
 const createEmptySection = (index: number) => ({
   name: `Treino ${String.fromCharCode(65 + index)}`,
+  description: "",
+  executionOrder: String(index + 1),
   exercises: [createEmptyExercise(1)],
 });
 
@@ -52,6 +54,7 @@ const EMPTY_FORM: WorkoutSheetSectionsFormData = {
   startDate: "",
   endDate: "",
   notes: "",
+  blocks: [],
   sections: [createEmptySection(0)],
 };
 
@@ -126,16 +129,6 @@ const validate = (data: WorkoutSheetSectionsFormData) => {
   return errors;
 };
 
-const flattenSectionsToExercises = (
-  sections: WorkoutSheetSectionsFormData["sections"],
-) =>
-  sections.flatMap((section) =>
-    section.exercises.map((exercise) => ({
-      ...exercise,
-      trainingSection: section.name.trim(),
-    })),
-  );
-
 const mapSectionsToPayload = (
   data: WorkoutSheetSectionsFormData,
 ): WorkoutSheetFormData => {
@@ -143,7 +136,16 @@ const mapSectionsToPayload = (
 
   return {
     ...sheetData,
-    exercises: flattenSectionsToExercises(sections),
+    blocks: sections.map((section, sectionIndex) => ({
+      name: section.name.trim(),
+      description: section.description.trim(),
+      executionOrder: section.executionOrder || String(sectionIndex + 1),
+      exercises: section.exercises.map((exercise, exerciseIndex) => ({
+        ...exercise,
+        trainingSection: "",
+        executionOrder: exercise.executionOrder || String(exerciseIndex + 1),
+      })),
+    })),
   };
 };
 
@@ -619,6 +621,23 @@ export const WorkoutSheetsCreate = () => {
                     placeholder="Treino A"
                     error={sectionErrors.name}
                     required
+                  />
+                  <TextField
+                    label="Descrição do bloco"
+                    id={`section-${sectionIndex}-description`}
+                    value={section.description}
+                    onChange={(event) =>
+                      setData((prev) => ({
+                        ...prev,
+                        sections: prev.sections.map((current, currentIndex) =>
+                          currentIndex === sectionIndex
+                            ? { ...current, description: event.target.value }
+                            : current,
+                        ),
+                      }))
+                    }
+                    placeholder="Peito, ombro e tríceps"
+                    optional
                   />
                   {data.sections.length > 1 && (
                     <Button

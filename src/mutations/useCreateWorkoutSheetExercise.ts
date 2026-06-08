@@ -8,6 +8,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 type CreateWorkoutSheetExerciseData = {
   workoutSheetId: string;
+  workoutBlockId?: string;
   data: WorkoutSheetExerciseFormData;
 };
 
@@ -17,16 +18,19 @@ const normalizeExercise = (data: WorkoutSheetExerciseFormData) => ({
   repetitions: data.repetitions,
   loadKg: data.loadKg ? Number(data.loadKg) : undefined,
   restSeconds: data.restSeconds ? Number(data.restSeconds) : undefined,
-  trainingSection: data.trainingSection || undefined,
   executionOrder: Number(data.executionOrder),
   notes: data.notes || undefined,
 });
 
 async function createWorkoutSheetExercise({
   workoutSheetId,
+  workoutBlockId,
   data,
 }: CreateWorkoutSheetExerciseData) {
-  const response = await authFetch(`workout-sheets/${workoutSheetId}/exercises`, {
+  const endpoint = workoutBlockId
+    ? `workout-blocks/${workoutBlockId}/exercises`
+    : `workout-sheets/${workoutSheetId}/exercises`;
+  const response = await authFetch(endpoint, {
     method: "POST",
     body: JSON.stringify(normalizeExercise(data)),
   });
@@ -45,12 +49,17 @@ export function useCreateWorkoutSheetExercise() {
     mutationFn: createWorkoutSheetExercise,
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
-        queryKey: ["workout-sheets", variables.workoutSheetId, "exercises"],
-      });
-      queryClient.invalidateQueries({
         queryKey: ["workout-sheets", variables.workoutSheetId],
       });
+      if (variables.workoutBlockId) {
+        queryClient.invalidateQueries({
+          queryKey: ["workout-blocks", variables.workoutBlockId],
+        });
+      } else {
+        queryClient.invalidateQueries({
+          queryKey: ["workout-sheets", variables.workoutSheetId, "exercises"],
+        });
+      }
     },
   });
 }
-

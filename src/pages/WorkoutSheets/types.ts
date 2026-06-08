@@ -26,6 +26,18 @@ export type WorkoutSheetSummary = {
 };
 
 export type WorkoutSheet = WorkoutSheetSummary & {
+  blocks?: WorkoutBlock[];
+  exercises?: WorkoutSheetExercise[];
+};
+
+export type WorkoutBlock = {
+  workoutBlockId?: string;
+  blockId?: string;
+  id?: string;
+  workoutSheetId?: string;
+  name: string;
+  description?: string | null;
+  executionOrder: number | string;
   exercises?: WorkoutSheetExercise[];
 };
 
@@ -37,19 +49,21 @@ export type WorkoutSheetFormData = {
   startDate: string;
   endDate: string;
   notes: string;
-  exercises: WorkoutSheetExerciseFormData[];
+  blocks: WorkoutSheetBlockFormData[];
+  exercises?: WorkoutSheetExerciseFormData[];
 };
 
-export type WorkoutSheetSectionFormData = {
+export type WorkoutSheetBlockFormData = {
   name: string;
+  description: string;
+  executionOrder: string;
   exercises: WorkoutSheetExerciseFormData[];
 };
 
-export type WorkoutSheetSectionsFormData = Omit<
-  WorkoutSheetFormData,
-  "exercises"
-> & {
-  sections: WorkoutSheetSectionFormData[];
+export type WorkoutSheetSectionFormData = WorkoutSheetBlockFormData;
+
+export type WorkoutSheetSectionsFormData = WorkoutSheetFormData & {
+  sections: WorkoutSheetBlockFormData[];
 };
 
 export type WorkoutSheetExercise = {
@@ -61,7 +75,7 @@ export type WorkoutSheetExercise = {
   repetitions: string;
   loadKg?: number | string | null;
   restSeconds?: number | string | null;
-  trainingSection: string;
+  trainingSection?: string;
   executionOrder: number | string;
   notes?: string | null;
 };
