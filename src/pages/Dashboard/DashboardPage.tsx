@@ -23,8 +23,16 @@ import { useResolveRetentionAlert } from "@/mutations/useResolveRetentionAlert";
 import { useGetFinancialDashboard } from "@/queries/useGetFinancialDashboard";
 import { useGetOpenRetentionAlerts } from "@/queries/useGetOpenRetentionAlerts";
 import { useGetOperationsDashboard } from "@/queries/useGetOperationsDashboard";
+import {
+  isRetentionAlertGenerationFailed,
+  isRetentionAlertGenerationFinished,
+  isRetentionAlertGenerationRunning,
+  useGetRetentionAlertGenerationStatus,
+} from "@/queries/useGetRetentionAlertGenerationStatus";
 import { useGetRetentionDashboard } from "@/queries/useGetRetentionDashboard";
+import { dashboardKeys, retentionAlertKeys } from "@/queries/dashboardKeys";
 import { auth } from "@/utils/auth";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   AlertTriangle,
   Banknote,
@@ -37,7 +45,7 @@ import {
   UserCheck,
   Users,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import styles from "./DashboardPage.module.css";
 import {
@@ -51,6 +59,9 @@ const areDateRangesEqual = (a: DateRangeValue, b: DateRangeValue) =>
 
 export const DashboardPage = () => {
   const isAdmin = auth.hasAnyRole(["ADMIN"]);
+  const queryClient = useQueryClient();
+  const generationWasRequestedRef = useRef(false);
+  const generationWasRunningRef = useRef(false);
   const [openAlertsPage, setOpenAlertsPage] = useState(0);
   const [openAlertsSize, setOpenAlertsSize] = useState(10);
   const [{ startDate: financialStartDate, endDate: financialEndDate }, setFinancialRange] =
@@ -75,8 +86,50 @@ export const DashboardPage = () => {
     },
     isAdmin,
   );
+  const generationStatus = useGetRetentionAlertGenerationStatus(isAdmin);
   const generateRetentionAlerts = useGenerateRetentionAlerts();
   const resolveAlert = useResolveRetentionAlert();
+
+  const retentionLoading = retention.isLoading || retention.isFetching;
+  const financialLoading = financial.isLoading || financial.isFetching;
+  const operationsLoading = operations.isLoading || operations.isFetching;
+  const openAlertsLoading = openAlerts.isLoading || openAlerts.isFetching;
+  const resolvingAlertId = resolveAlert.variables?.id;
+  const generationRunning =
+    generateRetentionAlerts.isPending ||
+    isRetentionAlertGenerationRunning(generationStatus.data);
+
+  useEffect(() => {
+    const status = generationStatus.data;
+    if (!status) return;
+
+    if (isRetentionAlertGenerationRunning(status)) {
+      generationWasRunningRef.current = true;
+      return;
+    }
+
+    const shouldRefreshAfterGeneration =
+      generationWasRunningRef.current || generationWasRequestedRef.current;
+
+    if (!shouldRefreshAfterGeneration) return;
+
+    if (isRetentionAlertGenerationFailed(status)) {
+      generationWasRunningRef.current = false;
+      generationWasRequestedRef.current = false;
+      toast.error(
+        status.message || "Não foi possível concluir a análise de retenção.",
+      );
+      return;
+    }
+
+    if (isRetentionAlertGenerationFinished(status)) {
+      generationWasRunningRef.current = false;
+      generationWasRequestedRef.current = false;
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.retention() });
+      queryClient.invalidateQueries({ queryKey: retentionAlertKeys.all });
+      toast.success("Análise de retenção concluída com sucesso.");
+    }
+  }, [generationStatus.data, queryClient]);
 
   const blockedByApi =
     isForbiddenError(retention.error) ||
@@ -87,12 +140,6 @@ export const DashboardPage = () => {
   if (!isAdmin || blockedByApi) {
     return <AccessBlocked />;
   }
-
-  const retentionLoading = retention.isLoading || retention.isFetching;
-  const financialLoading = financial.isLoading || financial.isFetching;
-  const operationsLoading = operations.isLoading || operations.isFetching;
-  const openAlertsLoading = openAlerts.isLoading || openAlerts.isFetching;
-  const resolvingAlertId = resolveAlert.variables?.id;
 
   const handleResolveAlert = (alert: RetentionAlert) => {
     resolveAlert.mutate(
@@ -113,7 +160,9 @@ export const DashboardPage = () => {
   const handleRefreshRetentionAnalysis = () => {
     generateRetentionAlerts.mutate(undefined, {
       onSuccess: () => {
-        toast.success("Análise de retenção atualizada com sucesso.");
+        generationWasRequestedRef.current = true;
+        toast.success("Análise de retenção iniciada em segundo plano.");
+        generationStatus.refetch();
       },
       onError: (error) => {
         toast.error(
@@ -212,17 +261,17 @@ export const DashboardPage = () => {
           <button
             className={styles.refreshButton}
             type="button"
-            disabled={generateRetentionAlerts.isPending}
+            disabled={generationRunning}
             onClick={handleRefreshRetentionAnalysis}
           >
             <RefreshCw
               size={15}
               className={
-                generateRetentionAlerts.isPending ? styles.spinIcon : undefined
+                generationRunning ? styles.spinIcon : undefined
               }
             />
-            {generateRetentionAlerts.isPending
-              ? "Atualizando..."
+            {generationRunning
+              ? "Análise em andamento..."
               : "Atualizar análise"}
           </button>
         }

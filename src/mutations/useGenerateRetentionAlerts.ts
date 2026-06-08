@@ -1,6 +1,6 @@
 import { authFetch } from "@/services/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { dashboardKeys, retentionAlertKeys } from "@/queries/dashboardKeys";
+import { retentionAlertKeys } from "@/queries/dashboardKeys";
 import { parseApiResponse, type ApiError } from "@/utils/apiError";
 
 async function generateRetentionAlerts() {
@@ -22,10 +22,7 @@ export function useGenerateRetentionAlerts() {
 
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: dashboardKeys.retention(),
-      });
-      queryClient.invalidateQueries({
-        queryKey: retentionAlertKeys.all,
+        queryKey: retentionAlertKeys.generationStatus(),
       });
     },
   });

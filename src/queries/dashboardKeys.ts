@@ -11,6 +11,8 @@ export const dashboardKeys = {
 
 export const retentionAlertKeys = {
   all: ["retention-alerts"] as const,
+  generationStatus: () =>
+    [...retentionAlertKeys.all, "generation-status"] as const,
   open: (pagination?: PageRequest) =>
     pagination
       ? ([...retentionAlertKeys.all, "open", pagination] as const)
