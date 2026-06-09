@@ -511,7 +511,7 @@ const WorkoutSheetsDetailsContent = ({
             <div>
               <h3 className={styles.sectionTitle}>Dados da ficha</h3>
               <p className={styles.sectionDescription}>
-                Atualize aluno, instrutor, nome, objetivo e periodo da ficha.
+                Atualize aluno, instrutor, nome, objetivo e período da ficha.
               </p>
             </div>
           </div>
@@ -619,7 +619,7 @@ const WorkoutSheetsDetailsContent = ({
                 error={sheetErrors.goal}
               />
               <TextField
-                label="Data de inicio"
+                label="Data de início"
                 id="startDate"
                 type="date"
                 value={sheetForm.startDate}
@@ -783,7 +783,7 @@ const WorkoutSheetsDetailsContent = ({
             error={exerciseErrors.exerciseId}
           />
           <TextField
-            label="Series"
+            label="Séries"
             id="sets"
             type="number"
             min={WORKOUT_SHEET_EXERCISE_LIMITS.sets.min}
@@ -800,7 +800,7 @@ const WorkoutSheetsDetailsContent = ({
 
         <div className={styles.grid}>
           <TextField
-            label="Repeticoes"
+            label="Repetições"
             id="repetitions"
             value={exerciseForm.repetitions}
             onChange={(event) => {
@@ -862,7 +862,7 @@ const WorkoutSheetsDetailsContent = ({
               setExerciseField("notes")(event);
               setExerciseErrors((prev) => ({ ...prev, notes: undefined }));
             }}
-            placeholder="Ajustes de execucao"
+            placeholder="Ajustes de execução"
             optional
             error={exerciseErrors.notes}
           />
@@ -875,7 +875,7 @@ const WorkoutSheetsDetailsContent = ({
               onClick={resetExerciseForm}
               disabled={isExerciseSubmitting}
             >
-              Cancelar edicao
+              Cancelar edição
             </Button>
           )}
           <Button type="submit" loading={isExerciseSubmitting}>
@@ -890,7 +890,7 @@ const WorkoutSheetsDetailsContent = ({
         <div className={styles.tableHeader}>
           <h3 className={styles.sectionTitle}>Ordem da ficha</h3>
           <p className={styles.sectionDescription}>
-            {blockExerciseRows.length} exercicio(s) vinculado(s).
+            {blockExerciseRows.length} exercício(s) vinculado(s).
           </p>
         </div>
 
@@ -900,8 +900,8 @@ const WorkoutSheetsDetailsContent = ({
               <TableRow>
                 <TableHeaderCell>Exercício</TableHeaderCell>
                 <TableHeaderCell>Bloco</TableHeaderCell>
-                <TableHeaderCell>Series</TableHeaderCell>
-                <TableHeaderCell>Repeticoes</TableHeaderCell>
+                <TableHeaderCell>Séries</TableHeaderCell>
+                <TableHeaderCell>Repetições</TableHeaderCell>
                 <TableHeaderCell>Descanso</TableHeaderCell>
                 <TableHeaderCell>Observações</TableHeaderCell>
                 <TableHeaderCell center>Ações</TableHeaderCell>

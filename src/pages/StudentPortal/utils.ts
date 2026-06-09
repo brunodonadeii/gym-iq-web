@@ -53,8 +53,8 @@ export const formatExerciseMeta = (
   restSeconds?: number | string | null,
 ) => {
   const parts = [
-    sets ? `${sets} series` : null,
-    repetitions ? `${repetitions} repeticoes` : null,
+    sets ? `${sets} séries` : null,
+    repetitions ? `${repetitions} repetições` : null,
     restSeconds ? `${restSeconds}s descanso` : null,
   ].filter(Boolean);
 

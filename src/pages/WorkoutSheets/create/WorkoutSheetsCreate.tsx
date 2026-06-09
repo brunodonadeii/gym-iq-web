@@ -566,7 +566,7 @@ export const WorkoutSheetsCreate = () => {
 
       <div className={styles.row}>
         <TextField
-          label="Data de inicio"
+          label="Data de início"
           id="startDate"
           type="date"
           value={data.startDate}
@@ -746,7 +746,7 @@ export const WorkoutSheetsCreate = () => {
                             required
                           />
                           <TextField
-                            label="Series"
+                            label="Séries"
                             id={`section-${sectionIndex}-exercise-${index}-sets`}
                             type="number"
                             min={WORKOUT_SHEET_EXERCISE_LIMITS.sets.min}
@@ -767,7 +767,7 @@ export const WorkoutSheetsCreate = () => {
 
                         <div className={styles.row}>
                           <TextField
-                            label="Repeticoes"
+                            label="Repetições"
                             id={`section-${sectionIndex}-exercise-${index}-repetitions`}
                             value={exercise.repetitions}
                             onChange={(event) =>

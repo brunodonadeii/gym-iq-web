@@ -449,7 +449,7 @@ export const PaymentsPage = () => {
           <div>
             <h3 className={styles.sectionTitle}>Lista principal</h3>
             <p className={styles.sectionDescription}>
-              Consulte os pagamentos com foco no que importa para acao rapida.
+              Consulte os pagamentos com foco no que importa para ação rápida.
               Total encontrado: {payments?.totalElements ?? 0}.
             </p>
           </div>
