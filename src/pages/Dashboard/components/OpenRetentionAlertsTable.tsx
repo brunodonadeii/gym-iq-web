@@ -85,9 +85,6 @@ export const OpenRetentionAlertsTable = ({
                     <span className={styles.namePrimary}>
                       {alert.studentName}
                     </span>
-                    <span className={styles.nameSecondary}>
-                      {alert.studentEmail}
-                    </span>
                   </div>
                 </TableCell>
                 <TableCell center>{formatNumber(alert.riskScore)}</TableCell>
@@ -131,5 +128,3 @@ export const OpenRetentionAlertsTable = ({
     />
   </div>
 );
-
-
