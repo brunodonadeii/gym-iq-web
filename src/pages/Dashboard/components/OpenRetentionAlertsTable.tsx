@@ -17,12 +17,12 @@ import { RiskBadge } from "./RiskBadge";
 import styles from "../DashboardPage.module.css";
 
 const openAlertsColumns = [
-  { width: "34%" },
+  { width: "30%" },
   { width: "10%" },
-  { width: "14%" },
+  { width: "12%" },
   { width: "16%" },
   { width: "16%" },
-  { width: "10%" },
+  { width: "16%" },
 ];
 
 type OpenRetentionAlertsTableProps = {
@@ -57,7 +57,7 @@ export const OpenRetentionAlertsTable = ({
       </p>
     </div>
 
-    <Table columns={openAlertsColumns} minWidth="920px">
+    <Table columns={openAlertsColumns} minWidth="980px">
       <TableHead>
         <TableRow>
           <TableHeaderCell>Aluno</TableHeaderCell>
@@ -95,7 +95,7 @@ export const OpenRetentionAlertsTable = ({
                 <TableCell center>
                   {formatNumber(alert.overduePayments)}
                 </TableCell>
-                <TableCell center>
+                <TableCell center className={styles.resolveCell}>
                   <button
                     className={styles.resolveButton}
                     type="button"

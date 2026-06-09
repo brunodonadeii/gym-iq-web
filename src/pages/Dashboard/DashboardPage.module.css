@@ -399,11 +399,17 @@
   text-overflow: ellipsis;
 }
 
+.resolveCell {
+  overflow: visible !important;
+}
+
 .resolveButton {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex: 0 0 auto;
   gap: 6px;
+  min-width: 106px;
   min-height: 36px;
   padding: 8px 12px;
   border: 1px solid var(--border);
@@ -412,6 +418,7 @@
   color: var(--primary);
   font-size: 0.82rem;
   font-weight: 800;
+  white-space: nowrap;
   cursor: pointer;
   transition:
     background 0.2s ease,
