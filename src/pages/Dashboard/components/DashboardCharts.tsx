@@ -14,7 +14,7 @@ import {
   ChartLegend,
   ChartPanel,
 } from "./ChartPanel";
-import { chartTooltipSlotProps } from "./chartConfig";
+import { chartSx, chartTooltipSlotProps } from "./chartConfig";
 
 type DashboardChartProps<TData> = {
   data?: TData;
@@ -84,7 +84,9 @@ export const RiskDistributionChart = ({
             valueFormatter: (value) => formatNumber(value ?? 0),
           },
         ]}
+        grid={{ horizontal: true }}
         margin={{ top: 16, right: 16, bottom: 34, left: 38 }}
+        sx={chartSx}
         slotProps={chartTooltipSlotProps}
       />
     </ChartPanel>
@@ -143,6 +145,7 @@ export const FinancialStatusChart = ({
             valueFormatter: (item) => formatCurrency(item.value),
           },
         ]}
+        sx={chartSx}
         slotProps={chartTooltipSlotProps}
       />
     </ChartPanel>
@@ -206,7 +209,9 @@ export const EnrollmentStatusChart = ({
             valueFormatter: (value) => formatNumber(value ?? 0),
           },
         ]}
+        grid={{ horizontal: true }}
         margin={{ top: 16, right: 16, bottom: 34, left: 38 }}
+        sx={chartSx}
         slotProps={chartTooltipSlotProps}
       />
     </ChartPanel>

@@ -255,6 +255,27 @@
   overflow: hidden;
 }
 
+.chartFrame :global(.MuiChartsAxis-line),
+.chartFrame :global(.MuiChartsAxis-tick),
+.chartFrame :global(.MuiChartsAxis-root line) {
+  stroke: var(--chart-axis) !important;
+}
+
+.chartFrame :global(.MuiChartsGrid-line) {
+  stroke: var(--chart-grid) !important;
+}
+
+.chartFrame :global(.MuiChartsAxis-tickLabel),
+.chartFrame :global(.MuiChartsAxis-label),
+.chartFrame :global(.MuiChartsLegend-label),
+.chartFrame :global(.MuiChartsText-root),
+.chartFrame :global(.MuiPieArcLabel-root),
+.chartFrame :global(text),
+.chartFrame :global(tspan) {
+  fill: var(--chart-label) !important;
+  color: var(--chart-label) !important;
+}
+
 .emptyChart,
 .chartSkeleton {
   display: flex;
@@ -313,7 +334,7 @@
   height: 10px;
   margin-top: 4px;
   border-radius: 999px;
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.65);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--surface) 78%, transparent);
 }
 
 .nameCell {

@@ -17,16 +17,16 @@ export const riskDescriptions: Record<RetentionRiskLevel, string> = {
 };
 
 export const chartColors = {
-  low: "#64748b",
-  medium: "#b45309",
-  high: "#c2410c",
-  critical: "#b91c1c",
-  paid: "#ff8a3d",
-  pending: "#b45309",
-  overdue: "#b91c1c",
-  active: "#ff8a3d",
-  suspended: "#b45309",
-  canceled: "#b91c1c",
+  low: "var(--chart-low)",
+  medium: "var(--chart-medium)",
+  high: "var(--chart-high)",
+  critical: "var(--chart-critical)",
+  paid: "var(--chart-paid)",
+  pending: "var(--chart-pending)",
+  overdue: "var(--chart-overdue)",
+  active: "var(--chart-active)",
+  suspended: "var(--chart-suspended)",
+  canceled: "var(--chart-canceled)",
 };
 
 

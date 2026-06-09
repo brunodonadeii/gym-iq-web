@@ -33,6 +33,19 @@
   --status-orange-text: #9a3412;
   --status-red-bg: rgba(239, 68, 68, 0.12);
   --status-red-text: #991b1b;
+  --chart-axis: #c5ced8;
+  --chart-grid: rgba(197, 206, 216, 0.16);
+  --chart-label: #f3f4f6;
+  --chart-low: #8ea0b6;
+  --chart-medium: #d49a54;
+  --chart-high: #df7a4f;
+  --chart-critical: #d96b6b;
+  --chart-paid: #e6a06f;
+  --chart-pending: #d49a54;
+  --chart-overdue: #d96b6b;
+  --chart-active: #e6a06f;
+  --chart-suspended: #d49a54;
+  --chart-canceled: #d96b6b;
 }
 
 [data-theme="dark"] {
@@ -62,6 +75,19 @@
   --status-orange-text: #9a3412;
   --status-red-bg: rgba(239, 68, 68, 0.12);
   --status-red-text: #991b1b;
+  --chart-axis: #c5ced8;
+  --chart-grid: rgba(197, 206, 216, 0.16);
+  --chart-label: #f3f4f6;
+  --chart-low: #8ea0b6;
+  --chart-medium: #d49a54;
+  --chart-high: #df7a4f;
+  --chart-critical: #d96b6b;
+  --chart-paid: #e6a06f;
+  --chart-pending: #d49a54;
+  --chart-overdue: #d96b6b;
+  --chart-active: #e6a06f;
+  --chart-suspended: #d49a54;
+  --chart-canceled: #d96b6b;
 }
 
 [data-theme="light"] {
@@ -91,6 +117,34 @@
   --status-orange-text: #9a3412;
   --status-red-bg: rgba(239, 68, 68, 0.12);
   --status-red-text: #991b1b;
+  --chart-axis: #475569;
+  --chart-grid: rgba(71, 85, 105, 0.22);
+  --chart-label: #111827;
+  --chart-low: #64748b;
+  --chart-medium: #b45309;
+  --chart-high: #c2410c;
+  --chart-critical: #b91c1c;
+  --chart-paid: #ff8a3d;
+  --chart-pending: #b45309;
+  --chart-overdue: #b91c1c;
+  --chart-active: #ff8a3d;
+  --chart-suspended: #b45309;
+  --chart-canceled: #b91c1c;
+}
+
+[data-theme="dark"] .MuiChartsTooltip-root,
+[data-theme="dark"] .MuiChartsTooltip-table,
+[data-theme="dark"] .MuiChartsTooltip-row,
+[data-theme="dark"] .MuiChartsTooltip-cell,
+[data-theme="dark"] .MuiChartsTooltip-markLabel,
+[data-theme="dark"] .MuiChartsTooltip-valueCell {
+  background: var(--surface) !important;
+  color: var(--chart-label) !important;
+}
+
+[data-theme="dark"] .MuiChartsTooltip-root {
+  border: 1px solid var(--border-strong) !important;
+  box-shadow: var(--shadow-lg) !important;
 }
 
 * {
