@@ -1,6 +1,11 @@
-﻿import { ForgotPasswordPage } from "@/pages/ForgotPassword/ForgotPasswordPage";
 import { getDefaultPathByRole } from "@/utils/auth";
+import { lazyRouteComponent } from "@/utils/lazyRouteComponent";
 import { createFileRoute, redirect } from "@tanstack/react-router";
+
+const ForgotPasswordPage = lazyRouteComponent(
+  () => import("@/pages/ForgotPassword/ForgotPasswordPage"),
+  "ForgotPasswordPage",
+);
 
 export const Route = createFileRoute("/forgot-password")({
   beforeLoad: ({ context }) => {
@@ -12,4 +17,3 @@ export const Route = createFileRoute("/forgot-password")({
   },
   component: ForgotPasswordPage,
 });
-

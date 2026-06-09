@@ -1,6 +1,11 @@
-﻿import { Layout } from "@/pages/Layout/Layout";
 import type { UserRole } from "@/utils/auth";
+import { lazyRouteComponent } from "@/utils/lazyRouteComponent";
 import { createFileRoute, redirect } from "@tanstack/react-router";
+
+const Layout = lazyRouteComponent(
+  () => import("@/pages/Layout/Layout"),
+  "Layout",
+);
 
 const ADMIN_PANEL_ROLES: UserRole[] = ["ADMIN", "RECEPTION", "INSTRUCTOR"];
 
@@ -23,4 +28,3 @@ export const Route = createFileRoute("/_sidebar")({
   },
   component: Layout,
 });
-

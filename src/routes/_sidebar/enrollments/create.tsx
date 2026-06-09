@@ -1,5 +1,10 @@
-﻿import { EnrollmentsCreate } from "@/pages/Enrollments/create/EnrollmentsCreate";
+import { lazyRouteComponent } from "@/utils/lazyRouteComponent";
 import { createFileRoute } from "@tanstack/react-router";
+
+const EnrollmentsCreate = lazyRouteComponent(
+  () => import("@/pages/Enrollments/create/EnrollmentsCreate"),
+  "EnrollmentsCreate",
+);
 
 export const Route = createFileRoute("/_sidebar/enrollments/create")({
   component: EnrollmentsCreate,
@@ -8,5 +13,3 @@ export const Route = createFileRoute("/_sidebar/enrollments/create")({
     headline: "Crie uma nova matrícula",
   },
 });
-
-

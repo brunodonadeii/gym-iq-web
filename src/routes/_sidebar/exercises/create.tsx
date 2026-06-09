@@ -1,5 +1,10 @@
-﻿import { ExercisesCreate } from "@/pages/Exercises/create/ExercisesCreate";
+import { lazyRouteComponent } from "@/utils/lazyRouteComponent";
 import { createFileRoute } from "@tanstack/react-router";
+
+const ExercisesCreate = lazyRouteComponent(
+  () => import("@/pages/Exercises/create/ExercisesCreate"),
+  "ExercisesCreate",
+);
 
 export const Route = createFileRoute("/_sidebar/exercises/create")({
   component: ExercisesCreate,
@@ -8,5 +13,3 @@ export const Route = createFileRoute("/_sidebar/exercises/create")({
     headline: "Adicionar novo exercício",
   },
 });
-
-

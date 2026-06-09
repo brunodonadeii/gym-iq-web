@@ -1,5 +1,10 @@
-﻿import { WorkoutSheetsPage } from "@/pages/WorkoutSheets/list/WorkoutSheetsPage";
+import { lazyRouteComponent } from "@/utils/lazyRouteComponent";
 import { createFileRoute } from "@tanstack/react-router";
+
+const WorkoutSheetsPage = lazyRouteComponent(
+  () => import("@/pages/WorkoutSheets/list/WorkoutSheetsPage"),
+  "WorkoutSheetsPage",
+);
 
 export const Route = createFileRoute("/_sidebar/workout-sheets/")({
   component: WorkoutSheetsPage,
@@ -8,4 +13,3 @@ export const Route = createFileRoute("/_sidebar/workout-sheets/")({
     headline: "Listagem de fichas",
   },
 });
-

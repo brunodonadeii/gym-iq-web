@@ -1,5 +1,10 @@
-﻿import { StudentsPage } from "@/pages/Students/list/StudentsPage";
+import { lazyRouteComponent } from "@/utils/lazyRouteComponent";
 import { createFileRoute } from "@tanstack/react-router";
+
+const StudentsPage = lazyRouteComponent(
+  () => import("@/pages/Students/list/StudentsPage"),
+  "StudentsPage",
+);
 
 export const Route = createFileRoute("/_sidebar/students/")({
   component: StudentsPage,
@@ -8,4 +13,3 @@ export const Route = createFileRoute("/_sidebar/students/")({
     headline: "Listagem de Alunos",
   },
 });
-

@@ -1,9 +1,14 @@
-import {
-  PaymentsPage,
-  type PaymentFilterMode,
-  type PaymentStatusFilter,
+import type {
+  PaymentFilterMode,
+  PaymentStatusFilter,
 } from "@/pages/Payments/list/PaymentsPage";
+import { lazyRouteComponent } from "@/utils/lazyRouteComponent";
 import { createFileRoute } from "@tanstack/react-router";
+
+const PaymentsPage = lazyRouteComponent(
+  () => import("@/pages/Payments/list/PaymentsPage"),
+  "PaymentsPage",
+);
 
 const paymentFilterModes = new Set<PaymentFilterMode>([
   "all",

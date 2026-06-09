@@ -1,5 +1,10 @@
-﻿import { StudentsEdit } from "@/pages/Students/edit/StudentsEdit";
+import { lazyRouteComponent } from "@/utils/lazyRouteComponent";
 import { createFileRoute } from "@tanstack/react-router";
+
+const StudentsEdit = lazyRouteComponent(
+  () => import("@/pages/Students/edit/StudentsEdit"),
+  "StudentsEdit",
+);
 
 export const Route = createFileRoute("/_sidebar/students/$studentId")({
   component: StudentsEdit,
@@ -8,4 +13,3 @@ export const Route = createFileRoute("/_sidebar/students/$studentId")({
     headline: "Editar aluno",
   },
 });
-

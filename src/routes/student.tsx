@@ -1,5 +1,10 @@
-﻿import { StudentPortalPage } from "@/pages/StudentPortal/StudentPortalPage";
+import { lazyRouteComponent } from "@/utils/lazyRouteComponent";
 import { createFileRoute, redirect } from "@tanstack/react-router";
+
+const StudentPortalPage = lazyRouteComponent(
+  () => import("@/pages/StudentPortal/StudentPortalPage"),
+  "StudentPortalPage",
+);
 
 export const Route = createFileRoute("/student")({
   beforeLoad: ({ context }) => {
@@ -20,4 +25,3 @@ export const Route = createFileRoute("/student")({
   },
   component: StudentPortalPage,
 });
-

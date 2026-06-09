@@ -1,6 +1,11 @@
-﻿import { InstructorsCreate } from "@/pages/Instructors/create/InstructorsCreate";
 import { requireRoles } from "@/routes/guards";
+import { lazyRouteComponent } from "@/utils/lazyRouteComponent";
 import { createFileRoute } from "@tanstack/react-router";
+
+const InstructorsCreate = lazyRouteComponent(
+  () => import("@/pages/Instructors/create/InstructorsCreate"),
+  "InstructorsCreate",
+);
 
 export const Route = createFileRoute("/_sidebar/instructors/create")({
   beforeLoad: ({ context }) => {
@@ -12,4 +17,3 @@ export const Route = createFileRoute("/_sidebar/instructors/create")({
     headline: "Adicionar novo instrutor",
   },
 });
-

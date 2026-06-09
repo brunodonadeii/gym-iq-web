@@ -1,5 +1,10 @@
-﻿import { StudentsCreate } from "@/pages/Students/create/StudentsCreate";
+import { lazyRouteComponent } from "@/utils/lazyRouteComponent";
 import { createFileRoute } from "@tanstack/react-router";
+
+const StudentsCreate = lazyRouteComponent(
+  () => import("@/pages/Students/create/StudentsCreate"),
+  "StudentsCreate",
+);
 
 export const Route = createFileRoute("/_sidebar/students/create")({
   component: StudentsCreate,
@@ -8,4 +13,3 @@ export const Route = createFileRoute("/_sidebar/students/create")({
     headline: "Adicionar novo aluno",
   },
 });
-
