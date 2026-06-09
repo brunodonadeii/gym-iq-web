@@ -3,10 +3,18 @@
 type JwtPayload = {
   exp?: number;
   role?: string;
-  roles?: string[] | string;
+  roles?: RoleClaim[] | RoleClaim;
   authority?: string;
-  authorities?: string[] | string;
+  authorities?: RoleClaim[] | RoleClaim;
 };
+
+type RoleClaim =
+  | string
+  | {
+      authority?: string;
+      name?: string;
+      role?: string;
+    };
 
 const normalizeRole = (value?: string | null): UserRole | null => {
   const normalized = value?.replace(/^ROLE_/, "").toUpperCase();
@@ -21,6 +29,14 @@ const normalizeRole = (value?: string | null): UserRole | null => {
   }
 
   return null;
+};
+
+const normalizeRoleClaim = (claim?: RoleClaim | null): UserRole | null => {
+  if (!claim) return null;
+
+  if (typeof claim === "string") return normalizeRole(claim);
+
+  return normalizeRole(claim.role ?? claim.authority ?? claim.name);
 };
 
 const decodeJwtPayload = (token: string): JwtPayload | null => {
@@ -59,7 +75,7 @@ const resolveRoleFromPayload = (payload: JwtPayload | null): UserRole | null => 
   ];
 
   return candidates.reduce<UserRole | null>(
-    (role, candidate) => role ?? normalizeRole(candidate),
+    (role, candidate) => role ?? normalizeRoleClaim(candidate),
     null,
   );
 };
@@ -103,10 +119,6 @@ export const auth = {
     const token = this.token;
 
     if (!token) return null;
-
-    const storedRole = normalizeRole(localStorage.getItem("role"));
-
-    if (storedRole) return storedRole;
 
     return resolveRoleFromPayload(decodeJwtPayload(token));
   },

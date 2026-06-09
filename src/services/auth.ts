@@ -45,10 +45,6 @@ export async function login(data: LoginRequest): Promise<AuthResponse> {
   clearAuthStorage();
   localStorage.setItem("token", jsonData.token);
 
-  if (jsonData.role) {
-    localStorage.setItem("role", jsonData.role);
-  }
-
   return jsonData;
 }
 
