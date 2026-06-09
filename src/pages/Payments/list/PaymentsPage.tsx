@@ -69,7 +69,6 @@ const paymentMethodLabels: Record<string, string> = {
 };
 
 const paymentMethodOptions = [
-  { label: "Não informar", value: "" },
   { label: "PIX", value: "PIX" },
   { label: "Dinheiro", value: "CASH" },
   { label: "Cartão de crédito", value: "CREDIT_CARD" },
@@ -246,10 +245,34 @@ export const PaymentsPage = () => {
     setPayFormErrors({});
   };
 
+  const focusPayFormError = (field: keyof PaymentPayFormData) => {
+    if (field === "paymentMethod") {
+      document
+        .querySelector<HTMLButtonElement>(
+          'button[aria-label="Forma de pagamento"]',
+        )
+        ?.focus();
+      return;
+    }
+
+    document.getElementById(field)?.focus();
+  };
+
   const handlePayPayment = () => {
     if (!selectedPayment) return;
 
     const paymentId = getPaymentId(selectedPayment);
+    const nextErrors: Partial<Record<keyof PaymentPayFormData, string>> = {};
+
+    if (!payForm.paymentMethod) {
+      nextErrors.paymentMethod = "Informe a forma de pagamento.";
+    }
+
+    if (Object.keys(nextErrors).length > 0) {
+      setPayFormErrors(nextErrors);
+      focusPayFormError(Object.keys(nextErrors)[0] as keyof PaymentPayFormData);
+      return;
+    }
 
     payPayment(
       { id: paymentId, data: payForm },
@@ -267,7 +290,9 @@ export const PaymentsPage = () => {
 
           if (fieldErrors) {
             setPayFormErrors(fieldErrors);
-            document.getElementById(Object.keys(fieldErrors)[0])?.focus();
+            focusPayFormError(
+              Object.keys(fieldErrors)[0] as keyof PaymentPayFormData,
+            );
             return;
           }
 
@@ -537,11 +562,11 @@ export const PaymentsPage = () => {
               <div>
                 <span className={styles.modalEyebrow}>Baixa de pagamento</span>
                 <h3 className={styles.modalTitle} id="payPaymentTitle">
-                  Marcar cobranca como paga
+                  Marcar cobrança como paga
                 </h3>
                 <p className={styles.modalDescription}>
-                  Todos os campos sao opcionais. Se a data ficar vazia, o
-                  backend usa o horario atual.
+                  Informe a forma de pagamento. Se a data ficar vazia, o backend
+                  usa o horário atual.
                 </p>
               </div>
 
@@ -589,7 +614,7 @@ export const PaymentsPage = () => {
                 label="Forma de pagamento"
                 id="payPaymentMethod"
                 value={payForm.paymentMethod}
-                optional
+                required
                 onChange={(e) => {
                   setPayForm((prev) => ({
                     ...prev,
