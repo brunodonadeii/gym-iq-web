@@ -129,7 +129,8 @@ export const PaymentsPage = () => {
   );
   const [studentId, setStudentId] = useState(search.studentId ?? "");
   const [studentSearch, setStudentSearch] = useState(
-    search.studentName ?? (search.studentId ? `Aluno #${search.studentId}` : ""),
+    search.studentName ??
+      (search.studentId ? `Aluno #${search.studentId}` : ""),
   );
   const [enrollmentId, setEnrollmentId] = useState(search.enrollmentId ?? "");
   const [page, setPage] = useState(0);
@@ -197,7 +198,7 @@ export const PaymentsPage = () => {
 
   const studentOptions =
     students?.map((student) => ({
-      label: student.label,
+      label: student.name,
       value: String(student.studentId),
       description: student.email,
     })) ?? [];
@@ -625,7 +626,11 @@ export const PaymentsPage = () => {
             </div>
 
             <div className={styles.modalActions}>
-              <Button type="button" onClick={closePayModal} disabled={isPayingPayment}>
+              <Button
+                type="button"
+                onClick={closePayModal}
+                disabled={isPayingPayment}
+              >
                 Cancelar
               </Button>
               <Button
@@ -642,7 +647,3 @@ export const PaymentsPage = () => {
     </div>
   );
 };
-
-
-
-

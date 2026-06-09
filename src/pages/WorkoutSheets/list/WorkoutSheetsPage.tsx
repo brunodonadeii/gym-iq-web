@@ -20,7 +20,10 @@ import { useDeleteWorkoutSheet } from "@/mutations/useDeleteWorkoutSheet";
 import type { WorkoutSheetSummary } from "@/pages/WorkoutSheets/types";
 import { useGetInstructors } from "@/queries/useGetInstructors";
 import { useGetStudentOptions } from "@/queries/useGetStudentOptions";
-import { fetchWorkoutSheets, useGetWorkoutSheets } from "@/queries/useGetWorkoutSheets";
+import {
+  fetchWorkoutSheets,
+  useGetWorkoutSheets,
+} from "@/queries/useGetWorkoutSheets";
 import { auth } from "@/utils/auth";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
@@ -52,7 +55,8 @@ const formatDate = (value?: string | null) =>
       })
     : "-";
 
-const getWorkoutSheetId = (sheet: WorkoutSheetSummary) => String(sheet.workoutSheetId);
+const getWorkoutSheetId = (sheet: WorkoutSheetSummary) =>
+  String(sheet.workoutSheetId);
 
 const resolveStudentName = (sheet: WorkoutSheetSummary) =>
   sheet.student?.name ?? sheet.studentName ?? `Aluno #${sheet.studentId}`;
@@ -75,7 +79,8 @@ export const WorkoutSheetsPage = () => {
     useState<WorkoutSheetStatusFilter>("all");
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
-  const [sheetToDelete, setSheetToDelete] = useState<WorkoutSheetSummary | null>(null);
+  const [sheetToDelete, setSheetToDelete] =
+    useState<WorkoutSheetSummary | null>(null);
   const debouncedStudentSearch = useDebouncedValue(studentSearch);
   const debouncedInstructorSearch = useDebouncedValue(instructorSearch);
 
@@ -148,7 +153,7 @@ export const WorkoutSheetsPage = () => {
 
   const autocompleteStudentOptions =
     studentOptions?.map((student) => ({
-      label: student.label,
+      label: student.name,
       value: String(student.studentId),
       description: student.email,
     })) ?? [];
@@ -411,5 +416,3 @@ export const WorkoutSheetsPage = () => {
     </div>
   );
 };
-
-

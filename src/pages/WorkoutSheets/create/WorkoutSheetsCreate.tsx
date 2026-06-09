@@ -216,7 +216,7 @@ export const WorkoutSheetsCreate = () => {
 
   const autocompleteStudentOptions =
     studentOptions?.map((student) => ({
-      label: student.label,
+      label: student.name,
       value: String(student.studentId),
       description: student.email,
     })) ?? [];
