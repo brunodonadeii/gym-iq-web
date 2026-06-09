@@ -114,7 +114,6 @@ export const LoginPage = () => {
               }}
               error={emailError || undefined}
               disabled={isSubmitting}
-              required
             />
 
             <TextField
@@ -128,7 +127,6 @@ export const LoginPage = () => {
               }}
               error={passwordError || undefined}
               disabled={isSubmitting}
-              required
             />
 
             <Button type="submit" loading={isSubmitting} disabled={!canSubmit}>
