@@ -385,6 +385,35 @@
   min-width: 0;
 }
 
+.retentionStudentLink {
+  width: fit-content;
+  max-width: 100%;
+  padding: 7px 9px;
+  border-radius: 12px;
+  color: inherit;
+  text-decoration: none;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.retentionStudentLink:hover {
+  background: var(--primary-soft);
+  transform: translateX(2px);
+}
+
+.retentionStudentLink:hover .namePrimary {
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.retentionStudentLink:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
 .namePrimary {
   overflow: hidden;
   color: var(--text-primary);

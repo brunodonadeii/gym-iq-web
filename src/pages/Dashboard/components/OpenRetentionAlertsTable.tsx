@@ -11,6 +11,7 @@ import {
 } from "@/components/Table/Table";
 import type { RetentionAlert } from "@/pages/Dashboard/types";
 import type { PageResponse } from "@/types/pagination";
+import { Link } from "@tanstack/react-router";
 import { CheckCircle2 } from "lucide-react";
 import { formatNumber } from "../utils";
 import { RiskBadge } from "./RiskBadge";
@@ -81,11 +82,19 @@ export const OpenRetentionAlertsTable = ({
             return (
               <TableRow key={alert.retentionAlertId}>
                 <TableCell>
-                  <div className={styles.nameCell}>
+                  <Link
+                    className={`${styles.nameCell} ${styles.retentionStudentLink}`}
+                    to="/students/$studentId"
+                    params={{ studentId: String(alert.studentId) }}
+                    title={`Ver dados de ${alert.studentName}`}
+                  >
                     <span className={styles.namePrimary}>
                       {alert.studentName}
                     </span>
-                  </div>
+                    <span className={styles.nameSecondary}>
+                      Ver detalhes do aluno
+                    </span>
+                  </Link>
                 </TableCell>
                 <TableCell center>{formatNumber(alert.riskScore)}</TableCell>
                 <TableCell center>
