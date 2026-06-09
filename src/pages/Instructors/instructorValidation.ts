@@ -98,7 +98,7 @@ export const validateInstructorCreate = (
 
 export const validateInstructorUpdate = (
   data: InstructorUpdateFormData,
-): InstructorFormErrors => validateCommonFields(data);
+): InstructorFormErrors => validateCommonFields({ ...data, lgpdAccepted: true });
 
 export const formatCrefInput = (value: string) => {
   const compact = value.toUpperCase().replace(/[^A-Z0-9]/g, "");

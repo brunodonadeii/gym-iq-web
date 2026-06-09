@@ -42,7 +42,6 @@ const INSTRUCTOR_FIELDS = [
   "cref",
   "phone",
   "specialty",
-  "lgpdAccepted",
 ] as const;
 
 const formatDate = (value?: string) =>
@@ -293,46 +292,6 @@ const InstructorsEditForm = ({
           required
         />
       </div>
-
-      <label
-        className={[
-          styles.lgpdBox,
-          errors.lgpdAccepted && styles.lgpdBoxError,
-        ]
-          .filter(Boolean)
-          .join(" ")}
-      >
-        <input
-          id="lgpdAccepted"
-          type="checkbox"
-          checked={data.lgpdAccepted}
-          onChange={(event) => {
-            setData((prev) => ({
-              ...prev,
-              lgpdAccepted: event.target.checked,
-            }));
-            setErrors((prev) => ({ ...prev, lgpdAccepted: undefined }));
-          }}
-          disabled={!isAdmin}
-          aria-invalid={Boolean(errors.lgpdAccepted)}
-          aria-describedby={
-            errors.lgpdAccepted ? "lgpdAccepted-error" : undefined
-          }
-          required
-        />
-        <span>
-          Confirmo o aceite dos termos de LGPD para atualizar o cadastro deste
-          instrutor.
-          <span className={styles.requiredMark} aria-hidden="true">
-            {" *"}
-          </span>
-        </span>
-      </label>
-      {errors.lgpdAccepted && (
-        <div className={styles.checkboxError} id="lgpdAccepted-error">
-          {errors.lgpdAccepted}
-        </div>
-      )}
 
     </Form>
   );
