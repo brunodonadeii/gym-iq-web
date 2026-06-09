@@ -38,6 +38,9 @@ export type WorkoutBlock = {
   name: string;
   description?: string | null;
   executionOrder: number | string;
+  active?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
   exercises?: WorkoutSheetExercise[];
 };
 
@@ -68,6 +71,8 @@ export type WorkoutSheetSectionsFormData = WorkoutSheetFormData & {
 
 export type WorkoutSheetExercise = {
   workoutSheetExerciseId: string;
+  workoutBlockId?: string;
+  blockName?: string;
   exerciseId: number;
   exerciseName: string;
   muscleGroup: string;

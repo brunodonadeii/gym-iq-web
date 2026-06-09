@@ -248,18 +248,20 @@ const WorkoutSheetsDetailsContent = ({
     },
   );
   const workoutBlocks = getWorkoutSheetBlocks(details);
-  const activeBlock =
-    workoutBlocks.find((block) => block.name === activeTrainingSection) ??
-    workoutBlocks[0];
+  const activeBlock = workoutBlocks.find(
+    (block) => block.name === activeTrainingSection,
+  );
   const activeWorkoutBlockId = getWorkoutBlockId(activeBlock);
-  const blockExerciseRows = workoutBlocks
-    .flatMap((block) =>
-      (block.exercises ?? []).map((exercise) => ({
-        ...exercise,
-        trainingSection: block.name,
-      })),
-    )
+  const activeBlockExerciseRows = (activeBlock?.exercises ?? [])
+    .map((exercise) => ({
+      ...exercise,
+      trainingSection: activeBlock?.name ?? activeTrainingSection,
+    }))
     .sort((a, b) => Number(a.executionOrder ?? 0) - Number(b.executionOrder ?? 0));
+  const totalExerciseCount = workoutBlocks.reduce(
+    (total, block) => total + (block.exercises?.length ?? 0),
+    0,
+  );
   const { mutate: updateSheet, isPending: isUpdatingSheet } =
     useUpdateWorkoutSheet();
   const { mutate: createBlock, isPending: isCreatingBlock } =
@@ -271,20 +273,20 @@ const WorkoutSheetsDetailsContent = ({
   const { mutate: deleteExercise, isPending: isDeletingExercise } =
     useDeleteWorkoutSheetExercise();
 
-  const exerciseRows = blockExerciseRows.slice(
+  const exerciseRows = activeBlockExerciseRows.slice(
     exercisePage * exerciseSize,
     exercisePage * exerciseSize + exerciseSize,
   );
   const exercisePageData = {
     content: exerciseRows,
-    totalElements: blockExerciseRows.length,
-    totalPages: Math.ceil(blockExerciseRows.length / exerciseSize),
+    totalElements: activeBlockExerciseRows.length,
+    totalPages: Math.ceil(activeBlockExerciseRows.length / exerciseSize),
     size: exerciseSize,
     number: exercisePage,
     first: exercisePage === 0,
     last:
-      blockExerciseRows.length === 0 ||
-      exercisePage >= Math.ceil(blockExerciseRows.length / exerciseSize) - 1,
+      activeBlockExerciseRows.length === 0 ||
+      exercisePage >= Math.ceil(activeBlockExerciseRows.length / exerciseSize) - 1,
   };
   const isExerciseSubmitting = isCreatingExercise || isUpdatingExercise;
   const tableLoading = false;
@@ -677,7 +679,7 @@ const WorkoutSheetsDetailsContent = ({
                 !sheetForm.studentId ||
                 !effectiveInstructorId ||
                 !sheetForm.name ||
-                (sheetForm.blocks.length === 0 && blockExerciseRows.length === 0)
+                (sheetForm.blocks.length === 0 && totalExerciseCount === 0)
               }
             >
               Salvar ficha
@@ -890,8 +892,34 @@ const WorkoutSheetsDetailsContent = ({
         <div className={styles.tableHeader}>
           <h3 className={styles.sectionTitle}>Ordem da ficha</h3>
           <p className={styles.sectionDescription}>
-            {blockExerciseRows.length} exercício(s) vinculado(s).
+            {activeBlockExerciseRows.length} exercício(s) em {activeTrainingSection}.
           </p>
+        </div>
+
+        <div className={styles.tableTabs}>
+          {workoutBlocks.map((block) => {
+            const blockName = block.name ?? "Treino";
+            const blockExerciseCount = block.exercises?.length ?? 0;
+
+            return (
+              <button
+                key={`${blockName}-${getWorkoutBlockId(block)}`}
+                type="button"
+                className={`${styles.trainingSectionTab} ${
+                  activeTrainingSection === blockName
+                    ? styles.trainingSectionTabActive
+                    : ""
+                }`}
+                onClick={() => {
+                  setActiveTrainingSection(blockName);
+                  setExercisePage(0);
+                }}
+              >
+                {blockName}
+                <span className={styles.tabCount}>{blockExerciseCount}</span>
+              </button>
+            );
+          })}
         </div>
 
         <div className={styles.tableWrap}>
