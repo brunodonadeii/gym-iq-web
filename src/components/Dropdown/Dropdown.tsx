@@ -10,6 +10,7 @@ export type DropdownItem = {
   onSelect?: () => void;
   disabled?: boolean;
   danger?: boolean;
+  tooltip?: string;
 };
 
 type DropdownProps = {
@@ -58,6 +59,7 @@ export const Dropdown = ({
               )}
               onSelect={item.onSelect}
               disabled={item.disabled}
+              title={item.tooltip}
             >
               {item.icon}
               <span>{item.label}</span>

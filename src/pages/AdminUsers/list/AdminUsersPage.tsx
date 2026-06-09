@@ -19,6 +19,7 @@ import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useDeleteAdminUser } from "@/mutations/useDeleteAdminUser";
 import type { AdminUser, AdminUserRole } from "@/pages/AdminUsers/types";
 import { useGetAdminUsers } from "@/queries/useGetAdminUsers";
+import { auth } from "@/utils/auth";
 import { useNavigate } from "@tanstack/react-router";
 import { Pencil, PlusCircle, Search, Trash2 } from "lucide-react";
 import { useState } from "react";
@@ -51,6 +52,8 @@ const getAdminUserId = (user: AdminUser) => String(user.userId ?? user.id ?? "")
 
 export const AdminUsersPage = () => {
   const navigate = useNavigate();
+  const currentUserId = auth.userId;
+  const currentUserEmail = auth.email;
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState<"all" | AdminUserRole>("all");
   const [page, setPage] = useState(0);
@@ -161,6 +164,10 @@ export const AdminUsersPage = () => {
               {!isLoading &&
                 users.map((user) => {
                   const userId = getAdminUserId(user);
+                  const isCurrentUser =
+                    (Boolean(currentUserId) && userId === currentUserId) ||
+                    (Boolean(currentUserEmail) &&
+                      user.email.toLowerCase() === currentUserEmail?.toLowerCase());
 
                   return (
                     <TableRow key={userId || user.email}>
@@ -202,7 +209,10 @@ export const AdminUsersPage = () => {
                               label: "Remover",
                               icon: <Trash2 size={15} />,
                               danger: true,
-                              disabled: !userId || isDeleting,
+                              disabled: !userId || isDeleting || isCurrentUser,
+                              tooltip: isCurrentUser
+                                ? "Não é possível excluir o próprio usuário administrador."
+                                : undefined,
                               onSelect: () => setUserToDelete(user),
                             },
                           ]}

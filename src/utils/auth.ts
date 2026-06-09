@@ -1,11 +1,15 @@
 ﻿export type UserRole = "ADMIN" | "RECEPTION" | "INSTRUCTOR" | "STUDENT";
 
 type JwtPayload = {
+  email?: string;
   exp?: number;
+  id?: string;
   role?: string;
   roles?: RoleClaim[] | RoleClaim;
+  sub?: string;
   authority?: string;
   authorities?: RoleClaim[] | RoleClaim;
+  userId?: string;
 };
 
 type RoleClaim =
@@ -86,6 +90,14 @@ const isExpiredPayload = (payload: JwtPayload | null) => {
   return payload.exp * 1000 <= Date.now();
 };
 
+const resolveEmailFromPayload = (payload: JwtPayload | null) => {
+  if (!payload) return null;
+
+  const candidate = payload.email ?? payload.sub;
+
+  return candidate?.includes("@") ? candidate : null;
+};
+
 export const clearAuthStorage = () => {
   localStorage.removeItem("token");
   localStorage.removeItem("role");
@@ -121,6 +133,25 @@ export const auth = {
     if (!token) return null;
 
     return resolveRoleFromPayload(decodeJwtPayload(token));
+  },
+
+  get userId() {
+    const token = this.token;
+
+    if (!token) return null;
+
+    const payload = decodeJwtPayload(token);
+    const resolvedUserId = payload?.userId ?? payload?.id;
+
+    return resolvedUserId ? String(resolvedUserId) : null;
+  },
+
+  get email() {
+    const token = this.token;
+
+    if (!token) return null;
+
+    return resolveEmailFromPayload(decodeJwtPayload(token));
   },
 
   hasAnyRole(roles: UserRole[]) {
