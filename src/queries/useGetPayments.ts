@@ -7,7 +7,6 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 type PaymentsQuery =
   | { mode: "all" }
-  | { mode: "overdue" }
   | { mode: "student"; studentId: string }
   | { mode: "enrollment"; enrollmentId: string };
 
@@ -26,28 +25,18 @@ const getPaymentsUrl = (query: PaymentsQuery) => {
 
 const getDefaultSort = () => "dueDate,desc";
 
-const resolveStatus = (
-  query: PaymentsQuery,
-  status?: PaymentStatus,
-): PaymentStatus | undefined => {
-  if (query.mode === "overdue") return "OVERDUE";
-
-  return status;
-};
-
 async function fetchPayments(
   query: PaymentsQueryWithStatus,
   pagination: PageRequest,
 ): Promise<PageResponse<Payment>> {
   const { status, ...paymentsQuery } = query;
-  const resolvedStatus = resolveStatus(paymentsQuery, status);
   const request = {
     ...pagination,
     sort: pagination.sort ?? getDefaultSort(),
   };
   const response = await authFetch(
     `${getPaymentsUrl(paymentsQuery)}?${buildPaginationParams(request, {
-      status: resolvedStatus,
+      status,
     })}`,
   );
 

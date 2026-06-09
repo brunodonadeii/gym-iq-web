@@ -35,7 +35,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import styles from "./PaymentsPage.module.css";
 
-export type PaymentFilterMode = "all" | "student" | "enrollment" | "overdue";
+export type PaymentFilterMode = "all" | "student" | "enrollment";
 export type PaymentStatusFilter = "all" | PaymentStatus;
 
 const EMPTY_PAY_FORM: PaymentPayFormData = {
@@ -159,16 +159,10 @@ export const PaymentsPage = () => {
       ? ({ mode: "student", studentId } as const)
       : filterMode === "enrollment"
         ? ({ mode: "enrollment", enrollmentId } as const)
-        : filterMode === "overdue"
-          ? ({ mode: "overdue" } as const)
-          : ({ mode: "all" } as const);
+        : ({ mode: "all" } as const);
 
   const effectiveStatusFilter =
-    filterMode === "overdue"
-      ? "OVERDUE"
-      : statusFilter === "all"
-        ? undefined
-        : statusFilter;
+    statusFilter === "all" ? undefined : statusFilter;
 
   const filterEnabled =
     filterMode === "student"
@@ -350,7 +344,7 @@ export const PaymentsPage = () => {
         <div className={styles.topBarContent}>
           <strong className={styles.topBarTitle}>Filtros e ações</strong>
           <span className={styles.topBarSubtitle}>
-            Combine visão por aluno, matrícula, atrasados e status financeiro.
+            Combine visão por aluno, matrícula e status financeiro.
           </span>
         </div>
 
@@ -370,7 +364,6 @@ export const PaymentsPage = () => {
               { label: "Todos", value: "all" },
               { label: "Por aluno", value: "student" },
               { label: "Por matrícula", value: "enrollment" },
-              { label: "Atrasados", value: "overdue" },
             ]}
             containerProps={{ className: styles.filterField }}
           />
