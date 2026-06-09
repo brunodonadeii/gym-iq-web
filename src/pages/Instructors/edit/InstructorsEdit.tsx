@@ -120,7 +120,7 @@ const InstructorsEditForm = ({
         data: {
           ...data,
           name: data.name.trim(),
-          email: data.email.trim(),
+          email: details?.email.trim() ?? data.email.trim(),
           cref: data.cref.trim(),
           phone: data.phone.trim(),
           specialty: data.specialty.trim(),
@@ -218,11 +218,9 @@ const InstructorsEditForm = ({
           type="email"
           id="email"
           value={data.email}
-          onChange={(event) => {
-            set("email")(event);
-            setErrors((prev) => ({ ...prev, email: undefined }));
-          }}
-          disabled={!isAdmin}
+          onChange={() => undefined}
+          helperText="E-mail vinculado ao usuário de acesso. Não pode ser alterado nesta tela."
+          disabled
           error={errors.email}
           required
         />
