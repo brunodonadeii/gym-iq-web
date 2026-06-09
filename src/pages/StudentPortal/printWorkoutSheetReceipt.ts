@@ -1,6 +1,19 @@
 import type { WorkoutBlock, WorkoutSheetSummary } from "@/pages/WorkoutSheets/types";
 import { formatDate, formatExerciseMeta } from "./utils";
 
+const escapeHtml = (value: unknown) =>
+  String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+
+const safeText = (value: unknown, fallback = "-") =>
+  escapeHtml(
+    value === null || value === undefined || value === "" ? fallback : value,
+  );
+
 export const printWorkoutBlock = (
   sheet: WorkoutSheetSummary,
   block: WorkoutBlock,
@@ -18,17 +31,20 @@ export const printWorkoutBlock = (
           (exercise) => `
             <div class="exercise">
               <div class="exercise-head">
-                <span class="order">${exercise.executionOrder ?? "-"}</span>
-                <span class="name">${exercise.exerciseName ?? "-"}</span>
+                <span class="order">${safeText(exercise.executionOrder)}</span>
+                <span class="name">${safeText(exercise.exerciseName)}</span>
               </div>
               <div class="meta">
-                ${formatExerciseMeta(
-                  exercise.sets,
-                  exercise.repetitions,
-                  exercise.restSeconds,
-                ) || "Sem detalhes informados"}
+                ${safeText(
+                  formatExerciseMeta(
+                    exercise.sets,
+                    exercise.repetitions,
+                    exercise.restSeconds,
+                  ),
+                  "Sem detalhes informados",
+                )}
               </div>
-              <div class="note">${exercise.notes ?? exercise.muscleGroup ?? "-"}</div>
+              <div class="note">${safeText(exercise.notes ?? exercise.muscleGroup)}</div>
             </div>
           `,
         )
@@ -38,7 +54,7 @@ export const printWorkoutBlock = (
   printWindow.document.write(`
     <html>
       <head>
-        <title>${block.name} - ${sheet.name}</title>
+        <title>${safeText(block.name)} - ${safeText(sheet.name)}</title>
         <style>
           @page { size: 80mm auto; margin: 4mm; }
           * { box-sizing: border-box; }
@@ -96,29 +112,29 @@ export const printWorkoutBlock = (
       <body>
         <main class="receipt">
           <section class="brand">
-            <h1>${block.name}</h1>
-            <p>${sheet.name}</p>
+            <h1>${safeText(block.name)}</h1>
+            <p>${safeText(sheet.name)}</p>
           </section>
 
           <section class="section">
             <span class="label">Descrição</span>
-            <div class="value">${block.description ?? "Sem descrição informada"}</div>
+            <div class="value">${safeText(block.description, "Sem descrição informada")}</div>
           </section>
 
           <section class="section">
             <span class="label">Objetivo</span>
-            <div class="value">${sheet.goal ?? "Sem objetivo informado"}</div>
+            <div class="value">${safeText(sheet.goal, "Sem objetivo informado")}</div>
           </section>
 
           <section class="section">
             <span class="label">Instrutor</span>
-            <div class="value">${sheet.instructorName ?? sheet.instructor?.name ?? "Não informado"}</div>
+            <div class="value">${safeText(sheet.instructorName ?? sheet.instructor?.name, "Não informado")}</div>
           </section>
 
           <section class="section">
             <span class="label">Período</span>
-            <div class="value">Início: ${formatDate(sheet.startDate)}</div>
-            <div class="value">Fim: ${formatDate(sheet.endDate)}</div>
+            <div class="value">Início: ${safeText(formatDate(sheet.startDate))}</div>
+            <div class="value">Fim: ${safeText(formatDate(sheet.endDate))}</div>
           </section>
 
           <section class="section">
