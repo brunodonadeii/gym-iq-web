@@ -1,6 +1,6 @@
-﻿import { Skeleton } from "@/components/Skeleton/Skeleton";
+import { Skeleton } from "@/components/Skeleton/Skeleton";
 import { Search, X } from "lucide-react";
-import { useState } from "react";
+import { useId, useState, type KeyboardEvent } from "react";
 import styles from "./Autocomplete.module.css";
 
 export type AutocompleteOption = {
@@ -45,12 +45,68 @@ export const Autocomplete = ({
   containerClassName,
 }: AutocompleteProps) => {
   const [open, setOpen] = useState(false);
-  const showList = open && (loading || options.length > 0 || search);
+  const [activeIndex, setActiveIndex] = useState(-1);
+  const generatedId = useId();
+  const listboxId = `${id}-${generatedId}-listbox`;
+  const showList = open && (loading || options.length > 0 || Boolean(search));
+  const safeActiveIndex =
+    open && activeIndex >= 0 && activeIndex < options.length ? activeIndex : -1;
+  const activeOption =
+    safeActiveIndex >= 0
+      ? options[safeActiveIndex]
+      : undefined;
+  const activeOptionId = activeOption
+    ? `${listboxId}-option-${activeOption.value}`
+    : undefined;
   const describedBy = error
     ? `${id}-error`
     : helperText
       ? `${id}-helper`
       : undefined;
+
+  const selectOption = (option: AutocompleteOption) => {
+    onSelect(option);
+    setOpen(false);
+    setActiveIndex(-1);
+  };
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      setOpen(true);
+
+      if (options.length === 0) return;
+
+      setActiveIndex((current) =>
+        current < options.length - 1 ? current + 1 : 0,
+      );
+      return;
+    }
+
+    if (event.key === "ArrowUp") {
+      event.preventDefault();
+      setOpen(true);
+
+      if (options.length === 0) return;
+
+      setActiveIndex((current) =>
+        current > 0 ? current - 1 : options.length - 1,
+      );
+      return;
+    }
+
+    if (event.key === "Enter" && open && activeOption) {
+      event.preventDefault();
+      selectOption(activeOption);
+      return;
+    }
+
+    if (event.key === "Escape" && open) {
+      event.preventDefault();
+      setOpen(false);
+      setActiveIndex(-1);
+    }
+  };
 
   return (
     <div
@@ -81,12 +137,19 @@ export const Autocomplete = ({
           onChange={(e) => {
             onSearchChange(e.target.value);
             setOpen(true);
+            setActiveIndex(-1);
           }}
           onFocus={() => setOpen(true)}
           onBlur={() => window.setTimeout(() => setOpen(false), 120)}
+          onKeyDown={handleKeyDown}
           placeholder={placeholder}
           autoComplete="off"
           required={required}
+          role="combobox"
+          aria-autocomplete="list"
+          aria-expanded={showList}
+          aria-controls={showList ? listboxId : undefined}
+          aria-activedescendant={activeOptionId}
           aria-invalid={!!error}
           aria-describedby={describedBy}
         />
@@ -99,6 +162,7 @@ export const Autocomplete = ({
             onClick={() => {
               onClear();
               setOpen(false);
+              setActiveIndex(-1);
             }}
             aria-label="Limpar seleção"
           >
@@ -107,35 +171,45 @@ export const Autocomplete = ({
         )}
 
         {showList && (
-          <div className={styles.listbox}>
+          <div id={listboxId} className={styles.listbox} role="listbox">
             {loading ? (
-              <div className={styles.loadingList}>
+              <div className={styles.loadingList} aria-label="Carregando opções">
                 <Skeleton height="16px" />
                 <Skeleton height="16px" />
                 <Skeleton height="16px" />
               </div>
             ) : options.length > 0 ? (
-              options.map((option) => (
-                <button
-                  type="button"
-                  key={option.value}
-                  className={styles.option}
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => {
-                    onSelect(option);
-                    setOpen(false);
-                  }}
-                >
-                  <span className={styles.optionLabel}>{option.label}</span>
-                  {option.description && (
-                    <span className={styles.optionDescription}>
-                      {option.description}
-                    </span>
-                  )}
-                </button>
-              ))
+              options.map((option, index) => {
+                const optionId = `${listboxId}-option-${option.value}`;
+                const active = index === safeActiveIndex;
+
+                return (
+                  <button
+                    id={optionId}
+                    type="button"
+                    key={option.value}
+                    className={`${styles.option} ${
+                      active ? styles.optionActive : ""
+                    }`}
+                    role="option"
+                    aria-selected={active}
+                    onMouseDown={(e) => e.preventDefault()}
+                    onMouseEnter={() => setActiveIndex(index)}
+                    onClick={() => selectOption(option)}
+                  >
+                    <span className={styles.optionLabel}>{option.label}</span>
+                    {option.description && (
+                      <span className={styles.optionDescription}>
+                        {option.description}
+                      </span>
+                    )}
+                  </button>
+                );
+              })
             ) : (
-              <div className={styles.emptyState}>{emptyMessage}</div>
+              <div className={styles.emptyState} role="status">
+                {emptyMessage}
+              </div>
             )}
           </div>
         )}

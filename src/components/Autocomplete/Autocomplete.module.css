@@ -126,7 +126,8 @@
   cursor: pointer;
 }
 
-.option:hover {
+.option:hover,
+.optionActive {
   background: var(--surface-hover);
 }
 
