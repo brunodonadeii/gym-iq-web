@@ -44,15 +44,6 @@ const INSTRUCTOR_FIELDS = [
   "specialty",
 ] as const;
 
-const formatDate = (value?: string) =>
-  value
-    ? new Date(value).toLocaleDateString("pt-BR", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      })
-    : "Não informado";
-
 const getInitialFormData = (
   details?: Instructor,
 ): InstructorUpdateFormData =>
@@ -92,9 +83,9 @@ const InstructorsEditForm = ({
     if (!firstField) return;
 
     if (firstField === "specialty") {
-      document.querySelector<HTMLButtonElement>(
-        'button[aria-label="Especialidade"]',
-      )?.focus();
+      document
+        .querySelector<HTMLButtonElement>('button[aria-label="Especialidade"]')
+        ?.focus();
       return;
     }
 
@@ -173,27 +164,6 @@ const InstructorsEditForm = ({
         </>
       }
     >
-      {details && (
-        <section className={styles.summary}>
-          <div className={styles.summaryItem}>
-            <span>ID do instrutor</span>
-            <strong>#{details.instructorId}</strong>
-          </div>
-          <div className={styles.summaryItem}>
-            <span>Usuário</span>
-            <strong>#{details.userId}</strong>
-          </div>
-          <div className={styles.summaryItem}>
-            <span>Status</span>
-            <strong>{details.active ? "Ativo" : "Inativo"}</strong>
-          </div>
-          <div className={styles.summaryItem}>
-            <span>Criado em</span>
-            <strong>{formatDate(details.createdAt)}</strong>
-          </div>
-        </section>
-      )}
-
       <div className={styles.row}>
         <TextField
           label="Nome"
@@ -290,7 +260,6 @@ const InstructorsEditForm = ({
           required
         />
       </div>
-
     </Form>
   );
 };
@@ -322,4 +291,3 @@ export const InstructorsEdit = () => {
     />
   );
 };
-
