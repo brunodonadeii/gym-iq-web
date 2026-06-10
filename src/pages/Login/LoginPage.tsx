@@ -20,7 +20,10 @@ export const LoginPage = () => {
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const search = useSearch({ strict: false }) as { redirect?: string };
+  const search = useSearch({ strict: false }) as {
+    redirect?: string;
+    reason?: "session-expired" | "permissions-changed";
+  };
   const redirect = search.redirect ?? "/dashboard";
   const navigate = useNavigate();
   const canSubmit = Boolean(email.trim() && password);
@@ -103,6 +106,17 @@ export const LoginPage = () => {
         <form className={styles.formWrapper} onSubmit={handleSubmit} noValidate>
           <Card>
             <FormHeader />
+            {search.reason === "permissions-changed" && (
+              <div className={styles.warningMessage} role="alert">
+                Suas permissões foram alteradas. Entre novamente para atualizar
+                seu acesso.
+              </div>
+            )}
+            {search.reason === "session-expired" && (
+              <div className={styles.warningMessage} role="alert">
+                Sua sessão expirou. Entre novamente para continuar.
+              </div>
+            )}
             <TextField
               label="E-mail"
               type="email"

@@ -2,14 +2,34 @@
 import { normalizeApiError } from "@/utils/apiError";
 import { buildApiUrl } from "@/services/apiUrl";
 
-const redirectToLogin = () => {
+type LoginRedirectReason = "session-expired" | "permissions-changed";
+
+let redirectingToLogin = false;
+
+export const buildLoginRedirectUrl = (
+  reason: LoginRedirectReason,
+  currentPath: string,
+) => {
+  const params = new URLSearchParams({
+    redirect:
+      reason === "permissions-changed"
+        ? "/dashboard"
+        : currentPath || "/dashboard",
+    reason,
+  });
+
+  return `/login?${params.toString()}`;
+};
+
+const redirectToLogin = (reason: LoginRedirectReason) => {
+  if (redirectingToLogin) return;
+
   const currentPath = `${window.location.pathname}${window.location.search}`;
 
   if (window.location.pathname === "/login") return;
 
-  window.location.assign(
-    `/login?redirect=${encodeURIComponent(currentPath || "/dashboard")}`,
-  );
+  redirectingToLogin = true;
+  window.location.assign(buildLoginRedirectUrl(reason, currentPath));
 };
 
 export async function authFetch(url: string, options: RequestInit = {}) {
@@ -17,7 +37,7 @@ export async function authFetch(url: string, options: RequestInit = {}) {
 
   if (!token) {
     clearAuthStorage();
-    redirectToLogin();
+    redirectToLogin("session-expired");
     throw normalizeApiError(
       {
         error: "Sessão expirada",
@@ -43,7 +63,12 @@ export async function authFetch(url: string, options: RequestInit = {}) {
 
   if (response.status === 401) {
     clearAuthStorage();
-    redirectToLogin();
+    redirectToLogin("session-expired");
+  }
+
+  if (response.status === 403) {
+    clearAuthStorage();
+    redirectToLogin("permissions-changed");
   }
 
   return response;

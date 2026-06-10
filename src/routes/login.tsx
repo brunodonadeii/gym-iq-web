@@ -17,6 +17,11 @@ export const Route = createFileRoute("/login")({
   },
   validateSearch: (search: Record<string, unknown>) => ({
     redirect: (search.redirect as string) ?? "/dashboard",
+    reason:
+      search.reason === "session-expired" ||
+      search.reason === "permissions-changed"
+        ? search.reason
+        : undefined,
   }),
   component: LoginPage,
 });
