@@ -10,6 +10,7 @@
 
 export type StudentSummary = {
   active: boolean;
+  anonymized?: boolean;
   createdAt: string;
   email: string;
   lgpdAccepted: boolean;
@@ -48,6 +49,11 @@ export const getStudentOptionLabel = (student: StudentOption) =>
 
 const ANONYMIZED_SENTINELS = new Set([
   "ANONYMIZED",
+  "ANONYMIZED STUDENT",
+  "NAME ANONYMIZED",
+  "ANONIMIZADO",
+  "ALUNO ANONIMIZADO",
+  "DADOS ANONIMIZADOS",
   "CPF ANONYMIZED",
   "EMAIL ANONYMIZED",
   "PHONE ANONYMIZED",
@@ -58,12 +64,23 @@ const hasAnonymizedSentinel = (value?: string | null) =>
   value ? ANONYMIZED_SENTINELS.has(value.trim().toUpperCase()) : false;
 
 type AnonymizedStudentCandidate = Partial<
-  Pick<Student, "address" | "birthDate" | "cpf" | "email" | "phone">
+  Pick<
+    Student,
+    | "address"
+    | "anonymized"
+    | "birthDate"
+    | "cpf"
+    | "email"
+    | "name"
+    | "phone"
+  >
 >;
 
 export const isAnonymizedStudent = (
   student?: AnonymizedStudentCandidate | null,
 ) =>
+  student?.anonymized === true ||
+  hasAnonymizedSentinel(student?.name) ||
   hasAnonymizedSentinel(student?.phone) ||
   hasAnonymizedSentinel(student?.cpf) ||
   hasAnonymizedSentinel(student?.email) ||

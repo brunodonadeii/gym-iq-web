@@ -79,6 +79,11 @@ export const StudentsEdit = () => {
   };
 
   const handleSubmit = () => {
+    if (anonymized) {
+      toast.error("Não é possível editar um cadastro anonimizado.");
+      return;
+    }
+
     const nextErrors = validate();
     if (Object.keys(nextErrors).length > 0) {
       focusFirstError(nextErrors);
@@ -132,24 +137,29 @@ export const StudentsEdit = () => {
       loading={isLoading}
       onSubmit={handleSubmit}
       actions={
-        <>
-          <Button
-            onClick={() => navigate({ to: "/students" })}
-            disabled={isPending}
-          >
-            Cancelar
-          </Button>
-          <Button type="submit" loading={isPending}>
-            Salvar
-          </Button>
-        </>
+        anonymized ? (
+          <Button onClick={() => navigate({ to: "/students" })}>Voltar</Button>
+        ) : (
+          <>
+            <Button
+              onClick={() => navigate({ to: "/students" })}
+              disabled={isPending}
+            >
+              Cancelar
+            </Button>
+            <Button type="submit" loading={isPending}>
+              Salvar
+            </Button>
+          </>
+        )
       }
     >
       {anonymized && (
         <div className={styles.anonymizedNotice}>
           <strong>Cadastro removido</strong>
           <span>
-            Nome, contato e endereço podem aparecer mascarados conforme o retorno da API.
+            Nome, contato e endereço podem aparecer mascarados conforme o
+            retorno da API.
           </span>
         </div>
       )}
@@ -164,6 +174,7 @@ export const StudentsEdit = () => {
             setErrors((prev) => ({ ...prev, name: undefined }));
           }}
           error={errors.name}
+          disabled={anonymized}
           required
         />
       </div>
@@ -179,6 +190,7 @@ export const StudentsEdit = () => {
             setErrors((prev) => ({ ...prev, email: undefined }));
           }}
           error={errors.email}
+          disabled={anonymized}
           required
         />
       </div>
@@ -202,6 +214,7 @@ export const StudentsEdit = () => {
             setErrors((prev) => ({ ...prev, birthDate: undefined }));
           }}
           error={errors.birthDate}
+          disabled={anonymized}
           required
         />
       </div>
@@ -217,6 +230,7 @@ export const StudentsEdit = () => {
           }}
           placeholder="(11) 99999-9999"
           error={errors.phone}
+          disabled={anonymized}
           required
         />
       </div>
@@ -230,6 +244,7 @@ export const StudentsEdit = () => {
             value={data.zipCode}
             onChange={setMasked("zipCode", "#####-###")}
             placeholder="00000-000"
+            disabled={anonymized}
             optional
           />
         </div>

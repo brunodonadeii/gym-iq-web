@@ -245,6 +245,12 @@
   color: var(--status-green-text);
 }
 
+.noActions {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
 .statusInactive {
   background: var(--status-neutral-bg);
   color: var(--status-neutral-text);

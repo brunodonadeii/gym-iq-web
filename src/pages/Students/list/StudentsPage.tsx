@@ -19,7 +19,10 @@ import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useActivateStudent } from "@/mutations/useActivateStudent";
 import { useDeactivateStudent } from "@/mutations/useDeactivateStudent";
 import { useDeleteStudentPersonalData } from "@/mutations/useDeleteStudentPersonalData";
-import { isAnonymizedStudent } from "@/pages/Students/types";
+import {
+  isAnonymizedStudent,
+  type StudentSummary,
+} from "@/pages/Students/types";
 import {
   fetchStudents,
   STUDENTS_QUERY_GC_TIME,
@@ -126,7 +129,19 @@ export const StudentsPage = () => {
   const visibleStudents = data?.content ?? [];
   const tableLoading = isLoading;
 
+  const preventAnonymizedAction = (student?: StudentSummary) => {
+    if (!isAnonymizedStudent(student)) return false;
+
+    toast.error("Não é possível executar ações em um cadastro anonimizado.");
+    return true;
+  };
+
   const handleDeactivateStudent = (studentId: string) => {
+    const student = visibleStudents.find(
+      (currentStudent) => currentStudent.studentId === studentId,
+    );
+    if (preventAnonymizedAction(student)) return;
+
     deactivateStudent(
       { id: studentId },
       {
@@ -166,6 +181,11 @@ export const StudentsPage = () => {
     studentId: string,
     studentName: string,
   ) => {
+    const student = visibleStudents.find(
+      (currentStudent) => currentStudent.studentId === studentId,
+    );
+    if (preventAnonymizedAction(student)) return;
+
     deleteStudentPersonalData(
       { id: studentId },
       {
@@ -221,6 +241,11 @@ export const StudentsPage = () => {
     studentId: string,
     studentName: string,
   ) => {
+    const student = visibleStudents.find(
+      (currentStudent) => currentStudent.studentId === studentId,
+    );
+    if (preventAnonymizedAction(student)) return;
+
     setCheckingDeletionEligibilityStudentId(studentId);
 
     try {
@@ -255,6 +280,11 @@ export const StudentsPage = () => {
   };
 
   const handleActivateStudent = (studentId: string) => {
+    const student = visibleStudents.find(
+      (currentStudent) => currentStudent.studentId === studentId,
+    );
+    if (preventAnonymizedAction(student)) return;
+
     activateStudent(
       { id: studentId },
       {
@@ -407,62 +437,66 @@ export const StudentsPage = () => {
                         </span>
                       </TableCell>
                       <TableCell center>
-                        <Dropdown
-                          items={[
-                            {
-                              label: "Editar",
-                              icon: <Pencil size={15} />,
-                              disabled: anonymized,
-                              onSelect: () =>
-                                navigate({
-                                  to: "/students/$studentId",
-                                  params: {
+                        {anonymized ? (
+                          <span className={styles.noActions}>
+                            Sem ações disponíveis
+                          </span>
+                        ) : (
+                          <Dropdown
+                            items={[
+                              {
+                                label: "Editar",
+                                icon: <Pencil size={15} />,
+                                onSelect: () =>
+                                  navigate({
+                                    to: "/students/$studentId",
+                                    params: {
+                                      studentId: String(student.studentId),
+                                    },
+                                  }),
+                              },
+                              {
+                                label: "Inativar aluno",
+                                icon: <UserMinus size={15} />,
+                                danger: true,
+                                disabled:
+                                  !student.active || isDeactivatingStudent,
+                                onSelect: () =>
+                                  setConfirmAction({
+                                    type: "deactivate",
                                     studentId: String(student.studentId),
-                                  },
-                                }),
-                            },
-                            {
-                              label: "Inativar aluno",
-                              icon: <UserMinus size={15} />,
-                              danger: true,
-                              disabled: !student.active || isDeactivatingStudent,
-                              onSelect: () =>
-                                setConfirmAction({
-                                  type: "deactivate",
-                                  studentId: String(student.studentId),
-                                  studentName: student.name,
-                                }),
-                            },
-                            ...(!student.active
-                              ? [
-                                  {
-                                    label: "Ativar aluno",
-                                    icon: <RotateCcw size={15} />,
-                                    disabled:
-                                      isActivatingStudent || anonymized,
-                                    onSelect: () =>
-                                      handleActivateStudent(
-                                        String(student.studentId),
-                                      ),
-                                  },
-                                  {
-                                    label: "Excluir",
-                                    icon: <EyeOff size={15} />,
-                                    disabled:
-                                      isDeletingStudentPersonalData ||
-                                      anonymized ||
-                                      checkingDeletionEligibilityStudentId ===
-                                        String(student.studentId),
-                                    onSelect: () =>
-                                      handleRequestDeleteStudentPersonalData(
-                                        String(student.studentId),
-                                        student.name,
-                                      ),
-                                  },
-                                ]
-                              : []),
-                          ]}
-                        />
+                                    studentName: student.name,
+                                  }),
+                              },
+                              ...(!student.active
+                                ? [
+                                    {
+                                      label: "Ativar aluno",
+                                      icon: <RotateCcw size={15} />,
+                                      disabled: isActivatingStudent,
+                                      onSelect: () =>
+                                        handleActivateStudent(
+                                          String(student.studentId),
+                                        ),
+                                    },
+                                    {
+                                      label: "Excluir",
+                                      icon: <EyeOff size={15} />,
+                                      disabled:
+                                        isDeletingStudentPersonalData ||
+                                        checkingDeletionEligibilityStudentId ===
+                                          String(student.studentId),
+                                      onSelect: () =>
+                                        handleRequestDeleteStudentPersonalData(
+                                          String(student.studentId),
+                                          student.name,
+                                        ),
+                                    },
+                                  ]
+                                : []),
+                            ]}
+                          />
+                        )}
                       </TableCell>
                     </TableRow>
                   );
