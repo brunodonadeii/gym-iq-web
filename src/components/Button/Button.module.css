@@ -60,12 +60,12 @@
 }
 
 .danger {
-  background: #dc2626;
-  color: #ffffff;
+  background: var(--danger);
+  color: var(--danger-contrast);
 }
 
 .danger:hover {
-  background: #b91c1c;
+  background: var(--danger-hover);
   transform: translateY(-1px);
 }
 

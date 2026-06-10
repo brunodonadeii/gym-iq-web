@@ -7,6 +7,9 @@
   --primary-ring: rgba(255, 138, 61, 0.18);
   --button-hover: #f67821;
   --button-active: #df6616;
+  --danger: #dc2626;
+  --danger-hover: #b91c1c;
+  --danger-contrast: #ffffff;
   --background: #0f1115;
   --background-elevated: #171c24;
   --surface: #171c24;
@@ -49,6 +52,15 @@
 }
 
 [data-theme="dark"] {
+  --primary: #d97a38;
+  --primary-contrast: #ffffff;
+  --primary-soft: rgba(217, 122, 56, 0.18);
+  --primary-ring: rgba(217, 122, 56, 0.28);
+  --button-hover: #e58948;
+  --button-active: #c76d2d;
+  --danger: #cf5f5f;
+  --danger-hover: #b94f4f;
+  --danger-contrast: #ffffff;
   --background: #0f1115;
   --background-elevated: #171c24;
   --surface: #171c24;
@@ -91,6 +103,15 @@
 }
 
 [data-theme="light"] {
+  --primary: #ff8a3d;
+  --primary-contrast: #ffffff;
+  --primary-soft: rgba(255, 138, 61, 0.16);
+  --primary-ring: rgba(255, 138, 61, 0.18);
+  --button-hover: #f67821;
+  --button-active: #df6616;
+  --danger: #dc2626;
+  --danger-hover: #b91c1c;
+  --danger-contrast: #ffffff;
   --background: #f4f7fb;
   --background-elevated: #ffffff;
   --surface: #ffffff;
