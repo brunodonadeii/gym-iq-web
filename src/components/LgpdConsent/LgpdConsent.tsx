@@ -1,7 +1,7 @@
 import { Button } from "@/components/Button/Button";
+import { Dialog } from "@/components/Dialog/Dialog";
 import { ShieldCheck, X } from "lucide-react";
-import type { KeyboardEvent } from "react";
-import { useEffect, useId, useRef, useState } from "react";
+import { useId, useRef, useState } from "react";
 import styles from "./LgpdConsent.module.css";
 
 type LgpdConsentProps = {
@@ -21,53 +21,7 @@ export const LgpdConsent = ({
   const titleId = useId();
   const descriptionId = useId();
   const errorId = `${id}-error`;
-  const dialogRef = useRef<HTMLElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
-  const policyButtonRef = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    if (!policyOpen) return undefined;
-
-    const focusTimer = window.setTimeout(() => {
-      closeButtonRef.current?.focus();
-    }, 0);
-
-    return () => {
-      window.clearTimeout(focusTimer);
-      policyButtonRef.current?.focus();
-    };
-  }, [policyOpen]);
-
-  const handleDialogKeyDown = (event: KeyboardEvent<HTMLElement>) => {
-    if (event.key === "Escape") {
-      event.preventDefault();
-      setPolicyOpen(false);
-      return;
-    }
-
-    if (event.key !== "Tab") return;
-
-    const focusableElements = dialogRef.current
-      ? Array.from(
-          dialogRef.current.querySelectorAll<HTMLElement>(
-            "button:not([disabled]), a[href], [tabindex]:not([tabindex='-1'])",
-          ),
-        )
-      : [];
-
-    if (focusableElements.length === 0) return;
-
-    const firstElement = focusableElements[0];
-    const lastElement = focusableElements[focusableElements.length - 1];
-
-    if (event.shiftKey && document.activeElement === firstElement) {
-      event.preventDefault();
-      lastElement.focus();
-    } else if (!event.shiftKey && document.activeElement === lastElement) {
-      event.preventDefault();
-      firstElement.focus();
-    }
-  };
 
   return (
     <>
@@ -86,7 +40,6 @@ export const LgpdConsent = ({
         <div className={styles.consentText}>
           <label htmlFor={id}>Li e estou ciente da </label>
           <button
-            ref={policyButtonRef}
             type="button"
             className={styles.policyLink}
             onClick={() => setPolicyOpen(true)}
@@ -109,26 +62,14 @@ export const LgpdConsent = ({
         </div>
       )}
 
-      {policyOpen && (
-        <div
-          className={styles.overlay}
-          role="presentation"
-          onMouseDown={(event) => {
-            if (event.target === event.currentTarget) {
-              setPolicyOpen(false);
-            }
-          }}
-        >
-          <section
-            ref={dialogRef}
-            className={styles.dialog}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby={titleId}
-            aria-describedby={descriptionId}
-            tabIndex={-1}
-            onKeyDown={handleDialogKeyDown}
-          >
+      <Dialog
+        open={policyOpen}
+        className={styles.dialog}
+        labelledBy={titleId}
+        describedBy={descriptionId}
+        initialFocusRef={closeButtonRef}
+        onClose={() => setPolicyOpen(false)}
+      >
             <div className={styles.header}>
               <span className={styles.icon} aria-hidden="true">
                 <ShieldCheck size={22} />
@@ -146,8 +87,11 @@ export const LgpdConsent = ({
 
             <div className={styles.content}>
               <h2 className={styles.title} id={titleId}>
-                Política de Privacidade
+                Política de Privacidade — versão 1.0
               </h2>
+              <p className={styles.policyMeta}>
+                Vigente desde 10 de junho de 2026.
+              </p>
               <div className={styles.policyContent} id={descriptionId}>
                 <p>
                   Esta política explica como os dados pessoais são utilizados no
@@ -191,9 +135,7 @@ export const LgpdConsent = ({
             <div className={styles.actions}>
               <Button onClick={() => setPolicyOpen(false)}>Entendi</Button>
             </div>
-          </section>
-        </div>
-      )}
+      </Dialog>
     </>
   );
 };

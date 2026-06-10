@@ -68,16 +68,6 @@
   line-height: 1.4;
 }
 
-.overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 1100;
-  display: grid;
-  place-items: center;
-  padding: 24px;
-  background: var(--overlay);
-}
-
 .dialog {
   width: min(100%, 680px);
   max-height: min(760px, calc(100vh - 48px));
@@ -139,6 +129,13 @@
   line-height: 1.2;
 }
 
+.policyMeta {
+  margin-top: -6px;
+  color: var(--muted);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
 .policyContent {
   overflow-y: auto;
   padding-right: 8px;
@@ -162,10 +159,6 @@
 }
 
 @media (max-width: 520px) {
-  .overlay {
-    padding: 12px;
-  }
-
   .dialog {
     max-height: calc(100vh - 24px);
     padding: 18px;
