@@ -15,6 +15,17 @@ export const WORKOUT_SHEET_EXERCISE_LIMITS = {
   },
 } as const;
 
+export const validateWorkoutSheetDateRange = (
+  startDate: string,
+  endDate: string,
+) => {
+  if (startDate && endDate && endDate < startDate) {
+    return "A data final não pode ser anterior à data inicial.";
+  }
+
+  return undefined;
+};
+
 export type WorkoutSheetExerciseFormErrors = Partial<
   Record<keyof WorkoutSheetExerciseFormData, string>
 >;

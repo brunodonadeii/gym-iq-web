@@ -15,6 +15,7 @@ import type {
   WorkoutSheetSectionsFormData,
 } from "@/pages/WorkoutSheets/types";
 import {
+  validateWorkoutSheetDateRange,
   validateWorkoutSheetExercise,
   WORKOUT_SHEET_EXERCISE_LIMITS,
 } from "@/pages/WorkoutSheets/validation";
@@ -70,7 +71,12 @@ const EMPTY_FORM: WorkoutSheetSectionsFormData = {
   sections: [],
 };
 
-type SheetField = "studentId" | "instructorId" | "name";
+type SheetField =
+  | "studentId"
+  | "instructorId"
+  | "name"
+  | "startDate"
+  | "endDate";
 type ExerciseField = keyof WorkoutSheetExerciseFormData;
 
 type FormErrors = Partial<Record<SheetField, string>> & {
@@ -185,6 +191,15 @@ const validate = (data: WorkoutSheetSectionsFormData) => {
     errors.name = "Informe o nome da ficha.";
   }
 
+  const dateRangeError = validateWorkoutSheetDateRange(
+    data.startDate,
+    data.endDate,
+  );
+
+  if (dateRangeError) {
+    errors.endDate = dateRangeError;
+  }
+
   data.sections.forEach((section, sectionIndex) => {
     const currentSection: NonNullable<FormErrors["sections"]>[number] = {};
     const exerciseErrors: NonNullable<
@@ -230,6 +245,8 @@ const focusFirstError = (errors: FormErrors) => {
   if (errors.studentId) return focusField("studentId");
   if (errors.instructorId) return focusField("instructorId");
   if (errors.name) return focusField("name");
+  if (errors.startDate) return focusField("startDate");
+  if (errors.endDate) return focusField("endDate");
 
   const sectionIndex = errors.sections?.findIndex(Boolean) ?? -1;
   if (sectionIndex < 0) return;
@@ -669,6 +686,8 @@ const WorkoutSheetsEditContent = ({
             "studentId",
             "instructorId",
             "name",
+            "startDate",
+            "endDate",
           ] as const);
 
           if (fieldErrors) {
@@ -825,12 +844,15 @@ const WorkoutSheetsEditContent = ({
                   id="startDate"
                   type="date"
                   value={data.startDate}
-                  onChange={(event) =>
+                  onChange={(event) => {
                     setData((prev) => ({
                       ...prev,
                       startDate: event.target.value,
-                    }))
-                  }
+                    }));
+                    clearError("startDate");
+                    clearError("endDate");
+                  }}
+                  error={errors.startDate}
                   optional
                 />
                 <TextField
@@ -838,12 +860,15 @@ const WorkoutSheetsEditContent = ({
                   id="endDate"
                   type="date"
                   value={data.endDate}
-                  onChange={(event) =>
+                  min={data.startDate || undefined}
+                  onChange={(event) => {
                     setData((prev) => ({
                       ...prev,
                       endDate: event.target.value,
-                    }))
-                  }
+                    }));
+                    clearError("endDate");
+                  }}
+                  error={errors.endDate}
                   optional
                 />
               </div>
