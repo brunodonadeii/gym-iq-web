@@ -21,7 +21,7 @@ import { useDeactivateWorkoutSheet } from "@/mutations/useDeactivateWorkoutSheet
 import { useDeleteWorkoutSheet } from "@/mutations/useDeleteWorkoutSheet";
 import { getStudentOptionLabel } from "@/pages/Students/types";
 import type { WorkoutSheetSummary } from "@/pages/WorkoutSheets/types";
-import { useGetInstructors } from "@/queries/useGetInstructors";
+import { useGetInstructorOptions } from "@/queries/useGetInstructorOptions";
 import { useGetStudentOptions } from "@/queries/useGetStudentOptions";
 import {
   fetchWorkoutSheets,
@@ -98,16 +98,16 @@ export const WorkoutSheetsPage = () => {
     fetchNextPage: fetchMoreStudents,
   } =
     useGetStudentOptions(debouncedStudentSearch, filterMode === "student");
-  const { data: instructors, isFetching: isFetchingInstructors } =
-    useGetInstructors(
-      debouncedInstructorSearch,
-      "ACTIVE",
-      {
-        size: 20,
-        sort: "user.name,asc",
-      },
-      !isInstructor,
-    );
+  const {
+    data: instructors,
+    isFetching: isFetchingInstructors,
+    isFetchingNextPage: isFetchingMoreInstructors,
+    hasNextPage: hasMoreInstructors,
+    fetchNextPage: fetchMoreInstructors,
+  } = useGetInstructorOptions(
+    debouncedInstructorSearch,
+    !isInstructor && filterMode === "instructor",
+  );
 
   const query = useMemo(
     () =>
@@ -171,7 +171,7 @@ export const WorkoutSheetsPage = () => {
     })) ?? [];
 
   const instructorOptions =
-    instructors?.content.map((instructor) => ({
+    instructors?.map((instructor) => ({
       label: instructor.name,
       value: String(instructor.instructorId),
       description: instructor.email,
@@ -302,7 +302,12 @@ export const WorkoutSheetsPage = () => {
                   setPage(0);
                 }}
                 options={instructorOptions}
-                loading={isFetchingInstructors}
+                loading={
+                  isFetchingInstructors && instructorOptions.length === 0
+                }
+                loadingMore={isFetchingMoreInstructors}
+                hasMoreOptions={Boolean(hasMoreInstructors)}
+                onLoadMore={() => void fetchMoreInstructors()}
                 placeholder="Digite nome, CREF ou e-mail completo"
                 containerClassName={styles.filterFieldLarge}
               />

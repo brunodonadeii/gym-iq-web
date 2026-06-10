@@ -9,7 +9,7 @@ import type { EnrollmentCreateFormData } from "@/pages/Enrollments/types";
 import { getStudentOptionLabel } from "@/pages/Students/types";
 import { getApiFieldErrors } from "@/utils/apiError";
 import { useGetStudentOptions } from "@/queries/useGetStudentOptions";
-import { useGetPlans } from "@/queries/useGetPlans";
+import { useGetPlanOptions } from "@/queries/useGetPlanOptions";
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -29,6 +29,7 @@ export const EnrollmentsCreate = () => {
   const [studentSearch, setStudentSearch] = useState("");
   const [planSearch, setPlanSearch] = useState("");
   const debouncedStudentSearch = useDebouncedValue(studentSearch);
+  const debouncedPlanSearch = useDebouncedValue(planSearch);
   const { set } = useFormInputs(setData);
   const navigate = useNavigate();
   const { mutate, isPending } = useCreateEnrollment();
@@ -40,12 +41,13 @@ export const EnrollmentsCreate = () => {
     fetchNextPage: fetchMoreStudentOptions,
   } =
     useGetStudentOptions(debouncedStudentSearch);
-  const { data: plans, isLoading: isLoadingPlans } = useGetPlans("active", "", {
-    size: 100,
-    sort: "name,asc",
-  });
-
-  const loadingDependencies = isLoadingPlans;
+  const {
+    data: plans,
+    isFetching: isFetchingPlans,
+    isFetchingNextPage: isFetchingMorePlans,
+    hasNextPage: hasMorePlans,
+    fetchNextPage: fetchMorePlans,
+  } = useGetPlanOptions(debouncedPlanSearch);
 
   const autocompleteStudentOptions =
     studentOptions?.map((student) => ({
@@ -54,11 +56,7 @@ export const EnrollmentsCreate = () => {
     })) ?? [];
 
   const autocompletePlanOptions =
-    plans?.content
-      .filter((plan) =>
-        plan.name.toLowerCase().includes(planSearch.toLowerCase()),
-      )
-      .map((plan) => ({
+    plans?.map((plan) => ({
         label: plan.name,
         value: String(plan.planId),
         description: `R$ ${plan.monthlyPrice} - ${plan.durationMonths} meses`,
@@ -105,7 +103,6 @@ export const EnrollmentsCreate = () => {
     <Form
       title="Dados da matrícula"
       description="Selecione o aluno, o plano e defina a data inicial quando precisar agendar a vigência."
-      loading={loadingDependencies}
       onSubmit={handleSubmit}
       actions={
         <>
@@ -170,7 +167,10 @@ export const EnrollmentsCreate = () => {
             setData((prev) => ({ ...prev, planId: "" }));
           }}
           options={autocompletePlanOptions}
-          loading={isLoadingPlans}
+          loading={isFetchingPlans && autocompletePlanOptions.length === 0}
+          loadingMore={isFetchingMorePlans}
+          hasMoreOptions={Boolean(hasMorePlans)}
+          onLoadMore={() => void fetchMorePlans()}
           placeholder="Digite o nome do plano"
           error={errors.planId}
           required

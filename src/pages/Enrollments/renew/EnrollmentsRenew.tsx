@@ -1,15 +1,15 @@
 ﻿import { Button } from "@/components/Button/Button";
 import { DetailLoadState } from "@/components/DetailLoadState/DetailLoadState";
 import { Form } from "@/components/Form/Form";
-import { SelectField } from "@/components/SelectField/SelectField";
-import { useFormInputs } from "@/hooks/useFormInputs";
+import { Autocomplete } from "@/components/Autocomplete/Autocomplete";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useRenewEnrollment } from "@/mutations/useRenewEnrollment";
 import type {
   Enrollment,
   EnrollmentRenewFormData,
 } from "@/pages/Enrollments/types";
 import { useGetEnrollmentById } from "@/queries/useGetEnrollmentById";
-import { useGetPlans } from "@/queries/useGetPlans";
+import { useGetPlanOptions } from "@/queries/useGetPlanOptions";
 import { getApiFieldErrors } from "@/utils/apiError";
 import { formatLocalDate } from "@/utils/date";
 import { useNavigate, useParams } from "@tanstack/react-router";
@@ -44,7 +44,6 @@ type EnrollmentsRenewFormProps = {
   enrollmentId?: string;
   initialData: EnrollmentRenewFormData;
   loading: boolean;
-  planOptions: Array<{ label: string; value: string; disabled?: boolean }>;
   recurring: boolean;
 };
 
@@ -53,14 +52,29 @@ const EnrollmentsRenewForm = ({
   enrollmentId,
   initialData,
   loading,
-  planOptions,
   recurring,
 }: EnrollmentsRenewFormProps) => {
   const navigate = useNavigate();
   const { mutate, isPending } = useRenewEnrollment();
   const [data, setData] = useState<EnrollmentRenewFormData>(initialData);
+  const [planSearch, setPlanSearch] = useState(
+    initialData.newPlanId ? resolvePlanName(enrollment) : "",
+  );
   const [planError, setPlanError] = useState("");
-  const { set } = useFormInputs(setData);
+  const debouncedPlanSearch = useDebouncedValue(planSearch);
+  const {
+    data: plans,
+    isFetching: isFetchingPlans,
+    isFetchingNextPage: isFetchingMorePlans,
+    hasNextPage: hasMorePlans,
+    fetchNextPage: fetchMorePlans,
+  } = useGetPlanOptions(debouncedPlanSearch, !recurring);
+  const planOptions =
+    plans?.map((plan) => ({
+      label: plan.name,
+      value: String(plan.planId),
+      description: `R$ ${plan.monthlyPrice} - ${plan.durationMonths} meses`,
+    })) ?? [];
 
   const handleSubmit = () => {
     if (recurring) {
@@ -160,16 +174,30 @@ const EnrollmentsRenewForm = ({
       )}
 
       <div className={styles.row}>
-        <SelectField
+        <Autocomplete
           label="Novo plano"
           id="newPlanId"
-          value={data.newPlanId}
-          onChange={(event) => {
-            set("newPlanId")(event);
+          search={planSearch}
+          onSearchChange={(value) => {
+            setPlanSearch(value);
+            setData({ newPlanId: "" });
             setPlanError("");
           }}
+          onSelect={(option) => {
+            setPlanSearch(option.label);
+            setData({ newPlanId: option.value });
+            setPlanError("");
+          }}
+          onClear={() => {
+            setPlanSearch("");
+            setData({ newPlanId: "" });
+          }}
           options={planOptions}
-          disabled={recurring}
+          loading={isFetchingPlans && planOptions.length === 0}
+          loadingMore={isFetchingMorePlans}
+          hasMoreOptions={Boolean(hasMorePlans)}
+          onLoadMore={() => void fetchMorePlans()}
+          placeholder="Digite o nome do plano"
           error={planError || undefined}
           required
         />
@@ -188,13 +216,8 @@ export const EnrollmentsRenew = () => {
     isError,
     isLoading: isLoadingEnrollment,
   } = useGetEnrollmentById(enrollmentId);
-  const { data: plans, isLoading: isLoadingPlans } = useGetPlans("active", "", {
-    size: 100,
-    sort: "name,asc",
-  });
-
   const recurring = isRecurringEnrollment(enrollment);
-  const loading = isLoadingEnrollment || isLoadingPlans;
+  const loading = isLoadingEnrollment;
   const initialData = enrollment
     ? { newPlanId: String(enrollment.planId) }
     : EMPTY_FORM;
@@ -216,14 +239,6 @@ export const EnrollmentsRenew = () => {
     );
   }
 
-  const planOptions = [
-    { label: "Selecione o novo plano", value: "", disabled: true },
-    ...(plans?.content.map((plan) => ({
-      label: plan.name,
-      value: String(plan.planId),
-    })) ?? []),
-  ];
-
   return (
     <EnrollmentsRenewForm
       key={`${enrollmentId ?? "new"}-${initialData.newPlanId}-${loading}`}
@@ -231,7 +246,6 @@ export const EnrollmentsRenew = () => {
       enrollmentId={enrollmentId}
       initialData={initialData}
       loading={loading}
-      planOptions={planOptions}
       recurring={recurring}
     />
   );

@@ -19,7 +19,7 @@ import {
   WORKOUT_SHEET_EXERCISE_LIMITS,
 } from "@/pages/WorkoutSheets/validation";
 import { useGetExercises } from "@/queries/useGetExercises";
-import { useGetInstructors } from "@/queries/useGetInstructors";
+import { useGetInstructorOptions } from "@/queries/useGetInstructorOptions";
 import { useGetMyInstructor } from "@/queries/useGetMyInstructor";
 import { useGetStudentOptions } from "@/queries/useGetStudentOptions";
 import { useGetWorkoutSheetById } from "@/queries/useGetWorkoutSheetById";
@@ -320,16 +320,13 @@ const WorkoutSheetsEditContent = ({
     fetchNextPage: fetchMoreStudents,
   } = useGetStudentOptions(debouncedStudentSearch);
   const { data: me } = useGetMyInstructor(isInstructor);
-  const { data: instructors, isFetching: isFetchingInstructors } =
-    useGetInstructors(
-      debouncedInstructorSearch,
-      "ACTIVE",
-      {
-        size: 20,
-        sort: "user.name,asc",
-      },
-      !isInstructor,
-    );
+  const {
+    data: instructors,
+    isFetching: isFetchingInstructors,
+    isFetchingNextPage: isFetchingMoreInstructors,
+    hasNextPage: hasMoreInstructors,
+    fetchNextPage: fetchMoreInstructors,
+  } = useGetInstructorOptions(debouncedInstructorSearch, !isInstructor);
   const { data: exercises, isFetching: isFetchingExercises } = useGetExercises(
     "active",
     debouncedExerciseSearch,
@@ -350,7 +347,7 @@ const WorkoutSheetsEditContent = ({
     })) ?? [];
 
   const instructorOptions =
-    instructors?.content.map((instructor) => ({
+    instructors?.map((instructor) => ({
       label: instructor.name,
       value: String(instructor.instructorId),
       description: instructor.email,
@@ -786,7 +783,12 @@ const WorkoutSheetsEditContent = ({
                       setData((prev) => ({ ...prev, instructorId: "" }));
                     }}
                     options={instructorOptions}
-                    loading={isFetchingInstructors}
+                    loading={
+                      isFetchingInstructors && instructorOptions.length === 0
+                    }
+                    loadingMore={isFetchingMoreInstructors}
+                    hasMoreOptions={Boolean(hasMoreInstructors)}
+                    onLoadMore={() => void fetchMoreInstructors()}
                     placeholder="Digite nome, CREF ou e-mail completo"
                     error={errors.instructorId}
                     required

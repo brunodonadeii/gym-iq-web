@@ -25,7 +25,6 @@ import {
   type EnrollmentStatusFilter as EnrollmentApiStatusFilter,
   useGetEnrollments,
 } from "@/queries/useGetEnrollments";
-import { useGetPlans } from "@/queries/useGetPlans";
 import { useGetStudentEnrollments } from "@/queries/useGetStudentEnrollments";
 import { useGetStudentOptions } from "@/queries/useGetStudentOptions";
 import { maskEmail } from "@/utils/sensitiveData";
@@ -136,10 +135,6 @@ export const EnrollmentsPage = () => {
     fetchNextPage: fetchMoreStudentOptions,
   } =
     useGetStudentOptions(debouncedStudentSearch);
-  const { data: plans } = useGetPlans("active", "", {
-    size: 100,
-    sort: "name,asc",
-  });
   const { mutate: updateStatus, isPending: isUpdatingStatus } =
     useUpdateEnrollmentStatus();
 
@@ -184,11 +179,9 @@ export const EnrollmentsPage = () => {
       value: String(student.studentId),
     })) ?? [];
 
-  const summaryPlanLabel =
-    activeEnrollment && plans
-      ? (plans.content.find((plan) => plan.planId === activeEnrollment.planId)
-          ?.name ?? resolvePlanName(activeEnrollment))
-      : null;
+  const summaryPlanLabel = activeEnrollment
+    ? resolvePlanName(activeEnrollment)
+    : null;
 
   const handleStatusChange = (id: string, newStatus: EnrollmentStatus) => {
     updateStatus(
