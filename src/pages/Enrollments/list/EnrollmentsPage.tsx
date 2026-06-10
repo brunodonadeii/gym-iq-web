@@ -1,5 +1,6 @@
 import { Autocomplete } from "@/components/Autocomplete/Autocomplete";
 import { Button } from "@/components/Button/Button";
+import { ConfirmDialog } from "@/components/ConfirmDialog/ConfirmDialog";
 import { Dropdown, type DropdownItem } from "@/components/Dropdown/Dropdown";
 import { ListToolbar } from "@/components/ListToolbar/ListToolbar";
 import { Pagination } from "@/components/Pagination/Pagination";
@@ -96,6 +97,11 @@ const resolvePlanName = (enrollment: Enrollment) =>
 const canChangeAccessStatus = (status: EnrollmentStatus) =>
   status !== "CANCELED";
 
+type EnrollmentConfirmation = {
+  enrollment: Enrollment;
+  newStatus: Extract<EnrollmentStatus, "SUSPENDED" | "CANCELED">;
+};
+
 export const EnrollmentsPage = () => {
   const navigate = useNavigate();
   const [selectedStudentId, setSelectedStudentId] = useState("");
@@ -105,6 +111,8 @@ export const EnrollmentsPage = () => {
   const [statusFilter, setStatusFilter] = useState<"all" | EnrollmentStatus>("all");
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
+  const [confirmation, setConfirmation] =
+    useState<EnrollmentConfirmation | null>(null);
   const debouncedStudentSearch = useDebouncedValue(studentSearch);
   const enrollmentApiStatusFilter =
     statusFilter === "all"
@@ -188,6 +196,7 @@ export const EnrollmentsPage = () => {
       {
         onSuccess: () => {
           toast.success("Status de acesso atualizado com sucesso!");
+          setConfirmation(null);
         },
         onError: (e) => {
           toast.error(
@@ -241,7 +250,11 @@ export const EnrollmentsPage = () => {
               label: "Suspender acesso",
               icon: <PauseCircle size={15} />,
               disabled: isUpdatingStatus,
-              onSelect: () => handleStatusChange(enrollmentId, "SUSPENDED"),
+              onSelect: () =>
+                setConfirmation({
+                  enrollment,
+                  newStatus: "SUSPENDED",
+                }),
             },
           ]
         : [
@@ -261,7 +274,11 @@ export const EnrollmentsPage = () => {
         icon: <CircleOff size={15} />,
         danger: true,
         disabled: isUpdatingStatus || !canChangeAccessStatus(enrollment.status),
-        onSelect: () => handleStatusChange(enrollmentId, "CANCELED"),
+        onSelect: () =>
+          setConfirmation({
+            enrollment,
+            newStatus: "CANCELED",
+          }),
       },
     ];
   };
@@ -482,6 +499,51 @@ export const EnrollmentsPage = () => {
           }}
         />
       </section>
+
+      <ConfirmDialog
+        open={!!confirmation}
+        title={
+          confirmation?.newStatus === "CANCELED"
+            ? "Cancelar matrícula?"
+            : "Suspender acesso?"
+        }
+        description={
+          confirmation
+            ? (
+                <>
+                  A matrícula de{" "}
+                  <strong>{resolveStudentName(confirmation.enrollment)}</strong>{" "}
+                  no plano{" "}
+                  <strong>{resolvePlanName(confirmation.enrollment)}</strong>{" "}
+                  será{" "}
+                  <strong>
+                    {confirmation.newStatus === "CANCELED"
+                      ? "cancelada definitivamente"
+                      : "suspensa"}
+                  </strong>
+                  {confirmation.newStatus === "CANCELED"
+                    ? ". Ela não poderá ser reativada por este fluxo."
+                    : ". O aluno perderá o acesso até que a matrícula seja ativada novamente."}
+                </>
+              )
+            : ""
+        }
+        confirmLabel={
+          confirmation?.newStatus === "CANCELED"
+            ? "Cancelar matrícula"
+            : "Suspender acesso"
+        }
+        loading={isUpdatingStatus}
+        onCancel={() => setConfirmation(null)}
+        onConfirm={() => {
+          if (!confirmation) return;
+
+          handleStatusChange(
+            String(confirmation.enrollment.enrollmentId),
+            confirmation.newStatus,
+          );
+        }}
+      />
     </div>
   );
 };

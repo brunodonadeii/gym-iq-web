@@ -1,5 +1,6 @@
 ﻿import { Autocomplete } from "@/components/Autocomplete/Autocomplete";
 import { Button } from "@/components/Button/Button";
+import { ConfirmDialog } from "@/components/ConfirmDialog/ConfirmDialog";
 import { Dropdown, type DropdownItem } from "@/components/Dropdown/Dropdown";
 import { Pagination } from "@/components/Pagination/Pagination";
 import { SelectField } from "@/components/SelectField/SelectField";
@@ -128,6 +129,8 @@ export const PaymentsPage = () => {
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
   const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
+  const [paymentToMarkOverdue, setPaymentToMarkOverdue] =
+    useState<Payment | null>(null);
   const [payForm, setPayForm] = useState<PaymentPayFormData>(EMPTY_PAY_FORM);
   const [payFormErrors, setPayFormErrors] = useState<
     Partial<Record<keyof PaymentPayFormData, string>>
@@ -307,12 +310,17 @@ export const PaymentsPage = () => {
     );
   };
 
-  const handleMarkOverdue = (id: string) => {
+  const handleMarkOverdue = () => {
+    if (!paymentToMarkOverdue) return;
+
+    const id = getPaymentId(paymentToMarkOverdue);
+
     updateStatus(
       { id, newStatus: "OVERDUE" },
       {
         onSuccess: () => {
           toast.success("Pagamento marcado como atrasado!");
+          setPaymentToMarkOverdue(null);
         },
         onError: (e) => {
           toast.error(
@@ -355,7 +363,7 @@ export const PaymentsPage = () => {
         icon: <ClockAlert size={15} />,
         danger: true,
         disabled: busy || !paymentId,
-        onSelect: () => handleMarkOverdue(paymentId),
+        onSelect: () => setPaymentToMarkOverdue(payment),
       });
     }
 
@@ -664,6 +672,33 @@ export const PaymentsPage = () => {
           </form>
         </div>
       )}
+
+      <ConfirmDialog
+        open={!!paymentToMarkOverdue}
+        title="Marcar pagamento como atrasado?"
+        description={
+          paymentToMarkOverdue
+            ? (
+                <>
+                  O pagamento de{" "}
+                  <strong>{resolveStudentName(paymentToMarkOverdue)}</strong>,
+                  no valor de{" "}
+                  <strong>{formatCurrency(paymentToMarkOverdue.amount)}</strong>{" "}
+                  e com vencimento em{" "}
+                  <strong>
+                    {formatLocalDate(paymentToMarkOverdue.dueDate)}
+                  </strong>
+                  , será marcado como <strong>atrasado</strong>. Essa alteração
+                  afetará os indicadores e as pendências financeiras do aluno.
+                </>
+              )
+            : ""
+        }
+        confirmLabel="Marcar como atrasado"
+        loading={isUpdatingStatus}
+        onCancel={() => setPaymentToMarkOverdue(null)}
+        onConfirm={handleMarkOverdue}
+      />
     </div>
   );
 };
