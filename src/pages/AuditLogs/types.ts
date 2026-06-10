@@ -18,6 +18,8 @@ export type AuditLogFilters = {
   actorId: string;
   resourceType: string;
   resourceId: string;
+  from: string;
+  to: string;
 };
 
 export type AuditLogApiResponse = AuditLog[] | PageResponse<AuditLog>;

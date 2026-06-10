@@ -35,6 +35,8 @@ const EMPTY_FILTERS: AuditLogFilters = {
   actorId: "",
   resourceType: "",
   resourceId: "",
+  from: "",
+  to: "",
 };
 
 const formatDateTime = (value?: string | null) =>
@@ -104,6 +106,7 @@ export const AuditLogsPage = () => {
     useState<AuditLogFilters>(EMPTY_FILTERS);
   const [filters, setFilters] = useState<AuditLogFilters>(EMPTY_FILTERS);
   const [actorSearch, setActorSearch] = useState("");
+  const [dateRangeError, setDateRangeError] = useState("");
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
   const { data: filterOptions, isLoading: isLoadingFilterOptions } =
@@ -179,11 +182,24 @@ export const AuditLogsPage = () => {
   }, [apiError, invalidFilterError]);
 
   const handleApplyFilters = () => {
+    if (
+      draftFilters.from &&
+      draftFilters.to &&
+      draftFilters.from > draftFilters.to
+    ) {
+      setDateRangeError("A data inicial não pode ser posterior à data final.");
+      document.getElementById("auditFrom")?.focus();
+      return;
+    }
+
+    setDateRangeError("");
     setFilters({
       action: draftFilters.action.trim(),
       actorId: draftFilters.actorId.trim(),
       resourceType: draftFilters.resourceType.trim(),
       resourceId: draftFilters.resourceId.trim(),
+      from: draftFilters.from,
+      to: draftFilters.to,
     });
     setPage(0);
   };
@@ -192,6 +208,7 @@ export const AuditLogsPage = () => {
     setDraftFilters(EMPTY_FILTERS);
     setFilters(EMPTY_FILTERS);
     setActorSearch("");
+    setDateRangeError("");
     setPage(0);
   };
 
@@ -265,6 +282,35 @@ export const AuditLogsPage = () => {
               }))
             }
             placeholder="10"
+          />
+          <TextField
+            label="Data inicial"
+            id="auditFrom"
+            type="date"
+            value={draftFilters.from}
+            onChange={(event) => {
+              setDraftFilters((prev) => ({
+                ...prev,
+                from: event.target.value,
+              }));
+              setDateRangeError("");
+            }}
+            error={dateRangeError || undefined}
+            optional
+          />
+          <TextField
+            label="Data final"
+            id="auditTo"
+            type="date"
+            value={draftFilters.to}
+            onChange={(event) => {
+              setDraftFilters((prev) => ({
+                ...prev,
+                to: event.target.value,
+              }));
+              setDateRangeError("");
+            }}
+            optional
           />
         </div>
 

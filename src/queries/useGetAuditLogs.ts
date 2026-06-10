@@ -43,24 +43,24 @@ const normalizeResponse = (
   pagination: PageRequest,
 ) => (isPageResponse(response) ? response : paginateLogs(response, pagination));
 
-const buildAuditLogsPath = (filters: AuditLogFilters, pagination: PageRequest) => {
+const buildAuditLogsPath = (
+  filters: AuditLogFilters,
+  pagination: PageRequest,
+) => {
   const actorId = filters.actorId.trim();
   const resourceType = filters.resourceType.trim();
   const resourceId = filters.resourceId.trim();
   const action = filters.action.trim();
-
-  if (actorId) {
-    return `audit-logs/actor/${actorId}`;
-  }
-
-  if (resourceType && resourceId) {
-    return `audit-logs/resource/${resourceType}/${resourceId}`;
-  }
+  const from = filters.from.trim();
+  const to = filters.to.trim();
 
   const query = buildPaginationParams(pagination, {
+    actorUserId: actorId || undefined,
     action: action || undefined,
     resourceType: resourceType || undefined,
     resourceId: resourceId || undefined,
+    from: from || undefined,
+    to: to || undefined,
   });
 
   return `audit-logs${query ? `?${query}` : ""}`;
@@ -79,7 +79,10 @@ async function fetchAuditLogs(
   return normalizeResponse(data, pagination);
 }
 
-export function useGetAuditLogs(filters: AuditLogFilters, pagination: PageRequest) {
+export function useGetAuditLogs(
+  filters: AuditLogFilters,
+  pagination: PageRequest,
+) {
   return useQuery({
     queryKey: ["audit-logs", filters, pagination],
     queryFn: () => fetchAuditLogs(filters, pagination),
