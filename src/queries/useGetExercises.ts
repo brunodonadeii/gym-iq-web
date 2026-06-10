@@ -33,10 +33,12 @@ export function useGetExercises(
   mode: ExercisesQueryMode = "active",
   search = "",
   pagination: PageRequest = DEFAULT_EXERCISES_PAGE,
+  enabled = true,
 ) {
   return useQuery({
     queryKey: ["exercises", mode, search, pagination],
     queryFn: () => fetchExercises(mode, search, pagination),
+    enabled,
     placeholderData: keepPreviousData,
     staleTime: 5 * 60 * 1000,
     gcTime: 15 * 60 * 1000,

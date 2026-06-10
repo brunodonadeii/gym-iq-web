@@ -62,12 +62,53 @@
   background: var(--surface-alt);
 }
 
+.sectionToggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.sectionToggleContent {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sectionToggleTitle {
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.sectionToggleIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text-secondary);
+  background: var(--surface);
+  flex-shrink: 0;
+}
+
 .sectionTopBar {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
   margin-bottom: 16px;
+  margin-top: 16px;
 }
 
 .sectionBadge {
@@ -87,6 +128,11 @@
   margin-top: 8px;
   color: var(--muted);
   font-size: 0.92rem;
+}
+
+.sectionExpandedMeta {
+  display: flex;
+  align-items: center;
 }
 
 .sectionExerciseList {
@@ -161,9 +207,11 @@
 
 @media (max-width: 768px) {
   .sectionHeader,
+  .sectionToggle,
   .sectionTopBar,
   .exerciseCardHeader {
     flex-direction: column;
+    align-items: stretch;
   }
 
   .row {

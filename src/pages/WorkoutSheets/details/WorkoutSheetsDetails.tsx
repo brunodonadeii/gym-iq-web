@@ -1,4 +1,4 @@
-import { Autocomplete } from "@/components/Autocomplete/Autocomplete";
+﻿import { Autocomplete } from "@/components/Autocomplete/Autocomplete";
 import { Button } from "@/components/Button/Button";
 import { DetailLoadState } from "@/components/DetailLoadState/DetailLoadState";
 import { Skeleton } from "@/components/Skeleton/Skeleton";
@@ -26,7 +26,14 @@ import { useGetWorkoutSheetById } from "@/queries/useGetWorkoutSheetById";
 import { getApiFieldErrors } from "@/utils/apiError";
 import { auth } from "@/utils/auth";
 import { useNavigate, useParams } from "@tanstack/react-router";
-import { ArrowDown, ArrowUp, PlusCircle, Trash2 } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowUp,
+  ChevronDown,
+  ChevronUp,
+  PlusCircle,
+  Trash2,
+} from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import styles from "./WorkoutSheetsDetails.module.css";
@@ -45,7 +52,7 @@ const createEmptyExercise = (
 });
 
 const createEmptySection = (index: number): WorkoutSheetBlockFormData => ({
-  name: `Treino ${String.fromCharCode(65 + index)}`,
+  name: `Treino ${String.fromCodePoint(65 + index)}`,
   description: "",
   executionOrder: String(index + 1),
   exercises: [createEmptyExercise(1)],
@@ -240,7 +247,9 @@ const focusFirstError = (errors: FormErrors) => {
   const firstField = Object.keys(exerciseError ?? {})[0];
 
   if (firstField) {
-    focusField(`section-${sectionIndex}-exercise-${exerciseIndex}-${firstField}`);
+    focusField(
+      `section-${sectionIndex}-exercise-${exerciseIndex}-${firstField}`,
+    );
   }
 };
 
@@ -292,12 +301,16 @@ const WorkoutSheetsDetailsContent = ({
     sectionIndex: 0,
     exerciseIndex: 0,
   });
+  const [expandedSections, setExpandedSections] = useState<number[]>([]);
   const debouncedStudentSearch = useDebouncedValue(studentSearch);
   const debouncedInstructorSearch = useDebouncedValue(instructorSearch);
+  const hasExpandedSection = expandedSections.length > 0;
   const debouncedExerciseSearch = useDebouncedValue(
-    exerciseSearches[activeExercisePosition.sectionIndex]?.[
-      activeExercisePosition.exerciseIndex
-    ] ?? "",
+    hasExpandedSection
+      ? (exerciseSearches[activeExercisePosition.sectionIndex]?.[
+          activeExercisePosition.exerciseIndex
+        ] ?? "")
+      : "",
   );
   const {
     data: studentOptions,
@@ -324,6 +337,7 @@ const WorkoutSheetsDetailsContent = ({
       size: 20,
       sort: "name,asc",
     },
+    hasExpandedSection,
   );
   const { mutate: updateSheet, isPending: isUpdatingSheet } =
     useUpdateWorkoutSheet();
@@ -352,11 +366,16 @@ const WorkoutSheetsDetailsContent = ({
   const effectiveInstructorId = isInstructor
     ? String(me?.instructorId ?? "")
     : data.instructorId;
-  const effectiveInstructorName = isInstructor ? (me?.name ?? "") : instructorSearch;
+  const effectiveInstructorName = isInstructor
+    ? (me?.name ?? "")
+    : instructorSearch;
   const effectiveData: WorkoutSheetSectionsFormData = {
     ...data,
     instructorId: effectiveInstructorId,
   };
+
+  const isSectionExpanded = (sectionIndex: number) =>
+    expandedSections.includes(sectionIndex);
 
   const clearError = (
     field: SheetField | ExerciseField | "name",
@@ -395,6 +414,23 @@ const WorkoutSheetsDetailsContent = ({
     });
   };
 
+  const toggleSection = (sectionIndex: number) => {
+    const expanded = isSectionExpanded(sectionIndex);
+
+    setExpandedSections((prev) =>
+      expanded
+        ? prev.filter((currentIndex) => currentIndex !== sectionIndex)
+        : [...prev, sectionIndex],
+    );
+
+    if (!expanded) {
+      setActiveExercisePosition({
+        sectionIndex,
+        exerciseIndex: 0,
+      });
+    }
+  };
+
   const updateSectionField = (
     sectionIndex: number,
     field: "name" | "description",
@@ -426,10 +462,11 @@ const WorkoutSheetsDetailsContent = ({
         currentSectionIndex === sectionIndex
           ? {
               ...section,
-              exercises: section.exercises.map((exercise, currentExerciseIndex) =>
-                currentExerciseIndex === exerciseIndex
-                  ? { ...exercise, [field]: value }
-                  : exercise,
+              exercises: section.exercises.map(
+                (exercise, currentExerciseIndex) =>
+                  currentExerciseIndex === exerciseIndex
+                    ? { ...exercise, [field]: value }
+                    : exercise,
               ),
             }
           : section,
@@ -444,6 +481,7 @@ const WorkoutSheetsDetailsContent = ({
       sections: [...prev.sections, createEmptySection(prev.sections.length)],
     }));
     setExerciseSearches((prev) => [...prev, [""]]);
+    setExpandedSections((prev) => [...prev, data.sections.length]);
     setActiveExercisePosition({
       sectionIndex: data.sections.length,
       exerciseIndex: 0,
@@ -460,7 +498,18 @@ const WorkoutSheetsDetailsContent = ({
       ),
     }));
     setExerciseSearches((prev) =>
-      prev.filter((_, currentSectionIndex) => currentSectionIndex !== sectionIndex),
+      prev.filter(
+        (_, currentSectionIndex) => currentSectionIndex !== sectionIndex,
+      ),
+    );
+    setExpandedSections((prev) =>
+      prev
+        .filter((currentSectionIndex) => currentSectionIndex !== sectionIndex)
+        .map((currentSectionIndex) =>
+          currentSectionIndex > sectionIndex
+            ? currentSectionIndex - 1
+            : currentSectionIndex,
+        ),
     );
     setErrors((prev) => ({
       ...prev,
@@ -520,7 +569,8 @@ const WorkoutSheetsDetailsContent = ({
       prev.map((sectionSearches, currentSectionIndex) =>
         currentSectionIndex === sectionIndex
           ? sectionSearches.filter(
-              (_, currentExerciseIndex) => currentExerciseIndex !== exerciseIndex,
+              (_, currentExerciseIndex) =>
+                currentExerciseIndex !== exerciseIndex,
             )
           : sectionSearches,
       ),
@@ -532,7 +582,8 @@ const WorkoutSheetsDetailsContent = ({
           ? {
               ...section,
               exercises: section.exercises?.filter(
-                (_, currentExerciseIndex) => currentExerciseIndex !== exerciseIndex,
+                (_, currentExerciseIndex) =>
+                  currentExerciseIndex !== exerciseIndex,
               ),
             }
           : section,
@@ -546,10 +597,15 @@ const WorkoutSheetsDetailsContent = ({
     exerciseIndex: number,
     direction: "up" | "down",
   ) => {
-    const targetIndex = direction === "up" ? exerciseIndex - 1 : exerciseIndex + 1;
+    const targetIndex =
+      direction === "up" ? exerciseIndex - 1 : exerciseIndex + 1;
     const section = data.sections[sectionIndex];
 
-    if (!section || targetIndex < 0 || targetIndex >= section.exercises.length) {
+    if (
+      !section ||
+      targetIndex < 0 ||
+      targetIndex >= section.exercises.length
+    ) {
       return;
     }
 
@@ -685,7 +741,8 @@ const WorkoutSheetsDetailsContent = ({
                   }}
                   options={autocompleteStudentOptions}
                   loading={
-                    isFetchingStudents && autocompleteStudentOptions.length === 0
+                    isFetchingStudents &&
+                    autocompleteStudentOptions.length === 0
                   }
                   loadingMore={isFetchingMoreStudents}
                   hasMoreOptions={Boolean(hasMoreStudents)}
@@ -780,7 +837,10 @@ const WorkoutSheetsDetailsContent = ({
                   type="date"
                   value={data.endDate}
                   onChange={(event) =>
-                    setData((prev) => ({ ...prev, endDate: event.target.value }))
+                    setData((prev) => ({
+                      ...prev,
+                      endDate: event.target.value,
+                    }))
                   }
                   optional
                 />
@@ -806,8 +866,8 @@ const WorkoutSheetsDetailsContent = ({
             <div>
               <h3 className={styles.sectionTitle}>Blocos e exercícios</h3>
               <p className={styles.sectionDescription}>
-                Edite a ficha direto dentro de cada bloco. A ordem dos exercícios
-                acompanha a posição da lista.
+                Expanda apenas o bloco que quiser editar. Os exercícios só são
+                montados na interface depois da abertura do accordion.
               </p>
             </div>
           </div>
@@ -815,317 +875,400 @@ const WorkoutSheetsDetailsContent = ({
           <div className={styles.exerciseList}>
             {data.sections.map((section, sectionIndex) => {
               const sectionErrors = errors.sections?.[sectionIndex] ?? {};
+              const expanded = isSectionExpanded(sectionIndex);
 
               return (
                 <div className={styles.sectionCard} key={sectionIndex}>
-                  <div className={styles.sectionTopBar}>
-                    <div>
+                  <button
+                    type="button"
+                    className={styles.sectionToggle}
+                    onClick={() => toggleSection(sectionIndex)}
+                    aria-expanded={expanded}
+                  >
+                    <div className={styles.sectionToggleContent}>
                       <span className={styles.sectionBadge}>
                         Bloco {sectionIndex + 1}
                       </span>
+                      <strong className={styles.sectionToggleTitle}>
+                        {section.name || `Treino ${sectionIndex + 1}`}
+                      </strong>
                       <p className={styles.sectionMeta}>
-                        {section.exercises.length} exercício(s) neste bloco
+                        {expanded
+                          ? "Bloco aberto para edição."
+                          : "Clique para expandir e editar este bloco."}
                       </p>
                     </div>
-                    {data.sections.length > 1 && (
-                      <Button
-                        variant="ghost"
-                        leftIcon={<Trash2 size={16} />}
-                        onClick={() => removeSection(sectionIndex)}
-                        disabled={isUpdatingSheet}
-                      >
-                        Remover bloco
-                      </Button>
-                    )}
-                  </div>
-
-                  <div className={styles.row}>
-                    <TextField
-                      label="Bloco do treino"
-                      id={`section-${sectionIndex}-name`}
-                      value={section.name}
-                      onChange={(event) =>
-                        updateSectionField(
-                          sectionIndex,
-                          "name",
-                          event.target.value,
-                        )
-                      }
-                      placeholder="Treino A"
-                      error={sectionErrors.name}
-                      required
-                    />
-                    <TextField
-                      label="Descrição do bloco"
-                      id={`section-${sectionIndex}-description`}
-                      value={section.description}
-                      onChange={(event) =>
-                        updateSectionField(
-                          sectionIndex,
-                          "description",
-                          event.target.value,
-                        )
-                      }
-                      placeholder="Peito, ombro e tríceps"
-                      optional
-                    />
-                  </div>
-
-                  <div className={styles.sectionExerciseList}>
-                    {section.exercises.length === 0 ? (
-                      <div className={styles.emptyExerciseState}>
-                        Nenhum exercício neste bloco ainda.
-                      </div>
-                    ) : (
-                      section.exercises.map((exercise, exerciseIndex) => {
-                        const currentErrors =
-                          sectionErrors.exercises?.[exerciseIndex] ?? {};
-                        const isActiveExercise =
-                          activeExercisePosition.sectionIndex === sectionIndex &&
-                          activeExercisePosition.exerciseIndex === exerciseIndex;
-
-                        return (
-                          <div className={styles.exerciseCard} key={exerciseIndex}>
-                            <div className={styles.exerciseCardHeader}>
-                              <div>
-                                <strong className={styles.exerciseTitle}>
-                                  Exercício {exerciseIndex + 1}
-                                </strong>
-                                <p className={styles.exerciseMeta}>
-                                  Reorganize pela posição da lista sem editar a
-                                  ordem manualmente.
-                                </p>
-                              </div>
-
-                              <div className={styles.exerciseActions}>
-                                <Button
-                                  variant="ghost"
-                                  leftIcon={<ArrowUp size={16} />}
-                                  onClick={() =>
-                                    moveExercise(sectionIndex, exerciseIndex, "up")
-                                  }
-                                  disabled={exerciseIndex === 0 || isUpdatingSheet}
-                                >
-                                  Subir
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  leftIcon={<ArrowDown size={16} />}
-                                  onClick={() =>
-                                    moveExercise(
-                                      sectionIndex,
-                                      exerciseIndex,
-                                      "down",
-                                    )
-                                  }
-                                  disabled={
-                                    exerciseIndex === section.exercises.length - 1 ||
-                                    isUpdatingSheet
-                                  }
-                                >
-                                  Descer
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  leftIcon={<Trash2 size={16} />}
-                                  onClick={() =>
-                                    removeExercise(sectionIndex, exerciseIndex)
-                                  }
-                                  disabled={isUpdatingSheet}
-                                >
-                                  Remover
-                                </Button>
-                              </div>
-                            </div>
-
-                            <div className={styles.row}>
-                              <Autocomplete
-                                label="Exercício"
-                                id={`section-${sectionIndex}-exercise-${exerciseIndex}-exerciseId`}
-                                search={
-                                  exerciseSearches[sectionIndex]?.[exerciseIndex] ??
-                                  ""
-                                }
-                                onSearchChange={(value) => {
-                                  setActiveExercisePosition({
-                                    sectionIndex,
-                                    exerciseIndex,
-                                  });
-                                  setExerciseSearches((prev) =>
-                                    prev.map(
-                                      (sectionSearches, currentSectionIndex) =>
-                                        currentSectionIndex === sectionIndex
-                                          ? sectionSearches.map(
-                                              (search, currentExerciseIndex) =>
-                                                currentExerciseIndex ===
-                                                exerciseIndex
-                                                  ? value
-                                                  : search,
-                                            )
-                                          : sectionSearches,
-                                    ),
-                                  );
-                                  updateExerciseField(
-                                    sectionIndex,
-                                    exerciseIndex,
-                                    "exerciseId",
-                                    "",
-                                  );
-                                }}
-                                onSelect={(option) => {
-                                  setExerciseSearches((prev) =>
-                                    prev.map(
-                                      (sectionSearches, currentSectionIndex) =>
-                                        currentSectionIndex === sectionIndex
-                                          ? sectionSearches.map(
-                                              (search, currentExerciseIndex) =>
-                                                currentExerciseIndex ===
-                                                exerciseIndex
-                                                  ? option.label
-                                                  : search,
-                                            )
-                                          : sectionSearches,
-                                    ),
-                                  );
-                                  updateExerciseField(
-                                    sectionIndex,
-                                    exerciseIndex,
-                                    "exerciseId",
-                                    option.value,
-                                  );
-                                }}
-                                onClear={() => {
-                                  setExerciseSearches((prev) =>
-                                    prev.map(
-                                      (sectionSearches, currentSectionIndex) =>
-                                        currentSectionIndex === sectionIndex
-                                          ? sectionSearches.map(
-                                              (search, currentExerciseIndex) =>
-                                                currentExerciseIndex ===
-                                                exerciseIndex
-                                                  ? ""
-                                                  : search,
-                                            )
-                                          : sectionSearches,
-                                    ),
-                                  );
-                                  updateExerciseField(
-                                    sectionIndex,
-                                    exerciseIndex,
-                                    "exerciseId",
-                                    "",
-                                  );
-                                }}
-                                options={isActiveExercise ? exerciseOptions : []}
-                                loading={isActiveExercise && isFetchingExercises}
-                                placeholder="Digite o nome do exercício"
-                                error={currentErrors.exerciseId}
-                                required
-                              />
-                              <TextField
-                                label="Séries"
-                                id={`section-${sectionIndex}-exercise-${exerciseIndex}-sets`}
-                                type="number"
-                                min={WORKOUT_SHEET_EXERCISE_LIMITS.sets.min}
-                                max={WORKOUT_SHEET_EXERCISE_LIMITS.sets.max}
-                                value={exercise.sets}
-                                onChange={(event) =>
-                                  updateExerciseField(
-                                    sectionIndex,
-                                    exerciseIndex,
-                                    "sets",
-                                    event.target.value,
-                                  )
-                                }
-                                error={currentErrors.sets}
-                                required
-                              />
-                            </div>
-
-                            <div className={styles.row}>
-                              <TextField
-                                label="Repetições"
-                                id={`section-${sectionIndex}-exercise-${exerciseIndex}-repetitions`}
-                                value={exercise.repetitions}
-                                onChange={(event) =>
-                                  updateExerciseField(
-                                    sectionIndex,
-                                    exerciseIndex,
-                                    "repetitions",
-                                    event.target.value,
-                                  )
-                                }
-                                placeholder="10-12"
-                                error={currentErrors.repetitions}
-                                required
-                              />
-                              <TextField
-                                label="Descanso em segundos"
-                                id={`section-${sectionIndex}-exercise-${exerciseIndex}-restSeconds`}
-                                type="number"
-                                min={WORKOUT_SHEET_EXERCISE_LIMITS.restSeconds.min}
-                                max={WORKOUT_SHEET_EXERCISE_LIMITS.restSeconds.max}
-                                value={exercise.restSeconds}
-                                onChange={(event) =>
-                                  updateExerciseField(
-                                    sectionIndex,
-                                    exerciseIndex,
-                                    "restSeconds",
-                                    event.target.value,
-                                  )
-                                }
-                                optional
-                                error={currentErrors.restSeconds}
-                              />
-                            </div>
-
-                            <div className={styles.row}>
-                              <TextField
-                                label="Posição na lista"
-                                id={`section-${sectionIndex}-exercise-${exerciseIndex}-executionOrder`}
-                                type="number"
-                                min={WORKOUT_SHEET_EXERCISE_LIMITS.executionOrder.min}
-                                max={WORKOUT_SHEET_EXERCISE_LIMITS.executionOrder.max}
-                                value={exercise.executionOrder}
-                                onChange={() => undefined}
-                                helperText="A ordem é definida automaticamente pela posição do exercício."
-                                error={currentErrors.executionOrder}
-                                required
-                                readOnly
-                                disabled
-                              />
-                              <TextField
-                                label="Observações do exercício"
-                                id={`section-${sectionIndex}-exercise-${exerciseIndex}-notes`}
-                                value={exercise.notes}
-                                onChange={(event) =>
-                                  updateExerciseField(
-                                    sectionIndex,
-                                    exerciseIndex,
-                                    "notes",
-                                    event.target.value,
-                                  )
-                                }
-                                placeholder="Controlar descida"
-                                optional
-                              />
-                            </div>
-                          </div>
-                        );
-                      })
-                    )}
-                  </div>
-
-                  <div className={styles.addExerciseRow}>
-                    <Button
-                      variant="secondary"
-                      leftIcon={<PlusCircle size={18} />}
-                      onClick={() => addExercise(sectionIndex)}
-                      disabled={isUpdatingSheet}
+                    <span
+                      className={styles.sectionToggleIcon}
+                      aria-hidden="true"
                     >
-                      Adicionar exercício em {section.name || "bloco"}
-                    </Button>
-                  </div>
+                      {expanded ? (
+                        <ChevronUp size={18} />
+                      ) : (
+                        <ChevronDown size={18} />
+                      )}
+                    </span>
+                  </button>
+
+                  {expanded && (
+                    <>
+                      <div className={styles.sectionTopBar}>
+                        <div className={styles.sectionExpandedMeta}>
+                          <p className={styles.sectionMeta}>
+                            {section.exercises.length} exercício(s) neste bloco.
+                          </p>
+                        </div>
+                        {data.sections.length > 1 && (
+                          <Button
+                            variant="ghost"
+                            leftIcon={<Trash2 size={16} />}
+                            onClick={() => removeSection(sectionIndex)}
+                            disabled={isUpdatingSheet}
+                          >
+                            Remover bloco
+                          </Button>
+                        )}
+                      </div>
+
+                      <div className={styles.row}>
+                        <TextField
+                          label="Bloco do treino"
+                          id={`section-${sectionIndex}-name`}
+                          value={section.name}
+                          onChange={(event) =>
+                            updateSectionField(
+                              sectionIndex,
+                              "name",
+                              event.target.value,
+                            )
+                          }
+                          placeholder="Treino A"
+                          error={sectionErrors.name}
+                          required
+                        />
+                        <TextField
+                          label="Descrição do bloco"
+                          id={`section-${sectionIndex}-description`}
+                          value={section.description}
+                          onChange={(event) =>
+                            updateSectionField(
+                              sectionIndex,
+                              "description",
+                              event.target.value,
+                            )
+                          }
+                          placeholder="Peito, ombro e tríceps"
+                          optional
+                        />
+                      </div>
+
+                      <div className={styles.sectionExerciseList}>
+                        {section.exercises.length === 0 ? (
+                          <div className={styles.emptyExerciseState}>
+                            Nenhum exercício neste bloco ainda.
+                          </div>
+                        ) : (
+                          section.exercises.map((exercise, exerciseIndex) => {
+                            const currentErrors =
+                              sectionErrors.exercises?.[exerciseIndex] ?? {};
+                            const isActiveExercise =
+                              activeExercisePosition.sectionIndex ===
+                                sectionIndex &&
+                              activeExercisePosition.exerciseIndex ===
+                                exerciseIndex;
+
+                            return (
+                              <div
+                                className={styles.exerciseCard}
+                                key={exerciseIndex}
+                              >
+                                <div className={styles.exerciseCardHeader}>
+                                  <div>
+                                    <strong className={styles.exerciseTitle}>
+                                      Exercício {exerciseIndex + 1}
+                                    </strong>
+                                    <p className={styles.exerciseMeta}>
+                                      Reorganize pela posição da lista sem
+                                      editar a ordem manualmente.
+                                    </p>
+                                  </div>
+
+                                  <div className={styles.exerciseActions}>
+                                    <Button
+                                      variant="ghost"
+                                      leftIcon={<ArrowUp size={16} />}
+                                      onClick={() =>
+                                        moveExercise(
+                                          sectionIndex,
+                                          exerciseIndex,
+                                          "up",
+                                        )
+                                      }
+                                      disabled={
+                                        exerciseIndex === 0 || isUpdatingSheet
+                                      }
+                                    >
+                                      Subir
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      leftIcon={<ArrowDown size={16} />}
+                                      onClick={() =>
+                                        moveExercise(
+                                          sectionIndex,
+                                          exerciseIndex,
+                                          "down",
+                                        )
+                                      }
+                                      disabled={
+                                        exerciseIndex ===
+                                          section.exercises.length - 1 ||
+                                        isUpdatingSheet
+                                      }
+                                    >
+                                      Descer
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      leftIcon={<Trash2 size={16} />}
+                                      onClick={() =>
+                                        removeExercise(
+                                          sectionIndex,
+                                          exerciseIndex,
+                                        )
+                                      }
+                                      disabled={isUpdatingSheet}
+                                    >
+                                      Remover
+                                    </Button>
+                                  </div>
+                                </div>
+
+                                <div className={styles.row}>
+                                  <Autocomplete
+                                    label="Exercício"
+                                    id={`section-${sectionIndex}-exercise-${exerciseIndex}-exerciseId`}
+                                    search={
+                                      exerciseSearches[sectionIndex]?.[
+                                        exerciseIndex
+                                      ] ?? ""
+                                    }
+                                    onSearchChange={(value) => {
+                                      setActiveExercisePosition({
+                                        sectionIndex,
+                                        exerciseIndex,
+                                      });
+                                      setExerciseSearches((prev) =>
+                                        prev.map(
+                                          (
+                                            sectionSearches,
+                                            currentSectionIndex,
+                                          ) =>
+                                            currentSectionIndex === sectionIndex
+                                              ? sectionSearches.map(
+                                                  (
+                                                    search,
+                                                    currentExerciseIndex,
+                                                  ) =>
+                                                    currentExerciseIndex ===
+                                                    exerciseIndex
+                                                      ? value
+                                                      : search,
+                                                )
+                                              : sectionSearches,
+                                        ),
+                                      );
+                                      updateExerciseField(
+                                        sectionIndex,
+                                        exerciseIndex,
+                                        "exerciseId",
+                                        "",
+                                      );
+                                    }}
+                                    onSelect={(option) => {
+                                      setExerciseSearches((prev) =>
+                                        prev.map(
+                                          (
+                                            sectionSearches,
+                                            currentSectionIndex,
+                                          ) =>
+                                            currentSectionIndex === sectionIndex
+                                              ? sectionSearches.map(
+                                                  (
+                                                    search,
+                                                    currentExerciseIndex,
+                                                  ) =>
+                                                    currentExerciseIndex ===
+                                                    exerciseIndex
+                                                      ? option.label
+                                                      : search,
+                                                )
+                                              : sectionSearches,
+                                        ),
+                                      );
+                                      updateExerciseField(
+                                        sectionIndex,
+                                        exerciseIndex,
+                                        "exerciseId",
+                                        option.value,
+                                      );
+                                    }}
+                                    onClear={() => {
+                                      setExerciseSearches((prev) =>
+                                        prev.map(
+                                          (
+                                            sectionSearches,
+                                            currentSectionIndex,
+                                          ) =>
+                                            currentSectionIndex === sectionIndex
+                                              ? sectionSearches.map(
+                                                  (
+                                                    search,
+                                                    currentExerciseIndex,
+                                                  ) =>
+                                                    currentExerciseIndex ===
+                                                    exerciseIndex
+                                                      ? ""
+                                                      : search,
+                                                )
+                                              : sectionSearches,
+                                        ),
+                                      );
+                                      updateExerciseField(
+                                        sectionIndex,
+                                        exerciseIndex,
+                                        "exerciseId",
+                                        "",
+                                      );
+                                    }}
+                                    options={
+                                      isActiveExercise ? exerciseOptions : []
+                                    }
+                                    loading={
+                                      isActiveExercise && isFetchingExercises
+                                    }
+                                    placeholder="Digite o nome do exercício"
+                                    error={currentErrors.exerciseId}
+                                    required
+                                  />
+                                  <TextField
+                                    label="Séries"
+                                    id={`section-${sectionIndex}-exercise-${exerciseIndex}-sets`}
+                                    type="number"
+                                    min={WORKOUT_SHEET_EXERCISE_LIMITS.sets.min}
+                                    max={WORKOUT_SHEET_EXERCISE_LIMITS.sets.max}
+                                    value={exercise.sets}
+                                    onChange={(event) =>
+                                      updateExerciseField(
+                                        sectionIndex,
+                                        exerciseIndex,
+                                        "sets",
+                                        event.target.value,
+                                      )
+                                    }
+                                    error={currentErrors.sets}
+                                    required
+                                  />
+                                </div>
+
+                                <div className={styles.row}>
+                                  <TextField
+                                    label="Repetições"
+                                    id={`section-${sectionIndex}-exercise-${exerciseIndex}-repetitions`}
+                                    value={exercise.repetitions}
+                                    onChange={(event) =>
+                                      updateExerciseField(
+                                        sectionIndex,
+                                        exerciseIndex,
+                                        "repetitions",
+                                        event.target.value,
+                                      )
+                                    }
+                                    placeholder="10-12"
+                                    error={currentErrors.repetitions}
+                                    required
+                                  />
+                                  <TextField
+                                    label="Descanso em segundos"
+                                    id={`section-${sectionIndex}-exercise-${exerciseIndex}-restSeconds`}
+                                    type="number"
+                                    min={
+                                      WORKOUT_SHEET_EXERCISE_LIMITS.restSeconds
+                                        .min
+                                    }
+                                    max={
+                                      WORKOUT_SHEET_EXERCISE_LIMITS.restSeconds
+                                        .max
+                                    }
+                                    value={exercise.restSeconds}
+                                    onChange={(event) =>
+                                      updateExerciseField(
+                                        sectionIndex,
+                                        exerciseIndex,
+                                        "restSeconds",
+                                        event.target.value,
+                                      )
+                                    }
+                                    optional
+                                    error={currentErrors.restSeconds}
+                                  />
+                                </div>
+
+                                <div className={styles.row}>
+                                  <TextField
+                                    label="Posição na lista"
+                                    id={`section-${sectionIndex}-exercise-${exerciseIndex}-executionOrder`}
+                                    type="number"
+                                    min={
+                                      WORKOUT_SHEET_EXERCISE_LIMITS
+                                        .executionOrder.min
+                                    }
+                                    max={
+                                      WORKOUT_SHEET_EXERCISE_LIMITS
+                                        .executionOrder.max
+                                    }
+                                    value={exercise.executionOrder}
+                                    onChange={() => undefined}
+                                    helperText="A ordem é definida automaticamente pela posição do exercício."
+                                    error={currentErrors.executionOrder}
+                                    required
+                                    readOnly
+                                    disabled
+                                  />
+                                  <TextField
+                                    label="Observações do exercício"
+                                    id={`section-${sectionIndex}-exercise-${exerciseIndex}-notes`}
+                                    value={exercise.notes}
+                                    onChange={(event) =>
+                                      updateExerciseField(
+                                        sectionIndex,
+                                        exerciseIndex,
+                                        "notes",
+                                        event.target.value,
+                                      )
+                                    }
+                                    placeholder="Controlar descida"
+                                    optional
+                                  />
+                                </div>
+                              </div>
+                            );
+                          })
+                        )}
+                      </div>
+
+                      <div className={styles.addExerciseRow}>
+                        <Button
+                          variant="secondary"
+                          leftIcon={<PlusCircle size={18} />}
+                          onClick={() => addExercise(sectionIndex)}
+                          disabled={isUpdatingSheet}
+                        >
+                          Adicionar exercício em {section.name || "bloco"}
+                        </Button>
+                      </div>
+                    </>
+                  )}
                 </div>
               );
             })}
