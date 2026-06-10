@@ -1,4 +1,5 @@
 import type { Payment, PaymentPayFormData } from "@/pages/Payments/types";
+import { studentDeletionEligibilityKeys } from "@/queries/useGetStudentPersonalDataDeletionEligibility";
 import { authFetch } from "@/services/api";
 import { parseApiResponse, type ApiError } from "@/utils/apiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -41,6 +42,9 @@ export function usePayPayment() {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["payments"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: studentDeletionEligibilityKeys.all,
       });
     },
   });
