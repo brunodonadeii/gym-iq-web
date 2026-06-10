@@ -150,18 +150,18 @@
 }
 
 .dangerBadge {
-  background: color-mix(in srgb, #ef4444 12%, var(--surface));
-  color: #ef4444;
+  background: var(--status-red-bg);
+  color: var(--status-red-text);
 }
 
 .successBadge {
-  background: color-mix(in srgb, #22c55e 13%, var(--surface));
-  color: #16a34a;
+  background: var(--status-green-bg);
+  color: var(--status-green-text);
 }
 
 .warningBadge {
-  background: color-mix(in srgb, #f59e0b 14%, var(--surface));
-  color: #d97706;
+  background: var(--status-yellow-bg);
+  color: var(--status-yellow-text);
 }
 
 .list {

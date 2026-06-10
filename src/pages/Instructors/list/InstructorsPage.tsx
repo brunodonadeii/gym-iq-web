@@ -27,8 +27,6 @@ import {
 import { auth } from "@/utils/auth";
 import { useNavigate } from "@tanstack/react-router";
 import {
-  BadgeCheck,
-  BadgeX,
   Eye,
   RotateCcw,
   Search,
@@ -300,11 +298,6 @@ export const InstructorsPage = () => {
                             : styles.statusInactive
                         }`}
                       >
-                        {instructor.active ? (
-                          <BadgeCheck size={14} />
-                        ) : (
-                          <BadgeX size={14} />
-                        )}
                         {instructor.active ? "Ativo" : "Inativo"}
                       </span>
                     </TableCell>
