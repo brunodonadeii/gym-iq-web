@@ -32,6 +32,7 @@ import {
   studentDeletionEligibilityKeys,
   type StudentPersonalDataDeletionEligibility,
 } from "@/queries/useGetStudentPersonalDataDeletionEligibility";
+import { auth } from "@/utils/auth";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import {
@@ -87,10 +88,13 @@ const hasFinancialPendingDeleteError = (error: {
   (error.message ?? "").toLowerCase().includes("pendências financeiras");
 
 export const StudentsPage = () => {
+  const isAdmin = auth.hasAnyRole(["ADMIN"]);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<StudentStatusFilter>("all");
+  const [statusFilter, setStatusFilter] = useState<StudentStatusFilter>(
+    isAdmin ? "all" : "active",
+  );
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
   const [confirmAction, setConfirmAction] = useState<ConfirmAction | null>(
@@ -326,9 +330,13 @@ export const StudentsPage = () => {
                 setPage(0);
               }}
               options={[
-                { label: "Todos", value: "all" },
                 { label: "Ativos", value: "active" },
-                { label: "Inativos", value: "inactive" },
+                ...(isAdmin
+                  ? [
+                      { label: "Inativos", value: "inactive" as const },
+                      { label: "Todos", value: "all" as const },
+                    ]
+                  : []),
               ]}
               containerProps={{ className: styles.filterField }}
             />

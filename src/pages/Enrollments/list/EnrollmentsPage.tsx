@@ -20,7 +20,10 @@ import { useUpdateEnrollmentStatus } from "@/mutations/useUpdateEnrollmentStatus
 import type { Enrollment, EnrollmentStatus } from "@/pages/Enrollments/types";
 import { getStudentOptionLabel } from "@/pages/Students/types";
 import { useGetActiveStudentEnrollment } from "@/queries/useGetActiveStudentEnrollment";
-import { useGetEnrollments } from "@/queries/useGetEnrollments";
+import {
+  type EnrollmentStatusFilter as EnrollmentApiStatusFilter,
+  useGetEnrollments,
+} from "@/queries/useGetEnrollments";
 import { useGetPlans } from "@/queries/useGetPlans";
 import { useGetStudentEnrollments } from "@/queries/useGetStudentEnrollments";
 import { useGetStudentOptions } from "@/queries/useGetStudentOptions";
@@ -111,12 +114,16 @@ export const EnrollmentsPage = () => {
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
   const debouncedStudentSearch = useDebouncedValue(studentSearch);
+  const enrollmentApiStatusFilter =
+    statusFilter === "all"
+      ? undefined
+      : (statusFilter as EnrollmentApiStatusFilter);
 
   const {
     data: allEnrollments,
     isLoading: isLoadingAllEnrollments,
     isFetching: isFetchingAllEnrollments,
-  } = useGetEnrollments({
+  } = useGetEnrollments(enrollmentApiStatusFilter, {
     page,
     size,
     sort: "createdAt,desc",
@@ -155,9 +162,11 @@ export const EnrollmentsPage = () => {
     ? (filteredEnrollments?.content ?? [])
     : (allEnrollments?.content ?? []);
 
-  const enrollments = baseEnrollments.filter((enrollment) =>
-    statusFilter === "all" ? true : enrollment.status === statusFilter,
-  );
+  const enrollments = studentFilterEnabled
+    ? baseEnrollments.filter((enrollment) =>
+        statusFilter === "all" ? true : enrollment.status === statusFilter,
+      )
+    : baseEnrollments;
 
   const currentPage = studentFilterEnabled
     ? filteredEnrollments

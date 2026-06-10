@@ -205,8 +205,12 @@ export const PlansPage = () => {
               }}
               options={[
                 { label: "Ativos", value: "active" },
-                { label: "Inativos", value: "inactive" },
-                { label: "Todos", value: "all" },
+                ...(isAdmin
+                  ? [
+                      { label: "Inativos", value: "inactive" as const },
+                      { label: "Todos", value: "all" as const },
+                    ]
+                  : []),
               ]}
               containerProps={{ className: styles.filterField }}
             />

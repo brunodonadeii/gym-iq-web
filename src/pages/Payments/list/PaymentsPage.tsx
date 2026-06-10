@@ -150,7 +150,7 @@ export const PaymentsPage = () => {
     fetchNextPage: fetchMoreStudents,
   } =
     useGetStudentOptions(debouncedStudentSearch, filterMode === "student");
-  const { data: enrollments } = useGetEnrollments({
+  const { data: enrollments } = useGetEnrollments(undefined, {
     size: 100,
     sort: "createdAt,desc",
   });
