@@ -34,13 +34,34 @@ export const StudentPortalPage = () => {
   const { data: student, isLoading: isLoadingStudent } = useGetStudentMe();
   const { data: activeEnrollment, isLoading: isLoadingActiveEnrollment } =
     useGetMyActiveEnrollment();
-  const { data: enrollments, isLoading: isLoadingEnrollments } =
-    useGetMyEnrollments();
-  const { data: payments, isLoading: isLoadingPayments } = useGetMyPayments();
-  const { data: presences, isLoading: isLoadingPresences } =
-    useGetMyPresences();
-  const { data: workoutSheets, isLoading: isLoadingWorkoutSheets } =
-    useGetMyWorkoutSheets();
+  const {
+    data: enrollments,
+    isLoading: isLoadingEnrollments,
+    isFetchingNextPage: isFetchingMoreEnrollments,
+    hasNextPage: hasMoreEnrollments,
+    fetchNextPage: fetchMoreEnrollments,
+  } = useGetMyEnrollments();
+  const {
+    data: payments,
+    isLoading: isLoadingPayments,
+    isFetchingNextPage: isFetchingMorePayments,
+    hasNextPage: hasMorePayments,
+    fetchNextPage: fetchMorePayments,
+  } = useGetMyPayments();
+  const {
+    data: presences,
+    isLoading: isLoadingPresences,
+    isFetchingNextPage: isFetchingMorePresences,
+    hasNextPage: hasMorePresences,
+    fetchNextPage: fetchMorePresences,
+  } = useGetMyPresences();
+  const {
+    data: workoutSheets,
+    isLoading: isLoadingWorkoutSheets,
+    isFetchingNextPage: isFetchingMoreWorkoutSheets,
+    hasNextPage: hasMoreWorkoutSheets,
+    fetchNextPage: fetchMoreWorkoutSheets,
+  } = useGetMyWorkoutSheets();
   const {
     data: deletionEligibility,
     isLoading: isLoadingDeletionEligibility,
@@ -219,29 +240,45 @@ export const StudentPortalPage = () => {
 
             {isLoadingPayments ? (
               <Skeleton height="180px" radius="18px" />
-            ) : payments?.content.length ? (
-              <div className={styles.list}>
-                {payments.content.map((payment) => (
-                  <div
-                    className={styles.listItem}
-                    key={payment.paymentId ?? payment.id}
-                  >
-                    <div>
-                      <p className={styles.itemTitle}>
-                        {formatCurrency(payment.amount)}
-                      </p>
-                      <p className={styles.itemDescription}>
-                        Vencimento: {formatDate(payment.dueDate)}
-                      </p>
-                    </div>
-                    <span
-                      className={getPaymentStatusClassName(payment.status, styles)}
+            ) : payments.length ? (
+              <>
+                <div className={styles.list}>
+                  {payments.map((payment) => (
+                    <div
+                      className={styles.listItem}
+                      key={payment.paymentId ?? payment.id}
                     >
-                      {paymentStatusLabels[payment.status]}
-                    </span>
+                      <div>
+                        <p className={styles.itemTitle}>
+                          {formatCurrency(payment.amount)}
+                        </p>
+                        <p className={styles.itemDescription}>
+                          Vencimento: {formatDate(payment.dueDate)}
+                        </p>
+                      </div>
+                      <span
+                        className={getPaymentStatusClassName(
+                          payment.status,
+                          styles,
+                        )}
+                      >
+                        {paymentStatusLabels[payment.status]}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                {hasMorePayments && (
+                  <div className={styles.loadMore}>
+                    <Button
+                      variant="secondary"
+                      loading={isFetchingMorePayments}
+                      onClick={() => void fetchMorePayments()}
+                    >
+                      Carregar mais pagamentos
+                    </Button>
                   </div>
-                ))}
-              </div>
+                )}
+              </>
             ) : (
               <div className={styles.empty}>Nenhum pagamento encontrado.</div>
             )}
@@ -252,18 +289,31 @@ export const StudentPortalPage = () => {
 
             {isLoadingPresences ? (
               <Skeleton height="180px" radius="18px" />
-            ) : presences?.content.length ? (
-              <div className={styles.list}>
-                {presences.content.map((presence) => (
-                  <div className={styles.listItem} key={presence.presenceId}>
-                    <div>
-                      <p className={styles.itemTitle}>
-                        {formatDateTime(presence.checkInAt)}
-                      </p>
+            ) : presences.length ? (
+              <>
+                <div className={styles.list}>
+                  {presences.map((presence) => (
+                    <div className={styles.listItem} key={presence.presenceId}>
+                      <div>
+                        <p className={styles.itemTitle}>
+                          {formatDateTime(presence.checkInAt)}
+                        </p>
+                      </div>
                     </div>
+                  ))}
+                </div>
+                {hasMorePresences && (
+                  <div className={styles.loadMore}>
+                    <Button
+                      variant="secondary"
+                      loading={isFetchingMorePresences}
+                      onClick={() => void fetchMorePresences()}
+                    >
+                      Carregar mais presenças
+                    </Button>
                   </div>
-                ))}
-              </div>
+                )}
+              </>
             ) : (
               <div className={styles.empty}>Nenhuma presença encontrada.</div>
             )}
@@ -274,23 +324,36 @@ export const StudentPortalPage = () => {
 
             {isLoadingWorkoutSheets ? (
               <Skeleton height="180px" radius="18px" />
-            ) : workoutSheets?.content.length ? (
-              <div className={styles.list}>
-                {workoutSheets.content.map((sheet) => (
-                  <WorkoutSheetCard
-                    key={sheet.workoutSheetId}
-                    sheet={sheet}
-                    expanded={expandedSheetId === sheet.workoutSheetId}
-                    onToggle={() =>
-                      setExpandedSheetId((current) =>
-                        current === sheet.workoutSheetId
-                          ? null
-                          : sheet.workoutSheetId,
-                      )
-                    }
-                  />
-                ))}
-              </div>
+            ) : workoutSheets.length ? (
+              <>
+                <div className={styles.list}>
+                  {workoutSheets.map((sheet) => (
+                    <WorkoutSheetCard
+                      key={sheet.workoutSheetId}
+                      sheet={sheet}
+                      expanded={expandedSheetId === sheet.workoutSheetId}
+                      onToggle={() =>
+                        setExpandedSheetId((current) =>
+                          current === sheet.workoutSheetId
+                            ? null
+                            : sheet.workoutSheetId,
+                        )
+                      }
+                    />
+                  ))}
+                </div>
+                {hasMoreWorkoutSheets && (
+                  <div className={styles.loadMore}>
+                    <Button
+                      variant="secondary"
+                      loading={isFetchingMoreWorkoutSheets}
+                      onClick={() => void fetchMoreWorkoutSheets()}
+                    >
+                      Carregar mais fichas
+                    </Button>
+                  </div>
+                )}
+              </>
             ) : (
               <div className={styles.empty}>Nenhuma ficha ativa encontrada.</div>
             )}
@@ -301,35 +364,48 @@ export const StudentPortalPage = () => {
 
             {isLoadingEnrollments ? (
               <Skeleton height="160px" radius="18px" />
-            ) : enrollments?.content.length ? (
-              <div className={styles.list}>
-                {enrollments.content.map((enrollment) => (
-                  <div
-                    className={styles.listItem}
-                    key={enrollment.enrollmentId}
-                  >
-                    <div>
-                      <p className={styles.itemTitle}>
-                        {enrollment.plan?.name ??
-                          enrollment.planName ??
-                          `Plano #${enrollment.planId}`}
-                      </p>
-                      <p className={styles.itemDescription}>
-                        {formatDate(enrollment.startDate)} até{" "}
-                        {formatEnrollmentEndDate(enrollment.endDate)}
-                      </p>
-                    </div>
-                    <span
-                      className={getEnrollmentStatusClassName(
-                        enrollment.status,
-                        styles,
-                      )}
+            ) : enrollments.length ? (
+              <>
+                <div className={styles.list}>
+                  {enrollments.map((enrollment) => (
+                    <div
+                      className={styles.listItem}
+                      key={enrollment.enrollmentId}
                     >
-                      {enrollmentStatusLabels[enrollment.status]}
-                    </span>
+                      <div>
+                        <p className={styles.itemTitle}>
+                          {enrollment.plan?.name ??
+                            enrollment.planName ??
+                            `Plano #${enrollment.planId}`}
+                        </p>
+                        <p className={styles.itemDescription}>
+                          {formatDate(enrollment.startDate)} até{" "}
+                          {formatEnrollmentEndDate(enrollment.endDate)}
+                        </p>
+                      </div>
+                      <span
+                        className={getEnrollmentStatusClassName(
+                          enrollment.status,
+                          styles,
+                        )}
+                      >
+                        {enrollmentStatusLabels[enrollment.status]}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                {hasMoreEnrollments && (
+                  <div className={styles.loadMore}>
+                    <Button
+                      variant="secondary"
+                      loading={isFetchingMoreEnrollments}
+                      onClick={() => void fetchMoreEnrollments()}
+                    >
+                      Carregar mais matrículas
+                    </Button>
                   </div>
-                ))}
-              </div>
+                )}
+              </>
             ) : (
               <div className={styles.empty}>Nenhuma matrícula encontrada.</div>
             )}

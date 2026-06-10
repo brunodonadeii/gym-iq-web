@@ -1,33 +1,37 @@
 ﻿import type { Presence } from "@/pages/Presences/types";
 import { authFetch } from "@/services/api";
-import type { PageRequest, PageResponse } from "@/types/pagination";
+import type { PageResponse } from "@/types/pagination";
 import { parseApiResponse } from "@/utils/apiError";
 import { buildPaginationParams } from "@/utils/pagination";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 
-const DEFAULT_MY_PRESENCES_PAGE: PageRequest = {
-  page: 0,
-  size: 5,
-  sort: "checkInAt,desc",
-};
+const PAGE_SIZE = 5;
 
-async function fetchMyPresences(
-  pagination: PageRequest,
-): Promise<PageResponse<Presence>> {
+async function fetchMyPresences(page: number): Promise<PageResponse<Presence>> {
   const response = await authFetch(
-    `presences/me?${buildPaginationParams(pagination)}`,
+    `presences/me?${buildPaginationParams({
+      page,
+      size: PAGE_SIZE,
+      sort: "checkInAt,desc",
+    })}`,
   );
 
   return parseApiResponse(response, "Erro ao buscar minhas presenças");
 }
 
-export function useGetMyPresences(
-  pagination: PageRequest = DEFAULT_MY_PRESENCES_PAGE,
-) {
-  return useQuery({
-    queryKey: ["presences", "me", pagination],
-    queryFn: () => fetchMyPresences(pagination),
+export function useGetMyPresences() {
+  const query = useInfiniteQuery({
+    queryKey: ["presences", "me"],
+    queryFn: ({ pageParam = 0 }) => fetchMyPresences(pageParam),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) =>
+      lastPage.last ? undefined : lastPage.number + 1,
     staleTime: 60 * 1000,
   });
+
+  return {
+    ...query,
+    data: query.data?.pages.flatMap((page) => page.content) ?? [],
+  };
 }
 

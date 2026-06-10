@@ -169,6 +169,12 @@
   gap: 10px;
 }
 
+.loadMore {
+  display: flex;
+  justify-content: center;
+  padding-top: 4px;
+}
+
 .sheetItem {
   display: grid;
   gap: 12px;
