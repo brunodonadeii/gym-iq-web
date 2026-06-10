@@ -16,6 +16,8 @@ import {
   TableSkeletonRows,
 } from "@/components/Table/Table";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import { useActivateWorkoutSheet } from "@/mutations/useActivateWorkoutSheet";
+import { useDeactivateWorkoutSheet } from "@/mutations/useDeactivateWorkoutSheet";
 import { useDeleteWorkoutSheet } from "@/mutations/useDeleteWorkoutSheet";
 import { getStudentOptionLabel } from "@/pages/Students/types";
 import type { WorkoutSheetSummary } from "@/pages/WorkoutSheets/types";
@@ -29,13 +31,23 @@ import { auth } from "@/utils/auth";
 import { formatLocalDate } from "@/utils/date";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
-import { Eye, Pencil, PlusCircle, Trash2 } from "lucide-react";
+import {
+  Eye,
+  Pencil,
+  PlusCircle,
+  RotateCcw,
+  Trash2,
+  UserX,
+} from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import styles from "./WorkoutSheetsPage.module.css";
 
 type WorkoutSheetFilterMode = "all" | "student" | "instructor";
 type WorkoutSheetStatusFilter = "all" | "active" | "inactive";
+type ConfirmAction =
+  | { type: "deactivate"; sheet: WorkoutSheetSummary }
+  | { type: "delete"; sheet: WorkoutSheetSummary };
 
 const sheetColumns = [
   { width: "20%" },
@@ -72,8 +84,9 @@ export const WorkoutSheetsPage = () => {
     useState<WorkoutSheetStatusFilter>("all");
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
-  const [sheetToDelete, setSheetToDelete] =
-    useState<WorkoutSheetSummary | null>(null);
+  const [confirmAction, setConfirmAction] = useState<ConfirmAction | null>(
+    null,
+  );
   const debouncedStudentSearch = useDebouncedValue(studentSearch);
   const debouncedInstructorSearch = useDebouncedValue(instructorSearch);
 
@@ -102,7 +115,8 @@ export const WorkoutSheetsPage = () => {
         ? ({
             mode: "student",
             studentId,
-            onlyActive: statusFilter === "active",
+            onlyActive:
+              statusFilter === "all" ? undefined : statusFilter === "active",
           } as const)
         : filterMode === "instructor"
           ? ({ mode: "instructor", instructorId } as const)
@@ -122,16 +136,15 @@ export const WorkoutSheetsPage = () => {
     size,
     sort: "createdAt,desc",
   });
+  const { mutate: activateWorkoutSheet, isPending: isActivating } =
+    useActivateWorkoutSheet();
+  const { mutate: deactivateWorkoutSheet, isPending: isDeactivating } =
+    useDeactivateWorkoutSheet();
   const { mutate: deleteWorkoutSheet, isPending: isDeleting } =
     useDeleteWorkoutSheet();
   const tableLoading = isLoading;
-  const sheets = (enabled ? (data?.content ?? []) : []).filter((sheet) =>
-    statusFilter === "active"
-      ? sheet.active
-      : statusFilter === "inactive"
-        ? !sheet.active
-        : true,
-  );
+  const sheets = enabled ? (data?.content ?? []) : [];
+  const mutationPending = isActivating || isDeactivating || isDeleting;
 
   useEffect(() => {
     if (!enabled || !data || data.last) return;
@@ -164,22 +177,68 @@ export const WorkoutSheetsPage = () => {
       description: instructor.email,
     })) ?? [];
 
-  const handleDelete = () => {
-    if (!sheetToDelete) return;
-
-    deleteWorkoutSheet(
-      { id: getWorkoutSheetId(sheetToDelete) },
+  const handleActivate = (sheet: WorkoutSheetSummary) => {
+    activateWorkoutSheet(
+      { id: getWorkoutSheetId(sheet) },
       {
         onSuccess: () => {
-          toast.success("Ficha inativada com sucesso!");
-          setSheetToDelete(null);
+          toast.success("Ficha ativada com sucesso!");
         },
         onError: (e) => {
           toast.error(
             <div>
               <strong>{e?.error ?? "Erro"}</strong>
               <br />
-              <span>{e?.message ?? "Erro inesperado"}</span>
+              <span>{e?.message ?? "Não foi possível ativar a ficha."}</span>
+            </div>,
+          );
+        },
+      },
+    );
+  };
+
+  const handleConfirmAction = () => {
+    if (!confirmAction) return;
+
+    const sheetId = getWorkoutSheetId(confirmAction.sheet);
+
+    if (confirmAction.type === "deactivate") {
+      deactivateWorkoutSheet(
+        { id: sheetId },
+        {
+          onSuccess: () => {
+            toast.success("Ficha inativada com sucesso!");
+            setConfirmAction(null);
+          },
+          onError: (e) => {
+            toast.error(
+              <div>
+                <strong>{e?.error ?? "Erro"}</strong>
+                <br />
+                <span>
+                  {e?.message ?? "Não foi possível inativar a ficha."}
+                </span>
+              </div>,
+            );
+          },
+        },
+      );
+      return;
+    }
+
+    deleteWorkoutSheet(
+      { id: sheetId },
+      {
+        onSuccess: () => {
+          toast.success("Ficha excluída com sucesso!");
+          setConfirmAction(null);
+        },
+        onError: (e) => {
+          toast.error(
+            <div>
+              <strong>{e?.error ?? "Erro"}</strong>
+              <br />
+              <span>{e?.message ?? "Não foi possível excluir a ficha."}</span>
             </div>,
           );
         },
@@ -261,6 +320,7 @@ export const WorkoutSheetsPage = () => {
                   setStudentSearch("");
                   setInstructorId("");
                   setInstructorSearch("");
+                  setStatusFilter("all");
                   setPage(0);
                 }}
                 options={[
@@ -272,21 +332,23 @@ export const WorkoutSheetsPage = () => {
                 ]}
                 containerProps={{ className: styles.filterField }}
               />
-              <SelectField
-                label="Status"
-                id="workoutSheetStatusFilter"
-                value={statusFilter}
-                onChange={(e) => {
-                  setStatusFilter(e.target.value as WorkoutSheetStatusFilter);
-                  setPage(0);
-                }}
-                options={[
-                  { label: "Todas", value: "all" },
-                  { label: "Ativas", value: "active" },
-                  { label: "Inativas", value: "inactive" },
-                ]}
-                containerProps={{ className: styles.filterField }}
-              />
+              {filterMode === "student" && (
+                <SelectField
+                  label="Status"
+                  id="workoutSheetStatusFilter"
+                  value={statusFilter}
+                  onChange={(e) => {
+                    setStatusFilter(e.target.value as WorkoutSheetStatusFilter);
+                    setPage(0);
+                  }}
+                  options={[
+                    { label: "Todas", value: "all" },
+                    { label: "Ativas", value: "active" },
+                    { label: "Inativas", value: "inactive" },
+                  ]}
+                  containerProps={{ className: styles.filterField }}
+                />
+              )}
             </>
           }
           action={
@@ -382,13 +444,39 @@ export const WorkoutSheetsPage = () => {
                                   params: { workoutSheetId: sheetId },
                                 }),
                             },
-                            {
-                              label: "Inativar",
-                              icon: <Trash2 size={15} />,
-                              danger: true,
-                              disabled: !sheetId || isDeleting,
-                              onSelect: () => setSheetToDelete(sheet),
-                            },
+                            ...(sheet.active
+                              ? [
+                                  {
+                                    label: "Inativar",
+                                    icon: <UserX size={15} />,
+                                    danger: true,
+                                    disabled: !sheetId || mutationPending,
+                                    onSelect: () =>
+                                      setConfirmAction({
+                                        type: "deactivate",
+                                        sheet,
+                                      }),
+                                  },
+                                ]
+                              : [
+                                  {
+                                    label: "Ativar",
+                                    icon: <RotateCcw size={15} />,
+                                    disabled: !sheetId || mutationPending,
+                                    onSelect: () => handleActivate(sheet),
+                                  },
+                                  {
+                                    label: "Excluir",
+                                    icon: <Trash2 size={15} />,
+                                    danger: true,
+                                    disabled: !sheetId || mutationPending,
+                                    onSelect: () =>
+                                      setConfirmAction({
+                                        type: "delete",
+                                        sheet,
+                                      }),
+                                  },
+                                ]),
                           ]}
                         />
                       </TableCell>
@@ -419,23 +507,38 @@ export const WorkoutSheetsPage = () => {
       </section>
 
       <ConfirmDialog
-        open={!!sheetToDelete}
-        title="Inativar ficha?"
+        open={!!confirmAction}
+        title={
+          confirmAction?.type === "delete"
+            ? "Excluir ficha definitivamente?"
+            : "Inativar ficha?"
+        }
         description={
-          sheetToDelete
+          confirmAction
             ? (
                 <>
-                  A ficha <strong>{sheetToDelete.name}</strong> de{" "}
-                  <strong>{resolveStudentName(sheetToDelete)}</strong> será{" "}
-                  <strong>inativada</strong>.
+                  A ficha <strong>{confirmAction.sheet.name}</strong> de{" "}
+                  <strong>{resolveStudentName(confirmAction.sheet)}</strong>{" "}
+                  será{" "}
+                  <strong>
+                    {confirmAction.type === "delete"
+                      ? "excluída definitivamente"
+                      : "inativada"}
+                  </strong>.
+                  {confirmAction.type === "delete" &&
+                    " Esta ação não pode ser desfeita."}
                 </>
               )
             : ""
         }
-        confirmLabel="Inativar ficha"
-        loading={isDeleting}
-        onCancel={() => setSheetToDelete(null)}
-        onConfirm={handleDelete}
+        confirmLabel={
+          confirmAction?.type === "delete"
+            ? "Excluir ficha"
+            : "Inativar ficha"
+        }
+        loading={isDeactivating || isDeleting}
+        onCancel={() => setConfirmAction(null)}
+        onConfirm={handleConfirmAction}
       />
     </div>
   );
