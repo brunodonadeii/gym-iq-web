@@ -43,6 +43,18 @@ const normalizeResponse = (
   pagination: PageRequest,
 ) => (isPageResponse(response) ? response : paginateLogs(response, pagination));
 
+export const toAuditLogDateTime = (
+  date: string,
+  boundary: "start" | "end",
+) => {
+  const normalizedDate = date.trim();
+  if (!normalizedDate) return undefined;
+
+  return boundary === "start"
+    ? `${normalizedDate}T00:00:00`
+    : `${normalizedDate}T23:59:59.999999999`;
+};
+
 const buildAuditLogsPath = (
   filters: AuditLogFilters,
   pagination: PageRequest,
@@ -59,8 +71,8 @@ const buildAuditLogsPath = (
     action: action || undefined,
     resourceType: resourceType || undefined,
     resourceId: resourceId || undefined,
-    from: from || undefined,
-    to: to || undefined,
+    from: toAuditLogDateTime(from, "start"),
+    to: toAuditLogDateTime(to, "end"),
   });
 
   return `audit-logs${query ? `?${query}` : ""}`;
