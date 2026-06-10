@@ -38,6 +38,7 @@ import { useGetExercises } from "@/queries/useGetExercises";
 import { useGetInstructors } from "@/queries/useGetInstructors";
 import { useGetMyInstructor } from "@/queries/useGetMyInstructor";
 import { useGetStudentOptions } from "@/queries/useGetStudentOptions";
+import { getStudentOptionLabel } from "@/pages/Students/types";
 import { useGetWorkoutSheetById } from "@/queries/useGetWorkoutSheetById";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { Pencil, PlusCircle, Trash2 } from "lucide-react";
@@ -231,7 +232,13 @@ const WorkoutSheetsDetailsContent = ({
   const debouncedExerciseSearch = useDebouncedValue(exerciseSearch);
   const { set: setSheetField } = useFormInputs(setSheetForm);
   const { set: setExerciseField } = useFormInputs(setExerciseForm);
-  const { data: studentOptions, isFetching: isFetchingStudents } =
+  const {
+    data: studentOptions,
+    isFetching: isFetchingStudents,
+    isFetchingNextPage: isFetchingMoreStudents,
+    hasNextPage: hasMoreStudents,
+    fetchNextPage: fetchMoreStudents,
+  } =
     useGetStudentOptions(debouncedStudentSearch);
   const { data: me } = useGetMyInstructor(isInstructor);
   const { data: instructors, isFetching: isFetchingInstructors } =
@@ -293,7 +300,7 @@ const WorkoutSheetsDetailsContent = ({
 
   const autocompleteStudentOptions =
     studentOptions?.map((student) => ({
-      label: student.name,
+      label: getStudentOptionLabel(student),
       value: String(student.studentId),
       description: student.email,
     })) ?? [];
@@ -550,7 +557,12 @@ const WorkoutSheetsDetailsContent = ({
                   setSheetForm((prev) => ({ ...prev, studentId: "" }));
                 }}
                 options={autocompleteStudentOptions}
-                loading={isFetchingStudents}
+                loading={
+                  isFetchingStudents && autocompleteStudentOptions.length === 0
+                }
+                loadingMore={isFetchingMoreStudents}
+                hasMoreOptions={Boolean(hasMoreStudents)}
+                onLoadMore={() => void fetchMoreStudents()}
                 placeholder="Digite o nome ou o CPF/e-mail completos"
                 required
                 error={sheetErrors.studentId}

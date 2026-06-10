@@ -6,6 +6,7 @@ import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useFormInputs } from "@/hooks/useFormInputs";
 import { useCreateEnrollment } from "@/mutations/useCreateEnrollment";
 import type { EnrollmentCreateFormData } from "@/pages/Enrollments/types";
+import { getStudentOptionLabel } from "@/pages/Students/types";
 import { getApiFieldErrors } from "@/utils/apiError";
 import { useGetStudentOptions } from "@/queries/useGetStudentOptions";
 import { useGetPlans } from "@/queries/useGetPlans";
@@ -31,7 +32,13 @@ export const EnrollmentsCreate = () => {
   const { set } = useFormInputs(setData);
   const navigate = useNavigate();
   const { mutate, isPending } = useCreateEnrollment();
-  const { data: studentOptions, isFetching: isFetchingStudentOptions } =
+  const {
+    data: studentOptions,
+    isFetching: isFetchingStudentOptions,
+    isFetchingNextPage: isFetchingMoreStudentOptions,
+    hasNextPage: hasMoreStudentOptions,
+    fetchNextPage: fetchMoreStudentOptions,
+  } =
     useGetStudentOptions(debouncedStudentSearch);
   const { data: plans, isLoading: isLoadingPlans } = useGetPlans("active", "", {
     size: 100,
@@ -42,7 +49,7 @@ export const EnrollmentsCreate = () => {
 
   const autocompleteStudentOptions =
     studentOptions?.map((student) => ({
-      label: student.name,
+      label: getStudentOptionLabel(student),
       value: String(student.studentId),
     })) ?? [];
 
@@ -134,7 +141,12 @@ export const EnrollmentsCreate = () => {
             setData((prev) => ({ ...prev, studentId: "" }));
           }}
           options={autocompleteStudentOptions}
-          loading={isFetchingStudentOptions}
+          loading={
+            isFetchingStudentOptions && autocompleteStudentOptions.length === 0
+          }
+          loadingMore={isFetchingMoreStudentOptions}
+          hasMoreOptions={Boolean(hasMoreStudentOptions)}
+          onLoadMore={() => void fetchMoreStudentOptions()}
           placeholder="Digite nome, CPF ou e-mail"
           error={errors.studentId}
           required

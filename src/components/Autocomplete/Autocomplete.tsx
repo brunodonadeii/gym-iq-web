@@ -1,6 +1,13 @@
 import { Skeleton } from "@/components/Skeleton/Skeleton";
 import { Search, X } from "lucide-react";
-import { useId, useState, type KeyboardEvent } from "react";
+import {
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type UIEvent,
+} from "react";
 import styles from "./Autocomplete.module.css";
 
 export type AutocompleteOption = {
@@ -22,6 +29,11 @@ type AutocompleteProps = {
   helperText?: string;
   error?: string;
   emptyMessage?: string;
+  hasMoreOptions?: boolean;
+  loadingMore?: boolean;
+  onLoadMore?: () => void;
+  loadMoreMessage?: string;
+  searchDebounceMs?: number;
   required?: boolean;
   optional?: boolean;
   containerClassName?: string;
@@ -40,21 +52,28 @@ export const Autocomplete = ({
   helperText,
   error,
   emptyMessage = "Nenhum resultado encontrado.",
+  hasMoreOptions = false,
+  loadingMore = false,
+  onLoadMore,
+  loadMoreMessage = "Role para ver mais",
+  searchDebounceMs = 300,
   required,
   optional = false,
   containerClassName,
 }: AutocompleteProps) => {
+  const [draftSearch, setDraftSearch] = useState(search);
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
+  const listboxRef = useRef<HTMLDivElement | null>(null);
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const generatedId = useId();
   const listboxId = `${id}-${generatedId}-listbox`;
-  const showList = open && (loading || options.length > 0 || Boolean(search));
+  const showList =
+    open && (loading || options.length > 0 || Boolean(draftSearch));
   const safeActiveIndex =
     open && activeIndex >= 0 && activeIndex < options.length ? activeIndex : -1;
   const activeOption =
-    safeActiveIndex >= 0
-      ? options[safeActiveIndex]
-      : undefined;
+    safeActiveIndex >= 0 ? options[safeActiveIndex] : undefined;
   const activeOptionId = activeOption
     ? `${listboxId}-option-${activeOption.value}`
     : undefined;
@@ -64,10 +83,35 @@ export const Autocomplete = ({
       ? `${id}-helper`
       : undefined;
 
+  useEffect(() => {
+    setDraftSearch(search);
+  }, [search]);
+
+  useEffect(() => {
+    if (draftSearch === search) {
+      return;
+    }
+
+    const timeout = window.setTimeout(() => {
+      onSearchChange(draftSearch);
+    }, searchDebounceMs);
+
+    return () => window.clearTimeout(timeout);
+  }, [draftSearch, onSearchChange, search, searchDebounceMs]);
+
   const selectOption = (option: AutocompleteOption) => {
+    setDraftSearch(option.label);
     onSelect(option);
     setOpen(false);
     setActiveIndex(-1);
+  };
+
+  const loadMoreIfNeeded = () => {
+    if (!open || !hasMoreOptions || loading || loadingMore || !onLoadMore) {
+      return;
+    }
+
+    onLoadMore();
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
@@ -80,6 +124,11 @@ export const Autocomplete = ({
       setActiveIndex((current) =>
         current < options.length - 1 ? current + 1 : 0,
       );
+
+      if (activeIndex >= options.length - 2) {
+        loadMoreIfNeeded();
+      }
+
       return;
     }
 
@@ -108,6 +157,46 @@ export const Autocomplete = ({
     }
   };
 
+  const handleListboxScroll = (event: UIEvent<HTMLDivElement>) => {
+    const target = event.currentTarget;
+    const distanceToBottom =
+      target.scrollHeight - target.scrollTop - target.clientHeight;
+
+    if (distanceToBottom <= 32) {
+      loadMoreIfNeeded();
+    }
+  };
+
+  useEffect(() => {
+    if (!open || !hasMoreOptions || loading || loadingMore) {
+      return;
+    }
+
+    const root = listboxRef.current;
+    const target = loadMoreRef.current;
+
+    if (!root || !target) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          loadMoreIfNeeded();
+        }
+      },
+      {
+        root,
+        rootMargin: "0px 0px 48px 0px",
+        threshold: 0.1,
+      },
+    );
+
+    observer.observe(target);
+
+    return () => observer.disconnect();
+  }, [open, hasMoreOptions, loading, loadingMore, options.length]);
+
   return (
     <div
       className={[styles.formGroup, containerClassName]
@@ -133,9 +222,9 @@ export const Autocomplete = ({
         <input
           id={id}
           className={`${styles.input} ${error ? styles.inputError : ""}`}
-          value={search}
+          value={draftSearch}
           onChange={(e) => {
-            onSearchChange(e.target.value);
+            setDraftSearch(e.target.value);
             setOpen(true);
             setActiveIndex(-1);
           }}
@@ -154,12 +243,13 @@ export const Autocomplete = ({
           aria-describedby={describedBy}
         />
 
-        {search && onClear && (
+        {draftSearch && onClear && (
           <button
             type="button"
             className={styles.clearButton}
             onMouseDown={(e) => e.preventDefault()}
             onClick={() => {
+              setDraftSearch("");
               onClear();
               setOpen(false);
               setActiveIndex(-1);
@@ -171,7 +261,13 @@ export const Autocomplete = ({
         )}
 
         {showList && (
-          <div id={listboxId} className={styles.listbox} role="listbox">
+          <div
+            id={listboxId}
+            ref={listboxRef}
+            className={styles.listbox}
+            role="listbox"
+            onScroll={handleListboxScroll}
+          >
             {loading ? (
               <div className={styles.loadingList} aria-label="Carregando opções">
                 <Skeleton height="16px" />
@@ -179,33 +275,48 @@ export const Autocomplete = ({
                 <Skeleton height="16px" />
               </div>
             ) : options.length > 0 ? (
-              options.map((option, index) => {
-                const optionId = `${listboxId}-option-${option.value}`;
-                const active = index === safeActiveIndex;
+              <>
+                {options.map((option, index) => {
+                  const optionId = `${listboxId}-option-${option.value}`;
+                  const active = index === safeActiveIndex;
 
-                return (
-                  <button
-                    id={optionId}
-                    type="button"
-                    key={option.value}
-                    className={`${styles.option} ${
-                      active ? styles.optionActive : ""
-                    }`}
-                    role="option"
-                    aria-selected={active}
-                    onMouseDown={(e) => e.preventDefault()}
-                    onMouseEnter={() => setActiveIndex(index)}
-                    onClick={() => selectOption(option)}
-                  >
-                    <span className={styles.optionLabel}>{option.label}</span>
-                    {option.description && (
-                      <span className={styles.optionDescription}>
-                        {option.description}
-                      </span>
-                    )}
-                  </button>
-                );
-              })
+                  return (
+                    <button
+                      id={optionId}
+                      type="button"
+                      key={option.value}
+                      className={`${styles.option} ${
+                        active ? styles.optionActive : ""
+                      }`}
+                      role="option"
+                      aria-selected={active}
+                      onMouseDown={(e) => e.preventDefault()}
+                      onMouseEnter={() => setActiveIndex(index)}
+                      onClick={() => selectOption(option)}
+                    >
+                      <span className={styles.optionLabel}>{option.label}</span>
+                      {option.description && (
+                        <span className={styles.optionDescription}>
+                          {option.description}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+
+                {(loadingMore || hasMoreOptions) && (
+                  <>
+                    <div className={styles.listStatus} role="status">
+                      {loadingMore ? "Carregando mais..." : loadMoreMessage}
+                    </div>
+                    <div
+                      ref={loadMoreRef}
+                      className={styles.loadMoreSentinel}
+                      aria-hidden="true"
+                    />
+                  </>
+                )}
+              </>
             ) : (
               <div className={styles.emptyState} role="status">
                 {emptyMessage}

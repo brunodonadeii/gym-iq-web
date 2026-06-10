@@ -14,11 +14,17 @@ const renderAutocomplete = ({
   onSearchChange = vi.fn(),
   onSelect = vi.fn(),
   onClear = vi.fn(),
+  onLoadMore = vi.fn(),
+  hasMoreOptions = false,
+  loadingMore = false,
 }: {
   search?: string;
   onSearchChange?: (value: string) => void;
   onSelect?: (option: AutocompleteOption) => void;
   onClear?: () => void;
+  onLoadMore?: () => void;
+  hasMoreOptions?: boolean;
+  loadingMore?: boolean;
 } = {}) => {
   render(
     <Autocomplete
@@ -29,10 +35,13 @@ const renderAutocomplete = ({
       onSearchChange={onSearchChange}
       onSelect={onSelect}
       onClear={onClear}
+      onLoadMore={onLoadMore}
+      hasMoreOptions={hasMoreOptions}
+      loadingMore={loadingMore}
     />,
   );
 
-  return { onSearchChange, onSelect, onClear };
+  return { onSearchChange, onSelect, onClear, onLoadMore };
 };
 
 describe("Autocomplete", () => {
@@ -97,5 +106,29 @@ describe("Autocomplete", () => {
     await user.click(screen.getByRole("button", { name: "Limpar seleção" }));
 
     expect(onClear).toHaveBeenCalledTimes(1);
+  });
+
+  it("requests more options when the list is scrolled to the end", async () => {
+    const user = userEvent.setup();
+    const { onLoadMore } = renderAutocomplete({ hasMoreOptions: true });
+
+    await user.click(screen.getByRole("combobox", { name: "Aluno" }));
+
+    const listbox = screen.getByRole("listbox");
+
+    Object.defineProperty(listbox, "scrollHeight", {
+      value: 400,
+      configurable: true,
+    });
+    Object.defineProperty(listbox, "clientHeight", {
+      value: 200,
+      configurable: true,
+    });
+
+    listbox.scrollTop = 180;
+    listbox.dispatchEvent(new Event("scroll"));
+
+    expect(onLoadMore).toHaveBeenCalledTimes(1);
+    expect(screen.getByText("Role para ver mais")).toBeInTheDocument();
   });
 });

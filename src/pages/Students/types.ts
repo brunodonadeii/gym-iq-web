@@ -43,6 +43,9 @@ export type StudentOption = {
   label: string;
 };
 
+export const getStudentOptionLabel = (student: StudentOption) =>
+  student.label?.trim() || student.name;
+
 const ANONYMIZED_SENTINELS = new Set([
   "ANONYMIZED",
   "CPF ANONYMIZED",

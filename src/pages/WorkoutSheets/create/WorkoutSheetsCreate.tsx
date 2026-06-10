@@ -5,6 +5,7 @@ import { TextField } from "@/components/TextField/TextField";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useFormInputs } from "@/hooks/useFormInputs";
 import { useCreateWorkoutSheet } from "@/mutations/useCreateWorkoutSheet";
+import { getStudentOptionLabel } from "@/pages/Students/types";
 import type {
   WorkoutSheetExerciseFormData,
   WorkoutSheetFormData,
@@ -196,7 +197,13 @@ export const WorkoutSheetsCreate = () => {
   const { set } = useFormInputs(setData);
   const navigate = useNavigate();
   const { mutate, isPending } = useCreateWorkoutSheet();
-  const { data: studentOptions, isFetching: isFetchingStudents } =
+  const {
+    data: studentOptions,
+    isFetching: isFetchingStudents,
+    isFetchingNextPage: isFetchingMoreStudents,
+    hasNextPage: hasMoreStudents,
+    fetchNextPage: fetchMoreStudents,
+  } =
     useGetStudentOptions(debouncedStudentSearch);
   const { data: me, isLoading: isLoadingMyInstructor } =
     useGetMyInstructor(isInstructor);
@@ -216,7 +223,7 @@ export const WorkoutSheetsCreate = () => {
 
   const autocompleteStudentOptions =
     studentOptions?.map((student) => ({
-      label: student.name,
+      label: getStudentOptionLabel(student),
       value: String(student.studentId),
       description: student.email,
     })) ?? [];
@@ -495,7 +502,10 @@ export const WorkoutSheetsCreate = () => {
             setData((prev) => ({ ...prev, studentId: "" }));
           }}
           options={autocompleteStudentOptions}
-          loading={isFetchingStudents}
+          loading={isFetchingStudents && autocompleteStudentOptions.length === 0}
+          loadingMore={isFetchingMoreStudents}
+          hasMoreOptions={Boolean(hasMoreStudents)}
+          onLoadMore={() => void fetchMoreStudents()}
           placeholder="Digite o nome ou o CPF/e-mail completos"
           error={errors.studentId}
           required
@@ -871,4 +881,3 @@ export const WorkoutSheetsCreate = () => {
     </Form>
   );
 };
-

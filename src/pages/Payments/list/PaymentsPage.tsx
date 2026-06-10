@@ -25,6 +25,7 @@ import type {
   PaymentPayFormData,
   PaymentStatus,
 } from "@/pages/Payments/types";
+import { getStudentOptionLabel } from "@/pages/Students/types";
 import { useGetEnrollments } from "@/queries/useGetEnrollments";
 import { useGetPayments } from "@/queries/useGetPayments";
 import { useGetStudentOptions } from "@/queries/useGetStudentOptions";
@@ -141,7 +142,13 @@ export const PaymentsPage = () => {
   >({});
   const debouncedStudentSearch = useDebouncedValue(studentSearch);
 
-  const { data: students, isFetching: isFetchingStudents } =
+  const {
+    data: students,
+    isFetching: isFetchingStudents,
+    isFetchingNextPage: isFetchingMoreStudents,
+    hasNextPage: hasMoreStudents,
+    fetchNextPage: fetchMoreStudents,
+  } =
     useGetStudentOptions(debouncedStudentSearch, filterMode === "student");
   const { data: enrollments } = useGetEnrollments({
     size: 100,
@@ -191,7 +198,7 @@ export const PaymentsPage = () => {
 
   const studentOptions =
     students?.map((student) => ({
-      label: student.name,
+      label: getStudentOptionLabel(student),
       value: String(student.studentId),
       description: student.email,
     })) ?? [];
@@ -432,7 +439,10 @@ export const PaymentsPage = () => {
                 setStudentId("");
                 setPage(0);
               }}
-              loading={isFetchingStudents}
+              loading={isFetchingStudents && studentOptions.length === 0}
+              loadingMore={isFetchingMoreStudents}
+              hasMoreOptions={Boolean(hasMoreStudents)}
+              onLoadMore={() => void fetchMoreStudents()}
               placeholder="Digite o nome ou o CPF/e-mail completos"
               emptyMessage="Nenhum aluno encontrado."
               containerClassName={styles.filterFieldLarge}

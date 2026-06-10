@@ -70,5 +70,3 @@ export const Dropdown = ({
     </DropdownMenu.Root>
   );
 };
-
-

@@ -17,6 +17,7 @@ import {
 } from "@/components/Table/Table";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useDeleteWorkoutSheet } from "@/mutations/useDeleteWorkoutSheet";
+import { getStudentOptionLabel } from "@/pages/Students/types";
 import type { WorkoutSheetSummary } from "@/pages/WorkoutSheets/types";
 import { useGetInstructors } from "@/queries/useGetInstructors";
 import { useGetStudentOptions } from "@/queries/useGetStudentOptions";
@@ -84,7 +85,13 @@ export const WorkoutSheetsPage = () => {
   const debouncedStudentSearch = useDebouncedValue(studentSearch);
   const debouncedInstructorSearch = useDebouncedValue(instructorSearch);
 
-  const { data: studentOptions, isFetching: isFetchingStudents } =
+  const {
+    data: studentOptions,
+    isFetching: isFetchingStudents,
+    isFetchingNextPage: isFetchingMoreStudents,
+    hasNextPage: hasMoreStudents,
+    fetchNextPage: fetchMoreStudents,
+  } =
     useGetStudentOptions(debouncedStudentSearch, filterMode === "student");
   const { data: instructors, isFetching: isFetchingInstructors } =
     useGetInstructors(
@@ -153,7 +160,7 @@ export const WorkoutSheetsPage = () => {
 
   const autocompleteStudentOptions =
     studentOptions?.map((student) => ({
-      label: student.name,
+      label: getStudentOptionLabel(student),
       value: String(student.studentId),
       description: student.email,
     })) ?? [];
@@ -214,7 +221,12 @@ export const WorkoutSheetsPage = () => {
                   setPage(0);
                 }}
                 options={autocompleteStudentOptions}
-                loading={isFetchingStudents}
+                loading={
+                  isFetchingStudents && autocompleteStudentOptions.length === 0
+                }
+                loadingMore={isFetchingMoreStudents}
+                hasMoreOptions={Boolean(hasMoreStudents)}
+                onLoadMore={() => void fetchMoreStudents()}
                 placeholder="Digite o nome ou o CPF/e-mail completos"
                 containerClassName={styles.filterFieldLarge}
               />

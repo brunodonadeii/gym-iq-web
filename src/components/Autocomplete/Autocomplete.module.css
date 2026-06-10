@@ -139,7 +139,8 @@
 .optionDescription,
 .helperText,
 .errorText,
-.emptyState {
+.emptyState,
+.listStatus {
   color: var(--muted);
   font-size: 0.84rem;
   line-height: 1.45;
@@ -153,6 +154,16 @@
 .emptyState,
 .loadingList {
   padding: 12px;
+}
+
+.listStatus {
+  padding: 10px 12px 6px;
+  text-align: center;
+}
+
+.loadMoreSentinel {
+  width: 100%;
+  height: 1px;
 }
 
 .loadingList {

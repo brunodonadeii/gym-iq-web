@@ -18,6 +18,7 @@ import {
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useUpdateEnrollmentStatus } from "@/mutations/useUpdateEnrollmentStatus";
 import type { Enrollment, EnrollmentStatus } from "@/pages/Enrollments/types";
+import { getStudentOptionLabel } from "@/pages/Students/types";
 import { useGetActiveStudentEnrollment } from "@/queries/useGetActiveStudentEnrollment";
 import { useGetEnrollments } from "@/queries/useGetEnrollments";
 import { useGetPlans } from "@/queries/useGetPlans";
@@ -120,7 +121,13 @@ export const EnrollmentsPage = () => {
     size,
     sort: "createdAt,desc",
   });
-  const { data: studentOptions, isFetching: isFetchingStudentOptions } =
+  const {
+    data: studentOptions,
+    isFetching: isFetchingStudentOptions,
+    isFetchingNextPage: isFetchingMoreStudentOptions,
+    hasNextPage: hasMoreStudentOptions,
+    fetchNextPage: fetchMoreStudentOptions,
+  } =
     useGetStudentOptions(debouncedStudentSearch);
   const { data: plans } = useGetPlans("active", "", {
     size: 100,
@@ -165,7 +172,7 @@ export const EnrollmentsPage = () => {
 
   const autocompleteStudentOptions =
     studentOptions?.map((student) => ({
-      label: student.name,
+      label: getStudentOptionLabel(student),
       value: String(student.studentId),
     })) ?? [];
 
@@ -294,7 +301,12 @@ export const EnrollmentsPage = () => {
                 setPage(0);
               }}
               options={autocompleteStudentOptions}
-              loading={isFetchingStudentOptions}
+              loading={
+                isFetchingStudentOptions && autocompleteStudentOptions.length === 0
+              }
+              loadingMore={isFetchingMoreStudentOptions}
+              hasMoreOptions={Boolean(hasMoreStudentOptions)}
+              onLoadMore={() => void fetchMoreStudentOptions()}
               placeholder="Buscar por nome ou por CPF/e-mail completos"
               containerClassName={styles.filterFieldLarge}
             />
