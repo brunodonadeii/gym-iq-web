@@ -1,4 +1,5 @@
-﻿import { Button } from "@/components/Button/Button";
+import { Button } from "@/components/Button/Button";
+import { ConfirmDialog } from "@/components/ConfirmDialog/ConfirmDialog";
 import { Dropdown, type DropdownItem } from "@/components/Dropdown/Dropdown";
 import { ListToolbar } from "@/components/ListToolbar/ListToolbar";
 import { Pagination } from "@/components/Pagination/Pagination";
@@ -15,6 +16,8 @@ import {
   TableSkeletonRows,
 } from "@/components/Table/Table";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import { useActivateInstructor } from "@/mutations/useActivateInstructor";
+import { useDeactivateInstructor } from "@/mutations/useDeactivateInstructor";
 import { useDeleteInstructor } from "@/mutations/useDeleteInstructor";
 import type { Instructor } from "@/pages/Instructors/types";
 import {
@@ -27,9 +30,11 @@ import {
   BadgeCheck,
   BadgeX,
   Eye,
+  RotateCcw,
   Search,
   Trash2,
   UserRoundPlus,
+  UserX,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -58,6 +63,10 @@ const formatDate = (value?: string) =>
       })
     : "Não informado";
 
+type ConfirmAction =
+  | { type: "deactivate"; instructor: Instructor }
+  | { type: "delete"; instructor: Instructor };
+
 export const InstructorsPage = () => {
   const isAdmin = auth.hasAnyRole(["ADMIN"]);
   const navigate = useNavigate();
@@ -66,6 +75,7 @@ export const InstructorsPage = () => {
     useState<InstructorStatusFilter>("ACTIVE");
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
+  const [confirmAction, setConfirmAction] = useState<ConfirmAction | null>(null);
   const debouncedSearch = useDebouncedValue(search);
   const { data, isLoading, isFetching } = useGetInstructors(
     debouncedSearch,
@@ -77,16 +87,22 @@ export const InstructorsPage = () => {
     },
   );
   const instructors = data?.content ?? [];
+  const { mutate: activateInstructor, isPending: isActivating } =
+    useActivateInstructor();
+  const { mutate: deactivateInstructor, isPending: isDeactivating } =
+    useDeactivateInstructor();
   const { mutate: deleteInstructor, isPending: isDeleting } =
     useDeleteInstructor();
+  const mutationPending = isActivating || isDeactivating || isDeleting;
   const tableLoading = isLoading || isFetching;
 
-  const handleDelete = (instructor: Instructor) => {
-    deleteInstructor(
+  const handleDeactivate = (instructor: Instructor) => {
+    deactivateInstructor(
       { id: String(instructor.instructorId) },
       {
         onSuccess: () => {
           toast.success("Instrutor inativado com sucesso!");
+          setConfirmAction(null);
         },
         onError: (e) => {
           toast.error(
@@ -103,6 +119,58 @@ export const InstructorsPage = () => {
     );
   };
 
+  const handleActivate = (instructor: Instructor) => {
+    activateInstructor(
+      { id: String(instructor.instructorId) },
+      {
+        onSuccess: () => {
+          toast.success("Instrutor ativado com sucesso!");
+        },
+        onError: (e) => {
+          toast.error(
+            <div>
+              <strong>{e?.error ?? "Erro"}</strong>
+              <br />
+              <span>{e?.message ?? "Não foi possível ativar o instrutor."}</span>
+            </div>,
+          );
+        },
+      },
+    );
+  };
+
+  const handleDelete = (instructor: Instructor) => {
+    deleteInstructor(
+      { id: String(instructor.instructorId) },
+      {
+        onSuccess: () => {
+          toast.success("Instrutor excluído com sucesso!");
+          setConfirmAction(null);
+        },
+        onError: (e) => {
+          toast.error(
+            <div>
+              <strong>{e?.error ?? "Erro"}</strong>
+              <br />
+              <span>{e?.message ?? "Não foi possível excluir o instrutor."}</span>
+            </div>,
+          );
+        },
+      },
+    );
+  };
+
+  const handleConfirmAction = () => {
+    if (!confirmAction) return;
+
+    if (confirmAction.type === "deactivate") {
+      handleDeactivate(confirmAction.instructor);
+      return;
+    }
+
+    handleDelete(confirmAction.instructor);
+  };
+
   const getInstructorActions = (instructor: Instructor): DropdownItem[] => [
     {
       label: isAdmin ? "Detalhes / editar" : "Detalhes",
@@ -114,15 +182,32 @@ export const InstructorsPage = () => {
         }),
     },
     ...(isAdmin
-      ? [
-          {
-            label: "Inativar",
-            icon: <Trash2 size={15} />,
-            danger: true,
-            disabled: !instructor.active || isDeleting,
-            onSelect: () => handleDelete(instructor),
-          } satisfies DropdownItem,
-        ]
+      ? instructor.active
+        ? [
+            {
+              label: "Inativar",
+              icon: <UserX size={15} />,
+              danger: true,
+              disabled: mutationPending,
+              onSelect: () =>
+                setConfirmAction({ type: "deactivate", instructor }),
+            } satisfies DropdownItem,
+          ]
+        : [
+            {
+              label: "Ativar",
+              icon: <RotateCcw size={15} />,
+              disabled: mutationPending,
+              onSelect: () => handleActivate(instructor),
+            } satisfies DropdownItem,
+            {
+              label: "Excluir",
+              icon: <Trash2 size={15} />,
+              danger: true,
+              disabled: mutationPending,
+              onSelect: () => setConfirmAction({ type: "delete", instructor }),
+            } satisfies DropdownItem,
+          ]
       : []),
   ];
 
@@ -250,8 +335,43 @@ export const InstructorsPage = () => {
           }}
         />
       </section>
+
+      <ConfirmDialog
+        open={!!confirmAction}
+        title={
+          confirmAction?.type === "delete"
+            ? "Excluir instrutor?"
+            : "Inativar instrutor?"
+        }
+        description={
+          confirmAction?.type === "delete"
+            ? (
+                <>
+                  O instrutor{" "}
+                  <strong>{confirmAction.instructor.name}</strong> será{" "}
+                  <strong>excluído definitivamente</strong>.
+                </>
+              )
+            : confirmAction
+              ? (
+                  <>
+                    O instrutor{" "}
+                    <strong>{confirmAction.instructor.name}</strong> será{" "}
+                    <strong>inativado</strong> e deixará de participar do
+                    sistema até uma nova ativação.
+                  </>
+                )
+              : ""
+        }
+        confirmLabel={
+          confirmAction?.type === "delete"
+            ? "Excluir instrutor"
+            : "Inativar instrutor"
+        }
+        loading={mutationPending}
+        onCancel={() => setConfirmAction(null)}
+        onConfirm={handleConfirmAction}
+      />
     </div>
   );
 };
-
-
