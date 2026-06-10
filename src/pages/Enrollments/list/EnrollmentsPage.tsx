@@ -141,24 +141,23 @@ export const EnrollmentsPage = () => {
     data: filteredEnrollments,
     isLoading: isLoadingStudentEnrollments,
     isFetching: isFetchingStudentEnrollments,
-  } = useGetStudentEnrollments(selectedStudentId, studentFilterEnabled, {
-    page,
-    size,
-    sort: "createdAt,desc",
-  });
+  } = useGetStudentEnrollments(
+    selectedStudentId,
+    enrollmentApiStatusFilter,
+    studentFilterEnabled,
+    {
+      page,
+      size,
+      sort: "createdAt,desc",
+    },
+  );
 
   const { data: activeEnrollment, isLoading: isLoadingActiveEnrollment } =
     useGetActiveStudentEnrollment(selectedStudentId, studentFilterEnabled);
 
-  const baseEnrollments = studentFilterEnabled
+  const enrollments = studentFilterEnabled
     ? (filteredEnrollments?.content ?? [])
     : (allEnrollments?.content ?? []);
-
-  const enrollments = studentFilterEnabled
-    ? baseEnrollments.filter((enrollment) =>
-        statusFilter === "all" ? true : enrollment.status === statusFilter,
-      )
-    : baseEnrollments;
 
   const currentPage = studentFilterEnabled
     ? filteredEnrollments

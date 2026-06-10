@@ -5,11 +5,14 @@ import { parseApiResponse } from "@/utils/apiError";
 import { buildPaginationParams } from "@/utils/pagination";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
+export type AdminUserRoleFilter = "ALL" | AdminUser["role"];
+
 async function fetchAdminUsers(
+  role: AdminUserRoleFilter,
   pagination: PageRequest,
 ): Promise<PageResponse<AdminUser>> {
   const response = await authFetch(
-    `users?${buildPaginationParams(pagination)}`,
+    `users?${buildPaginationParams(pagination, { role })}`,
   );
 
   return parseApiResponse(response, "Erro ao buscar usuários administrativos");
@@ -38,6 +41,7 @@ const paginateUsers = (
 
 async function searchAdminUsers(
   search: string,
+  role: AdminUserRoleFilter,
   pagination: PageRequest,
 ): Promise<PageResponse<AdminUser>> {
   const normalizedSearch = search.trim().toLowerCase();
@@ -46,7 +50,7 @@ async function searchAdminUsers(
   let last = false;
 
   while (!last) {
-    const response = await fetchAdminUsers({
+    const response = await fetchAdminUsers(role, {
       ...pagination,
       page: currentPage,
       size: 100,
@@ -69,13 +73,17 @@ async function searchAdminUsers(
   );
 }
 
-export function useGetAdminUsers(search: string, pagination: PageRequest) {
+export function useGetAdminUsers(
+  search: string,
+  role: AdminUserRoleFilter,
+  pagination: PageRequest,
+) {
   return useQuery({
-    queryKey: ["users", search, pagination],
+    queryKey: ["users", search, role, pagination],
     queryFn: () =>
       search.trim()
-        ? searchAdminUsers(search, pagination)
-        : fetchAdminUsers(pagination),
+        ? searchAdminUsers(search, role, pagination)
+        : fetchAdminUsers(role, pagination),
     placeholderData: keepPreviousData,
     staleTime: 5 * 60 * 1000,
     gcTime: 15 * 60 * 1000,

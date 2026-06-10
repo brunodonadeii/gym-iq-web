@@ -13,10 +13,13 @@ const DEFAULT_STUDENT_ENROLLMENTS_PAGE: PageRequest = {
 
 async function fetchStudentEnrollments(
   studentId: string,
+  status: Enrollment["status"] | undefined,
   pagination: PageRequest,
 ): Promise<PageResponse<Enrollment>> {
   const response = await authFetch(
-    `enrollments/student/${studentId}?${buildPaginationParams(pagination)}`,
+    `enrollments/student/${studentId}?${buildPaginationParams(pagination, {
+      status,
+    })}`,
   );
 
   return parseApiResponse<PageResponse<Enrollment>>(response, "Erro ao buscar matrículas do aluno");
@@ -24,12 +27,13 @@ async function fetchStudentEnrollments(
 
 export function useGetStudentEnrollments(
   studentId: string,
+  status: Enrollment["status"] | undefined,
   enabled: boolean,
   pagination: PageRequest = DEFAULT_STUDENT_ENROLLMENTS_PAGE,
 ) {
   return useQuery({
-    queryKey: ["enrollments", "student", studentId, pagination],
-    queryFn: () => fetchStudentEnrollments(studentId, pagination),
+    queryKey: ["enrollments", "student", studentId, status, pagination],
+    queryFn: () => fetchStudentEnrollments(studentId, status, pagination),
     enabled,
     placeholderData: keepPreviousData,
     staleTime: 5 * 60 * 1000,

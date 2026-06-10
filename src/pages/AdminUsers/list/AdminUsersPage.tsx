@@ -18,7 +18,10 @@ import {
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useDeleteAdminUser } from "@/mutations/useDeleteAdminUser";
 import type { AdminUser, AdminUserRole } from "@/pages/AdminUsers/types";
-import { useGetAdminUsers } from "@/queries/useGetAdminUsers";
+import {
+  type AdminUserRoleFilter,
+  useGetAdminUsers,
+} from "@/queries/useGetAdminUsers";
 import { auth } from "@/utils/auth";
 import { useNavigate } from "@tanstack/react-router";
 import { Pencil, PlusCircle, Search, Trash2 } from "lucide-react";
@@ -55,21 +58,24 @@ export const AdminUsersPage = () => {
   const currentUserId = auth.userId;
   const currentUserEmail = auth.email;
   const [search, setSearch] = useState("");
-  const [roleFilter, setRoleFilter] = useState<"all" | AdminUserRole>("all");
+  const [roleFilter, setRoleFilter] =
+    useState<AdminUserRoleFilter>("ALL");
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
   const [userToDelete, setUserToDelete] = useState<AdminUser | null>(null);
   const debouncedSearch = useDebouncedValue(search);
-  const { data, isLoading, isFetching } = useGetAdminUsers(debouncedSearch, {
-    page,
-    size,
-    sort: "createdAt,desc",
-  });
+  const { data, isLoading, isFetching } = useGetAdminUsers(
+    debouncedSearch,
+    roleFilter,
+    {
+      page,
+      size,
+      sort: "createdAt,desc",
+    },
+  );
   const { mutate: deleteAdminUser, isPending: isDeleting } =
     useDeleteAdminUser();
-  const users = (data?.content ?? []).filter((user) =>
-    roleFilter === "all" ? true : user.role === roleFilter,
-  );
+  const users = data?.content ?? [];
 
   const handleDelete = () => {
     if (!userToDelete) return;
@@ -116,11 +122,11 @@ export const AdminUsersPage = () => {
               id="adminUserRoleFilter"
               value={roleFilter}
               onChange={(e) => {
-                setRoleFilter(e.target.value as "all" | AdminUserRole);
+                setRoleFilter(e.target.value as AdminUserRoleFilter);
                 setPage(0);
               }}
               options={[
-                { label: "Todos", value: "all" },
+                { label: "Todos", value: "ALL" },
                 { label: "Administrador", value: "ADMIN" },
                 { label: "Recepção", value: "RECEPTION" },
               ]}
