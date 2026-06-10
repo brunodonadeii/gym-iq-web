@@ -126,7 +126,7 @@ describe("TextField", () => {
   });
 
   it("forwards container attributes and disabled state", () => {
-    render(
+    const { container } = render(
       <TextField
         id="cpf"
         label="CPF"
@@ -135,14 +135,15 @@ describe("TextField", () => {
         disabled
         containerProps={{
           className: "document-field",
-          "data-testid": "field-container",
+          title: "Campo de documento",
         }}
       />,
     );
 
     expect(screen.getByRole("textbox", { name: "CPF" })).toBeDisabled();
-    expect(screen.getByTestId("field-container")).toHaveClass(
-      "document-field",
+    expect(container.querySelector(".document-field")).toHaveAttribute(
+      "title",
+      "Campo de documento",
     );
   });
 });
