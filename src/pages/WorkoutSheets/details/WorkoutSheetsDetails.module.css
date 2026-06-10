@@ -4,12 +4,6 @@
   gap: 24px;
 }
 
-.editorForm {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
 .card {
   padding: 24px;
   background: var(--surface);
@@ -18,12 +12,83 @@
   box-shadow: var(--shadow-sm);
 }
 
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.title {
+  color: var(--text-primary);
+  font-size: 1.4rem;
+  font-weight: 800;
+}
+
+.subtitle {
+  margin-top: 8px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.skeletonGrid,
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.infoCard,
+.notesCard,
+.blockCard {
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--surface-alt);
+}
+
+.infoCard {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.infoLabel {
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.infoValue {
+  color: var(--text-primary);
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.infoHint {
+  color: var(--text-secondary);
+  font-size: 0.92rem;
+}
+
+.notesCard {
+  margin-top: 16px;
+  padding: 18px;
+}
+
+.notesText {
+  margin-top: 10px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
 .sectionHeader {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 18px;
 }
 
 .sectionTitle {
@@ -39,79 +104,26 @@
   line-height: 1.6;
 }
 
-.row {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-}
-
-.row + .row {
-  margin-top: 16px;
-}
-
-.exerciseList {
+.blockList {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  margin-top: 20px;
 }
 
-.sectionCard {
-  padding: 18px;
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  background: var(--surface-alt);
+.blockCard {
+  padding: 20px;
 }
 
-.sectionToggle {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: inherit;
-  text-align: left;
-  cursor: pointer;
-}
-
-.sectionToggleContent {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.sectionToggleTitle {
-  color: var(--text-primary);
-  font-size: 1rem;
-  font-weight: 700;
-}
-
-.sectionToggleIcon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  color: var(--text-secondary);
-  background: var(--surface);
-  flex-shrink: 0;
-}
-
-.sectionTopBar {
+.blockHeader {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 16px;
-  margin-top: 16px;
 }
 
-.sectionBadge {
+.blockOrder,
+.blockCount {
   display: inline-flex;
   align-items: center;
   padding: 6px 10px;
@@ -120,75 +132,73 @@
   color: var(--primary);
   font-size: 0.78rem;
   font-weight: 800;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
 }
 
-.sectionMeta {
+.blockTitle {
+  margin-top: 12px;
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.blockDescription {
   margin-top: 8px;
-  color: var(--muted);
-  font-size: 0.92rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
 }
 
-.sectionExpandedMeta {
-  display: flex;
-  align-items: center;
-}
-
-.sectionExerciseList {
+.exerciseList {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  margin-top: 16px;
+  gap: 12px;
+  margin-top: 18px;
 }
 
-.exerciseCard {
+.exerciseRow {
   padding: 16px;
   border: 1px solid var(--border);
   border-radius: 16px;
   background: var(--surface);
 }
 
-.exerciseCardHeader {
+.exerciseMain {
   display: flex;
-  align-items: flex-start;
+  align-items: baseline;
   justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 16px;
+  gap: 12px;
 }
 
-.exerciseTitle {
-  display: block;
+.exerciseName {
   color: var(--text-primary);
-  font-size: 1rem;
   font-weight: 700;
 }
 
 .exerciseMeta {
-  margin-top: 6px;
   color: var(--muted);
-  font-size: 0.88rem;
-  line-height: 1.5;
+  font-size: 0.9rem;
 }
 
-.exerciseActions {
+.exerciseStats {
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 8px;
+  gap: 10px 18px;
+  margin-top: 10px;
+  color: var(--text-secondary);
+  font-size: 0.92rem;
 }
 
-.addExerciseRow {
-  display: flex;
-  justify-content: center;
-  margin-top: 18px;
+.exerciseNotes {
+  margin-top: 10px;
+  color: var(--muted);
+  line-height: 1.6;
 }
 
+.emptyState,
 .emptyExerciseState {
   padding: 18px;
   border: 1px dashed var(--border);
-  border-radius: 14px;
-  background: var(--surface);
+  border-radius: 16px;
+  background: var(--surface-alt);
   color: var(--muted);
   text-align: center;
 }
@@ -199,34 +209,21 @@
   gap: 12px;
 }
 
-.skeletonStack {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
 @media (max-width: 768px) {
+  .header,
   .sectionHeader,
-  .sectionToggle,
-  .sectionTopBar,
-  .exerciseCardHeader {
+  .blockHeader,
+  .exerciseMain,
+  .actions {
     flex-direction: column;
-    align-items: stretch;
   }
 
-  .row {
+  .skeletonGrid,
+  .infoGrid {
     grid-template-columns: 1fr;
   }
 
-  .exerciseActions,
-  .actions,
-  .addExerciseRow {
-    justify-content: stretch;
-  }
-
-  .exerciseActions :global(button),
-  .actions :global(button),
-  .addExerciseRow :global(button) {
+  .actions :global(button) {
     width: 100%;
   }
 }

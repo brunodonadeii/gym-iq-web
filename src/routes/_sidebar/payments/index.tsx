@@ -14,7 +14,6 @@ const paymentFilterModes = new Set<PaymentFilterMode>([
   "all",
   "student",
   "enrollment",
-  "overdue",
 ]);
 
 const paymentStatusFilters = new Set<PaymentStatusFilter>([

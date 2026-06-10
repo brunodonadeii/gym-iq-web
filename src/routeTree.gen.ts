@@ -50,6 +50,8 @@ import { Route as SidebarEnrollmentsCreateRouteImport } from './routes/_sidebar/
 import { Route as SidebarEnrollmentsEnrollmentIdRouteImport } from './routes/_sidebar/enrollments/$enrollmentId'
 import { Route as SidebarAdminUsersCreateRouteImport } from './routes/_sidebar/admin-users/create'
 import { Route as SidebarAdminUsersUserIdRouteImport } from './routes/_sidebar/admin-users/$userId'
+import { Route as SidebarWorkoutSheetsWorkoutSheetIdIndexRouteImport } from './routes/_sidebar/workout-sheets/$workoutSheetId/index'
+import { Route as SidebarWorkoutSheetsWorkoutSheetIdEditRouteImport } from './routes/_sidebar/workout-sheets/$workoutSheetId/edit'
 
 const UnauthorizedRoute = UnauthorizedRouteImport.update({
   id: '/unauthorized',
@@ -264,6 +266,18 @@ const SidebarAdminUsersUserIdRoute = SidebarAdminUsersUserIdRouteImport.update({
   path: '/$userId',
   getParentRoute: () => SidebarAdminUsersRoute,
 } as any)
+const SidebarWorkoutSheetsWorkoutSheetIdIndexRoute =
+  SidebarWorkoutSheetsWorkoutSheetIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => SidebarWorkoutSheetsWorkoutSheetIdRoute,
+  } as any)
+const SidebarWorkoutSheetsWorkoutSheetIdEditRoute =
+  SidebarWorkoutSheetsWorkoutSheetIdEditRouteImport.update({
+    id: '/edit',
+    path: '/edit',
+    getParentRoute: () => SidebarWorkoutSheetsWorkoutSheetIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -295,7 +309,7 @@ export interface FileRoutesByFullPath {
   '/plans/create': typeof SidebarPlansCreateRoute
   '/students/$studentId': typeof SidebarStudentsStudentIdRoute
   '/students/create': typeof SidebarStudentsCreateRoute
-  '/workout-sheets/$workoutSheetId': typeof SidebarWorkoutSheetsWorkoutSheetIdRoute
+  '/workout-sheets/$workoutSheetId': typeof SidebarWorkoutSheetsWorkoutSheetIdRouteWithChildren
   '/workout-sheets/create': typeof SidebarWorkoutSheetsCreateRoute
   '/admin-users/': typeof SidebarAdminUsersIndexRoute
   '/audit-logs/': typeof SidebarAuditLogsIndexRoute
@@ -306,6 +320,8 @@ export interface FileRoutesByFullPath {
   '/plans/': typeof SidebarPlansIndexRoute
   '/students/': typeof SidebarStudentsIndexRoute
   '/workout-sheets/': typeof SidebarWorkoutSheetsIndexRoute
+  '/workout-sheets/$workoutSheetId/edit': typeof SidebarWorkoutSheetsWorkoutSheetIdEditRoute
+  '/workout-sheets/$workoutSheetId/': typeof SidebarWorkoutSheetsWorkoutSheetIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -328,7 +344,6 @@ export interface FileRoutesByTo {
   '/plans/create': typeof SidebarPlansCreateRoute
   '/students/$studentId': typeof SidebarStudentsStudentIdRoute
   '/students/create': typeof SidebarStudentsCreateRoute
-  '/workout-sheets/$workoutSheetId': typeof SidebarWorkoutSheetsWorkoutSheetIdRoute
   '/workout-sheets/create': typeof SidebarWorkoutSheetsCreateRoute
   '/admin-users': typeof SidebarAdminUsersIndexRoute
   '/audit-logs': typeof SidebarAuditLogsIndexRoute
@@ -339,6 +354,8 @@ export interface FileRoutesByTo {
   '/plans': typeof SidebarPlansIndexRoute
   '/students': typeof SidebarStudentsIndexRoute
   '/workout-sheets': typeof SidebarWorkoutSheetsIndexRoute
+  '/workout-sheets/$workoutSheetId/edit': typeof SidebarWorkoutSheetsWorkoutSheetIdEditRoute
+  '/workout-sheets/$workoutSheetId': typeof SidebarWorkoutSheetsWorkoutSheetIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -372,7 +389,7 @@ export interface FileRoutesById {
   '/_sidebar/plans/create': typeof SidebarPlansCreateRoute
   '/_sidebar/students/$studentId': typeof SidebarStudentsStudentIdRoute
   '/_sidebar/students/create': typeof SidebarStudentsCreateRoute
-  '/_sidebar/workout-sheets/$workoutSheetId': typeof SidebarWorkoutSheetsWorkoutSheetIdRoute
+  '/_sidebar/workout-sheets/$workoutSheetId': typeof SidebarWorkoutSheetsWorkoutSheetIdRouteWithChildren
   '/_sidebar/workout-sheets/create': typeof SidebarWorkoutSheetsCreateRoute
   '/_sidebar/admin-users/': typeof SidebarAdminUsersIndexRoute
   '/_sidebar/audit-logs/': typeof SidebarAuditLogsIndexRoute
@@ -383,6 +400,8 @@ export interface FileRoutesById {
   '/_sidebar/plans/': typeof SidebarPlansIndexRoute
   '/_sidebar/students/': typeof SidebarStudentsIndexRoute
   '/_sidebar/workout-sheets/': typeof SidebarWorkoutSheetsIndexRoute
+  '/_sidebar/workout-sheets/$workoutSheetId/edit': typeof SidebarWorkoutSheetsWorkoutSheetIdEditRoute
+  '/_sidebar/workout-sheets/$workoutSheetId/': typeof SidebarWorkoutSheetsWorkoutSheetIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -427,6 +446,8 @@ export interface FileRouteTypes {
     | '/plans/'
     | '/students/'
     | '/workout-sheets/'
+    | '/workout-sheets/$workoutSheetId/edit'
+    | '/workout-sheets/$workoutSheetId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -449,7 +470,6 @@ export interface FileRouteTypes {
     | '/plans/create'
     | '/students/$studentId'
     | '/students/create'
-    | '/workout-sheets/$workoutSheetId'
     | '/workout-sheets/create'
     | '/admin-users'
     | '/audit-logs'
@@ -460,6 +480,8 @@ export interface FileRouteTypes {
     | '/plans'
     | '/students'
     | '/workout-sheets'
+    | '/workout-sheets/$workoutSheetId/edit'
+    | '/workout-sheets/$workoutSheetId'
   id:
     | '__root__'
     | '/'
@@ -503,6 +525,8 @@ export interface FileRouteTypes {
     | '/_sidebar/plans/'
     | '/_sidebar/students/'
     | '/_sidebar/workout-sheets/'
+    | '/_sidebar/workout-sheets/$workoutSheetId/edit'
+    | '/_sidebar/workout-sheets/$workoutSheetId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -805,6 +829,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SidebarAdminUsersUserIdRouteImport
       parentRoute: typeof SidebarAdminUsersRoute
     }
+    '/_sidebar/workout-sheets/$workoutSheetId/': {
+      id: '/_sidebar/workout-sheets/$workoutSheetId/'
+      path: '/'
+      fullPath: '/workout-sheets/$workoutSheetId/'
+      preLoaderRoute: typeof SidebarWorkoutSheetsWorkoutSheetIdIndexRouteImport
+      parentRoute: typeof SidebarWorkoutSheetsWorkoutSheetIdRoute
+    }
+    '/_sidebar/workout-sheets/$workoutSheetId/edit': {
+      id: '/_sidebar/workout-sheets/$workoutSheetId/edit'
+      path: '/edit'
+      fullPath: '/workout-sheets/$workoutSheetId/edit'
+      preLoaderRoute: typeof SidebarWorkoutSheetsWorkoutSheetIdEditRouteImport
+      parentRoute: typeof SidebarWorkoutSheetsWorkoutSheetIdRoute
+    }
   }
 }
 
@@ -923,15 +961,33 @@ const SidebarStudentsRouteWithChildren = SidebarStudentsRoute._addFileChildren(
   SidebarStudentsRouteChildren,
 )
 
+interface SidebarWorkoutSheetsWorkoutSheetIdRouteChildren {
+  SidebarWorkoutSheetsWorkoutSheetIdEditRoute: typeof SidebarWorkoutSheetsWorkoutSheetIdEditRoute
+  SidebarWorkoutSheetsWorkoutSheetIdIndexRoute: typeof SidebarWorkoutSheetsWorkoutSheetIdIndexRoute
+}
+
+const SidebarWorkoutSheetsWorkoutSheetIdRouteChildren: SidebarWorkoutSheetsWorkoutSheetIdRouteChildren =
+  {
+    SidebarWorkoutSheetsWorkoutSheetIdEditRoute:
+      SidebarWorkoutSheetsWorkoutSheetIdEditRoute,
+    SidebarWorkoutSheetsWorkoutSheetIdIndexRoute:
+      SidebarWorkoutSheetsWorkoutSheetIdIndexRoute,
+  }
+
+const SidebarWorkoutSheetsWorkoutSheetIdRouteWithChildren =
+  SidebarWorkoutSheetsWorkoutSheetIdRoute._addFileChildren(
+    SidebarWorkoutSheetsWorkoutSheetIdRouteChildren,
+  )
+
 interface SidebarWorkoutSheetsRouteChildren {
-  SidebarWorkoutSheetsWorkoutSheetIdRoute: typeof SidebarWorkoutSheetsWorkoutSheetIdRoute
+  SidebarWorkoutSheetsWorkoutSheetIdRoute: typeof SidebarWorkoutSheetsWorkoutSheetIdRouteWithChildren
   SidebarWorkoutSheetsCreateRoute: typeof SidebarWorkoutSheetsCreateRoute
   SidebarWorkoutSheetsIndexRoute: typeof SidebarWorkoutSheetsIndexRoute
 }
 
 const SidebarWorkoutSheetsRouteChildren: SidebarWorkoutSheetsRouteChildren = {
   SidebarWorkoutSheetsWorkoutSheetIdRoute:
-    SidebarWorkoutSheetsWorkoutSheetIdRoute,
+    SidebarWorkoutSheetsWorkoutSheetIdRouteWithChildren,
   SidebarWorkoutSheetsCreateRoute: SidebarWorkoutSheetsCreateRoute,
   SidebarWorkoutSheetsIndexRoute: SidebarWorkoutSheetsIndexRoute,
 }
