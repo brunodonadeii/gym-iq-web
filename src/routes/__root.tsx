@@ -1,4 +1,3 @@
-﻿import { Skeleton } from "@/components/Skeleton/Skeleton";
 import {
   GlobalErrorFallback,
   GlobalNotFoundFallback,
@@ -26,12 +25,15 @@ interface RouterContext {
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   component: () => (
-    <Suspense fallback={<Skeleton height="100vh" radius="0" />}>
+    <>
       <Outlet />
-      {RouterDevtools && <RouterDevtools />}
-    </Suspense>
+      {RouterDevtools && (
+        <Suspense fallback={null}>
+          <RouterDevtools />
+        </Suspense>
+      )}
+    </>
   ),
   errorComponent: GlobalErrorFallback,
   notFoundComponent: GlobalNotFoundFallback,
 });
-

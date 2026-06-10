@@ -1,4 +1,5 @@
-﻿import { Header } from "@/components/Header/Header";
+import { Header } from "@/components/Header/Header";
+import { Skeleton } from "@/components/Skeleton/Skeleton";
 import { Sidebar } from "@/components/Sidebar/Sidebar";
 import { auth, type UserRole } from "@/utils/auth";
 import { Outlet } from "@tanstack/react-router";
@@ -14,7 +15,7 @@ import {
   ShieldPlus,
   Users,
 } from "lucide-react";
-import type { ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
 import styles from "./Layout.module.css";
 
 type SidebarItem = {
@@ -99,11 +100,18 @@ export function Layout() {
       <main className={styles.main}>
         <div className={styles.content}>
           <Header />
-          <Outlet />
+          <Suspense
+            fallback={
+              <div className={styles.routeFallback}>
+                <Skeleton height="220px" radius="24px" />
+                <Skeleton height="220px" radius="24px" />
+              </div>
+            }
+          >
+            <Outlet />
+          </Suspense>
         </div>
       </main>
     </div>
   );
 }
-
-

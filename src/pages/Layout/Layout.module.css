@@ -39,6 +39,11 @@
   backdrop-filter: blur(14px);
 }
 
+.routeFallback {
+  display: grid;
+  gap: 20px;
+}
+
 @media (max-width: 900px) {
   .shell {
     flex-direction: column;
