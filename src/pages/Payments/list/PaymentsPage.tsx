@@ -1,6 +1,7 @@
 ﻿import { Autocomplete } from "@/components/Autocomplete/Autocomplete";
 import { Button } from "@/components/Button/Button";
 import { ConfirmDialog } from "@/components/ConfirmDialog/ConfirmDialog";
+import { Dialog } from "@/components/Dialog/Dialog";
 import { Dropdown, type DropdownItem } from "@/components/Dropdown/Dropdown";
 import { Pagination } from "@/components/Pagination/Pagination";
 import { SelectField } from "@/components/SelectField/SelectField";
@@ -34,7 +35,7 @@ import { getApiFieldErrors } from "@/utils/apiError";
 import { formatLocalDate, isLocalDateBeforeToday } from "@/utils/date";
 import { useSearch } from "@tanstack/react-router";
 import { CheckCircle2, ClockAlert, RefreshCcw, X } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
 import styles from "./PaymentsPage.module.css";
 
@@ -135,6 +136,7 @@ export const PaymentsPage = () => {
   const [payFormErrors, setPayFormErrors] = useState<
     Partial<Record<keyof PaymentPayFormData, string>>
   >({});
+  const payCancelButtonRef = useRef<HTMLButtonElement>(null);
   const debouncedStudentSearch = useDebouncedValue(studentSearch);
 
   const {
@@ -558,13 +560,18 @@ export const PaymentsPage = () => {
         />
       </section>
 
-      {selectedPayment && (
-        <div className={styles.modalOverlay} role="presentation">
+      <Dialog
+        open={!!selectedPayment}
+        className={styles.modal}
+        labelledBy="payPaymentTitle"
+        describedBy="payPaymentDescription"
+        closeDisabled={isPayingPayment}
+        initialFocusRef={payCancelButtonRef}
+        onClose={closePayModal}
+      >
+        {selectedPayment && (
           <form
-            className={styles.modal}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="payPaymentTitle"
+            className={styles.modalForm}
             noValidate
             onSubmit={(event) => {
               event.preventDefault();
@@ -577,7 +584,10 @@ export const PaymentsPage = () => {
                 <h3 className={styles.modalTitle} id="payPaymentTitle">
                   Marcar cobrança como paga
                 </h3>
-                <p className={styles.modalDescription}>
+                <p
+                  className={styles.modalDescription}
+                  id="payPaymentDescription"
+                >
                   Informe a forma de pagamento. Se a data ficar vazia, o backend
                   usa o horário atual.
                 </p>
@@ -658,6 +668,7 @@ export const PaymentsPage = () => {
 
             <div className={styles.modalActions}>
               <Button
+                ref={payCancelButtonRef}
                 type="button"
                 onClick={closePayModal}
                 disabled={isPayingPayment}
@@ -673,8 +684,8 @@ export const PaymentsPage = () => {
               </Button>
             </div>
           </form>
-        </div>
-      )}
+        )}
+      </Dialog>
 
       <ConfirmDialog
         open={!!paymentToMarkOverdue}
