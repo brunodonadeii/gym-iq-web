@@ -31,7 +31,7 @@ import { useGetEnrollments } from "@/queries/useGetEnrollments";
 import { useGetPayments } from "@/queries/useGetPayments";
 import { useGetStudentOptions } from "@/queries/useGetStudentOptions";
 import { getApiFieldErrors } from "@/utils/apiError";
-import { formatLocalDate } from "@/utils/date";
+import { formatLocalDate, isLocalDateBeforeToday } from "@/utils/date";
 import { useSearch } from "@tanstack/react-router";
 import { CheckCircle2, ClockAlert, RefreshCcw, X } from "lucide-react";
 import { useState } from "react";
@@ -357,7 +357,10 @@ export const PaymentsPage = () => {
       },
     ];
 
-    if (payment.status === "PENDING") {
+    if (
+      payment.status === "PENDING" &&
+      isLocalDateBeforeToday(payment.dueDate)
+    ) {
       actions.push({
         label: "Marcar como atrasado",
         icon: <ClockAlert size={15} />,
