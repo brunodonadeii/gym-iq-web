@@ -36,6 +36,8 @@
   --status-orange-text: #9a3412;
   --status-red-bg: rgba(239, 68, 68, 0.12);
   --status-red-text: #991b1b;
+  --status-neutral-bg: rgba(100, 116, 139, 0.16);
+  --status-neutral-text: #475569;
   --chart-axis: #c5ced8;
   --chart-grid: rgba(197, 206, 216, 0.16);
   --chart-label: #f3f4f6;
@@ -87,6 +89,8 @@
   --status-orange-text: #9a3412;
   --status-red-bg: rgba(239, 68, 68, 0.12);
   --status-red-text: #991b1b;
+  --status-neutral-bg: rgba(100, 116, 139, 0.16);
+  --status-neutral-text: #c5ced8;
   --chart-axis: #c5ced8;
   --chart-grid: rgba(197, 206, 216, 0.16);
   --chart-label: #f3f4f6;
@@ -138,6 +142,8 @@
   --status-orange-text: #9a3412;
   --status-red-bg: rgba(239, 68, 68, 0.12);
   --status-red-text: #991b1b;
+  --status-neutral-bg: rgba(100, 116, 139, 0.16);
+  --status-neutral-text: #475569;
   --chart-axis: #475569;
   --chart-grid: rgba(71, 85, 105, 0.22);
   --chart-label: #111827;

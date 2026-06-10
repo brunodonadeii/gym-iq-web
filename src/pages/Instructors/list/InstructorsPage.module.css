@@ -94,8 +94,8 @@
 }
 
 .statusInactive {
-  background: var(--status-orange-bg);
-  color: var(--status-orange-text);
+  background: var(--status-neutral-bg);
+  color: var(--status-neutral-text);
 }
 
 @media (max-width: 768px) {

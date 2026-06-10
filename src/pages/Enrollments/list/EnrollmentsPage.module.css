@@ -227,21 +227,21 @@
 }
 
 .statusACTIVE {
-  background: rgba(34, 197, 94, 0.14);
-  border-color: rgba(34, 197, 94, 0.24);
-  color: #15803d;
+  background: var(--status-green-bg);
+  border-color: color-mix(in srgb, var(--status-green-text) 18%, transparent);
+  color: var(--status-green-text);
 }
 
 .statusSUSPENDED {
-  background: rgba(245, 158, 11, 0.14);
-  border-color: rgba(245, 158, 11, 0.24);
-  color: #b45309;
+  background: var(--status-yellow-bg);
+  border-color: color-mix(in srgb, var(--status-yellow-text) 18%, transparent);
+  color: var(--status-yellow-text);
 }
 
 .statusCANCELED {
-  background: rgba(239, 68, 68, 0.14);
-  border-color: rgba(239, 68, 68, 0.24);
-  color: #b91c1c;
+  background: var(--status-red-bg);
+  border-color: color-mix(in srgb, var(--status-red-text) 18%, transparent);
+  color: var(--status-red-text);
 }
 
 @media (max-width: 1080px) {

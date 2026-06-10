@@ -76,13 +76,13 @@
 }
 
 .statusActive {
-  background: rgba(34, 197, 94, 0.14);
-  color: #15803d;
+  background: var(--status-green-bg);
+  color: var(--status-green-text);
 }
 
 .statusInactive {
-  background: rgba(100, 116, 139, 0.16);
-  color: var(--text-secondary);
+  background: var(--status-neutral-bg);
+  color: var(--status-neutral-text);
 }
 
 @media (max-width: 768px) {
