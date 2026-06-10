@@ -419,7 +419,7 @@ export const StudentsPage = () => {
                           </span>
                           {anonymized && (
                             <span className={styles.anonymizedBadge}>
-                              Cadastro removido
+                              Anonimizado
                             </span>
                           )}
                         </div>

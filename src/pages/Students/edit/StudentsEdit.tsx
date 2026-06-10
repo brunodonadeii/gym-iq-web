@@ -156,7 +156,7 @@ export const StudentsEdit = () => {
     >
       {anonymized && (
         <div className={styles.anonymizedNotice}>
-          <strong>Cadastro removido</strong>
+          <strong>Cadastro anonimizado</strong>
           <span>
             Nome, contato e endereço podem aparecer mascarados conforme o
             retorno da API.
