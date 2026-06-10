@@ -84,6 +84,7 @@ export const Autocomplete = ({
       : undefined;
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setDraftSearch(search);
   }, [search]);
 
