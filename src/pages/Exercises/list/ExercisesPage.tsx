@@ -220,7 +220,12 @@ export const ExercisesPage = () => {
         title="Excluir exercício?"
         description={
           exerciseToDelete
-            ? `O exercício ${exerciseToDelete.name} será excluído. Confirme antes de continuar.`
+            ? (
+                <>
+                  O exercício <strong>{exerciseToDelete.name}</strong> será{" "}
+                  <strong>excluído</strong>. Confirme antes de continuar.
+                </>
+              )
             : ""
         }
         confirmLabel="Excluir exercício"

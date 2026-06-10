@@ -337,7 +337,14 @@ export const StudentPortalPage = () => {
       <ConfirmDialog
         open={confirmDeleteOpen}
         title="Excluir seus dados?"
-        description="Seus dados pessoais serão removidos e o histórico será preservado. Esta ação não pode ser desfeita e não será concluída se houver pagamentos pendentes ou atrasados."
+        description={
+          <>
+            Seus dados pessoais serão <strong>excluídos</strong> e o histórico
+            será preservado. Esta ação <strong>não pode ser desfeita</strong> e
+            não será concluída se houver <strong>pagamentos pendentes ou
+            atrasados</strong>.
+          </>
+        }
         confirmLabel="Excluir"
         loading={isDeletingMyPersonalData}
         confirmDisabled={!canDeletePersonalData}

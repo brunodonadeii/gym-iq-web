@@ -492,12 +492,19 @@ export const StudentsPage = () => {
         description={
           confirmAction?.type === "delete"
             ? confirmAction.eligibility.canAnonymize
-              ? `Os dados pessoais de ${confirmAction.studentName} serão removidos e o histórico será preservado. Esta ação não pode ser desfeita.`
+              ? (
+                  <>
+                    Os dados pessoais de{" "}
+                    <strong>{confirmAction.studentName}</strong> serão{" "}
+                    <strong>excluídos</strong> e o histórico será preservado.
+                    Esta ação <strong>não pode ser desfeita</strong>.
+                  </>
+                )
               : (
                   <div className={styles.eligibilityBlock}>
                     <p>
-                      Os dados de {confirmAction.studentName} ainda não podem
-                      ser excluídos.
+                      Os dados de <strong>{confirmAction.studentName}</strong>{" "}
+                      ainda não podem ser <strong>excluídos</strong>.
                     </p>
                     <ul>
                       {confirmAction.eligibility.blockers.map((blocker) => (
@@ -521,7 +528,13 @@ export const StudentsPage = () => {
                   </div>
                 )
             : confirmAction
-              ? `${confirmAction.studentName} perderá o acesso ativo, mas o histórico será preservado.`
+              ? (
+                  <>
+                    <strong>{confirmAction.studentName}</strong> perderá o{" "}
+                    <strong>acesso ativo</strong>, mas o histórico será
+                    preservado.
+                  </>
+                )
               : ""
         }
         confirmLabel={

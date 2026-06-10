@@ -417,7 +417,13 @@ export const WorkoutSheetsPage = () => {
         title="Inativar ficha?"
         description={
           sheetToDelete
-            ? `A ficha ${sheetToDelete.name} de ${resolveStudentName(sheetToDelete)} deixará de ficar ativa.`
+            ? (
+                <>
+                  A ficha <strong>{sheetToDelete.name}</strong> de{" "}
+                  <strong>{resolveStudentName(sheetToDelete)}</strong> será{" "}
+                  <strong>inativada</strong>.
+                </>
+              )
             : ""
         }
         confirmLabel="Inativar ficha"

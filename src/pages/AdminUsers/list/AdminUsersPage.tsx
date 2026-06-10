@@ -249,7 +249,13 @@ export const AdminUsersPage = () => {
         title="Remover usuário administrativo?"
         description={
           userToDelete
-            ? `O acesso de ${userToDelete.name} será removido. Esta ação deve ser usada apenas para usuários internos.`
+            ? (
+                <>
+                  O acesso de <strong>{userToDelete.name}</strong> será{" "}
+                  <strong>removido</strong>. Esta ação deve ser usada apenas
+                  para usuários internos.
+                </>
+              )
             : ""
         }
         confirmLabel="Remover usuário"

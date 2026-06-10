@@ -309,9 +309,21 @@ export const PlansPage = () => {
         }
         description={
           confirmAction?.type === "delete"
-            ? `O plano ${confirmAction.plan.name} será removido definitivamente. Planos vinculados a matrículas podem ser bloqueados pelo servidor.`
+            ? (
+                <>
+                  O plano <strong>{confirmAction.plan.name}</strong> será{" "}
+                  <strong>excluído definitivamente</strong>. Planos vinculados a
+                  matrículas podem ser bloqueados pelo servidor.
+                </>
+              )
             : confirmAction
-              ? `O plano ${confirmAction.plan.name} deixará de estar disponível para novas matrículas.`
+              ? (
+                  <>
+                    O plano <strong>{confirmAction.plan.name}</strong> será{" "}
+                    <strong>inativado</strong> e deixará de estar disponível
+                    para novas matrículas.
+                  </>
+                )
               : ""
         }
         confirmLabel={
