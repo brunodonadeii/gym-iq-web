@@ -27,7 +27,6 @@ export type InstructorUpdateFormData = {
   cref: string;
   phone: string;
   specialty: string;
-  lgpdAccepted: boolean;
 };
 
 export type InstructorEditFormData = InstructorUpdateFormData;

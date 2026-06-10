@@ -75,10 +75,6 @@ const validateCommonFields = (
     errors.specialty = "Selecione uma especialidade válida.";
   }
 
-  if (!data.lgpdAccepted) {
-    errors.lgpdAccepted = "É necessário aceitar os termos de LGPD.";
-  }
-
   return errors;
 };
 
@@ -93,12 +89,16 @@ export const validateInstructorCreate = (
     errors.password = "A senha deve ter no mínimo 6 caracteres.";
   }
 
+  if (!data.lgpdAccepted) {
+    errors.lgpdAccepted = "É necessário aceitar os termos de LGPD.";
+  }
+
   return errors;
 };
 
 export const validateInstructorUpdate = (
   data: InstructorUpdateFormData,
-): InstructorFormErrors => validateCommonFields({ ...data, lgpdAccepted: true });
+): InstructorFormErrors => validateCommonFields(data);
 
 export const formatCrefInput = (value: string) => {
   const compact = value.toUpperCase().replace(/[^A-Z0-9]/g, "");

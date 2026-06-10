@@ -60,10 +60,15 @@ export const LoginPage = () => {
       await router.invalidate();
       navigate({
         to:
-          redirect === "/dashboard" ? getDefaultPathByRole(auth.role) : redirect,
+          redirect === "/dashboard"
+            ? getDefaultPathByRole(auth.role)
+            : redirect,
       });
     } catch (error) {
-      const fieldErrors = getApiFieldErrors(error, ["email", "password"] as const);
+      const fieldErrors = getApiFieldErrors(error, [
+        "email",
+        "password",
+      ] as const);
       if (fieldErrors) {
         setEmailError(fieldErrors.email ?? "");
         setPasswordError(fieldErrors.password ?? "");
@@ -72,12 +77,12 @@ export const LoginPage = () => {
 
       const apiError = normalizeApiError(
         error,
-            "Não foi possível entrar. Confira seu e-mail e senha e tente novamente.",
+        "Não foi possível entrar. Confira seu e-mail e senha e tente novamente.",
       );
 
       showApiError(
         apiError,
-            "Não foi possível entrar. Confira seu e-mail e senha e tente novamente.",
+        "Não foi possível entrar. Confira seu e-mail e senha e tente novamente.",
       );
     } finally {
       setIsSubmitting(false);
@@ -152,25 +157,9 @@ export const LoginPage = () => {
                 Esqueci minha senha
               </Link>
             </div>
-
-            <div className={styles.demoCard}>
-              <p className={styles.demoTitle}>
-                <strong>Conta Demo:</strong>
-              </p>
-              <div className={styles.demoCredentials}>
-                <div className={styles.demoItem}>
-                  <span>E-mail:</span> admin@gymiq.com
-                </div>
-                <div className={styles.demoItem}>
-                  <span>Senha:</span> gymiq@2026
-                </div>
-              </div>
-            </div>
           </Card>
         </form>
       </div>
     </div>
   );
 };
-
-

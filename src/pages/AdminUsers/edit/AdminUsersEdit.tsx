@@ -235,7 +235,6 @@ export const AdminUsersEdit = () => {
         name: user.name ?? "",
         email: user.email ?? "",
         role: user.role ?? "RECEPTION",
-        lgpdAccepted: user.lgpdAccepted ?? true,
       }}
     />
   );

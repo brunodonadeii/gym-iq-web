@@ -12,9 +12,15 @@ type UpdateAdminUserVariables = {
 };
 
 async function updateAdminUser({ id, data }: UpdateAdminUserVariables) {
+  const payload = {
+    name: data.name,
+    email: data.email,
+    role: data.role,
+  };
+
   const response = await authFetch(`users/${id}`, {
     method: "PUT",
-    body: JSON.stringify(data),
+    body: JSON.stringify(payload),
   });
 
   return parseApiResponse<AdminUser>(response);

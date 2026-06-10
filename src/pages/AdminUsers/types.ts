@@ -25,6 +25,5 @@ export type AdminUserUpdateFormData = {
   name: string;
   email: string;
   role: AdminUserRole;
-  lgpdAccepted: boolean;
 };
 

@@ -33,7 +33,6 @@ const EMPTY_FORM: InstructorUpdateFormData = {
   cref: "",
   phone: "",
   specialty: "",
-  lgpdAccepted: false,
 };
 
 const INSTRUCTOR_FIELDS = [
@@ -54,7 +53,6 @@ const getInitialFormData = (
         cref: details.cref,
         phone: details.phone,
         specialty: normalizeInstructorSpecialty(details.specialty),
-        lgpdAccepted: details.lgpdAccepted,
       }
     : EMPTY_FORM;
 

@@ -18,7 +18,6 @@ async function updateInstructor({ data, id }: UpdateInstructorData) {
     cref: data.cref,
     phone: data.phone,
     specialty: data.specialty.trim() || undefined,
-    lgpdAccepted: data.lgpdAccepted,
   };
 
   const response = await authFetch(`instructors/${id}`, {
