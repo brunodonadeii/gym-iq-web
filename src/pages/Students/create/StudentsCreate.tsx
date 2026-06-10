@@ -1,5 +1,6 @@
 ﻿import { Button } from "@/components/Button/Button";
 import { Form } from "@/components/Form/Form";
+import { LgpdConsent } from "@/components/LgpdConsent/LgpdConsent";
 import { TextField } from "@/components/TextField/TextField";
 import { useFormInputs } from "@/hooks/useFormInputs";
 import { useCreateStudent } from "@/mutations/useCreateStudent";
@@ -220,31 +221,14 @@ export const StudentsCreate = () => {
         </div>
       </fieldset>
 
-      <label className={styles.lgpdBox}>
-        <input
-          id="lgpdAccepted"
-          type="checkbox"
-          checked={data.lgpdAccepted}
-          onChange={(event) => {
-            setData((prev) => ({
-              ...prev,
-              lgpdAccepted: event.target.checked,
-            }));
-            setErrors((prev) => ({ ...prev, lgpdAccepted: undefined }));
-          }}
-          required
-        />
-        <span>
-          Declaro que o aluno aceitou o uso dos dados para cadastro e gestao do
-          acesso na academia.
-          <span className={styles.requiredMark} aria-hidden="true">
-            {" *"}
-          </span>
-        </span>
-      </label>
-      {errors.lgpdAccepted && (
-        <div className={styles.checkboxError}>{errors.lgpdAccepted}</div>
-      )}
+      <LgpdConsent
+        checked={data.lgpdAccepted}
+        error={errors.lgpdAccepted}
+        onChange={(checked) => {
+          setData((prev) => ({ ...prev, lgpdAccepted: checked }));
+          setErrors((prev) => ({ ...prev, lgpdAccepted: undefined }));
+        }}
+      />
     </Form>
   );
 };

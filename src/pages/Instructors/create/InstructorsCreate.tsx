@@ -1,5 +1,6 @@
 ﻿import { Button } from "@/components/Button/Button";
 import { Form } from "@/components/Form/Form";
+import { LgpdConsent } from "@/components/LgpdConsent/LgpdConsent";
 import { SelectField } from "@/components/SelectField/SelectField";
 import { TextField } from "@/components/TextField/TextField";
 import { useFormInputs } from "@/hooks/useFormInputs";
@@ -241,44 +242,14 @@ export const InstructorsCreate = () => {
         />
       </div>
 
-      <label
-        className={[
-          styles.lgpdBox,
-          errors.lgpdAccepted && styles.lgpdBoxError,
-        ]
-          .filter(Boolean)
-          .join(" ")}
-      >
-        <input
-          id="lgpdAccepted"
-          type="checkbox"
-          checked={data.lgpdAccepted}
-          onChange={(event) => {
-            setData((prev) => ({
-              ...prev,
-              lgpdAccepted: event.target.checked,
-            }));
-            setErrors((prev) => ({ ...prev, lgpdAccepted: undefined }));
-          }}
-          aria-invalid={Boolean(errors.lgpdAccepted)}
-          aria-describedby={
-            errors.lgpdAccepted ? "lgpdAccepted-error" : undefined
-          }
-          required
-        />
-        <span>
-          Declaro que o instrutor aceitou o uso dos dados para cadastro e gestao
-          do acesso na academia.
-          <span className={styles.requiredMark} aria-hidden="true">
-            {" *"}
-          </span>
-        </span>
-      </label>
-      {errors.lgpdAccepted && (
-        <div className={styles.checkboxError} id="lgpdAccepted-error">
-          {errors.lgpdAccepted}
-        </div>
-      )}
+      <LgpdConsent
+        checked={data.lgpdAccepted}
+        error={errors.lgpdAccepted}
+        onChange={(checked) => {
+          setData((prev) => ({ ...prev, lgpdAccepted: checked }));
+          setErrors((prev) => ({ ...prev, lgpdAccepted: undefined }));
+        }}
+      />
     </Form>
   );
 };

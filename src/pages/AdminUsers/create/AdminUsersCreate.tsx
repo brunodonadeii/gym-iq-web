@@ -1,5 +1,6 @@
 ﻿import { Button } from "@/components/Button/Button";
 import { Form } from "@/components/Form/Form";
+import { LgpdConsent } from "@/components/LgpdConsent/LgpdConsent";
 import { SelectField } from "@/components/SelectField/SelectField";
 import { TextField } from "@/components/TextField/TextField";
 import { useFormInputs } from "@/hooks/useFormInputs";
@@ -209,28 +210,14 @@ export const AdminUsersCreate = () => {
         />
       </div>
 
-      <label className={styles.lgpdBox}>
-        <input
-          id="lgpdAccepted"
-          type="checkbox"
-          checked={data.lgpdAccepted}
-          onChange={(event) => {
-            setData((prev) => ({
-              ...prev,
-              lgpdAccepted: event.target.checked,
-            }));
-            setErrors((prev) => ({ ...prev, lgpdAccepted: undefined }));
-          }}
-          required
-        />
-        <span>
-          Declaro que o usuário aceitou o uso dos dados para cadastro e acesso
-          interno ao sistema.
-        </span>
-      </label>
-      {errors.lgpdAccepted && (
-        <div className={styles.checkboxError}>{errors.lgpdAccepted}</div>
-      )}
+      <LgpdConsent
+        checked={data.lgpdAccepted}
+        error={errors.lgpdAccepted}
+        onChange={(checked) => {
+          setData((prev) => ({ ...prev, lgpdAccepted: checked }));
+          setErrors((prev) => ({ ...prev, lgpdAccepted: undefined }));
+        }}
+      />
     </Form>
   );
 };
