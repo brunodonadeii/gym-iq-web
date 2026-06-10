@@ -1,6 +1,7 @@
 ﻿import type { EnrollmentStatus } from "@/pages/Enrollments/types";
 import type { PaymentStatus } from "@/pages/Payments/types";
 import type { WorkoutSheetExercise } from "@/pages/WorkoutSheets/types";
+import { formatLocalDate } from "@/utils/date";
 
 export const enrollmentStatusLabels: Record<EnrollmentStatus, string> = {
   ACTIVE: "Ativa",
@@ -15,7 +16,9 @@ export const paymentStatusLabels: Record<PaymentStatus, string> = {
   CANCELED: "Cancelado",
 };
 
-export const formatDate = (value?: string | null) =>
+export const formatDate = formatLocalDate;
+
+export const formatDateTimeAsDate = (value?: string | null) =>
   value
     ? new Date(value).toLocaleDateString("pt-BR", {
         day: "2-digit",

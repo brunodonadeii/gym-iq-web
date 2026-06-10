@@ -19,6 +19,7 @@ import {
   enrollmentStatusLabels,
   formatCurrency,
   formatDate,
+  formatDateTimeAsDate,
   formatDateTime,
   formatEnrollmentEndDate,
   getEnrollmentStatusClassName,
@@ -201,7 +202,9 @@ export const StudentPortalPage = () => {
                 </div>
                 <div className={styles.detail}>
                   <span>Criada em</span>
-                  <strong>{formatDate(activeEnrollment.createdAt)}</strong>
+                  <strong>
+                    {formatDateTimeAsDate(activeEnrollment.createdAt)}
+                  </strong>
                 </div>
               </div>
             ) : (

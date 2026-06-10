@@ -11,6 +11,7 @@ import type {
 import { useGetEnrollmentById } from "@/queries/useGetEnrollmentById";
 import { useGetPlans } from "@/queries/useGetPlans";
 import { getApiFieldErrors } from "@/utils/apiError";
+import { formatLocalDate } from "@/utils/date";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -23,19 +24,10 @@ const EMPTY_FORM: EnrollmentRenewFormData = {
 const isRecurringEnrollment = (enrollment?: Enrollment | null) =>
   enrollment?.endDate === null;
 
-const formatDate = (value?: string | null) =>
-  value
-    ? new Date(value).toLocaleDateString("pt-BR", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      })
-    : "Não informado";
-
 const formatEndDate = (enrollment?: Enrollment | null) =>
   isRecurringEnrollment(enrollment)
     ? "Recorrente"
-    : formatDate(enrollment?.endDate);
+    : formatLocalDate(enrollment?.endDate);
 
 const resolveStudentName = (enrollment?: Enrollment) =>
   enrollment?.student?.name ??

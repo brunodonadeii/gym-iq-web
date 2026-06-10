@@ -3,18 +3,10 @@ import { DetailLoadState } from "@/components/DetailLoadState/DetailLoadState";
 import { Skeleton } from "@/components/Skeleton/Skeleton";
 import type { WorkoutBlock, WorkoutSheet, WorkoutSheetExercise } from "@/pages/WorkoutSheets/types";
 import { useGetWorkoutSheetById } from "@/queries/useGetWorkoutSheetById";
+import { formatLocalDate } from "@/utils/date";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { Pencil } from "lucide-react";
 import styles from "./WorkoutSheetsDetails.module.css";
-
-const formatDate = (value?: string | null) =>
-  value
-    ? new Date(value).toLocaleDateString("pt-BR", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      })
-    : "-";
 
 const resolveExerciseName = (exercise: WorkoutSheetExercise) =>
   exercise.exerciseName ?? `Exercício #${exercise.exerciseId}`;
@@ -120,7 +112,7 @@ const WorkoutSheetsDetailsContent = ({
               <span className={styles.infoLabel}>Objetivo</span>
               <strong className={styles.infoValue}>{details?.goal || "-"}</strong>
               <span className={styles.infoHint}>
-                Início: {formatDate(details?.startDate)}
+                Início: {formatLocalDate(details?.startDate, "-")}
               </span>
             </article>
             <article className={styles.infoCard}>
@@ -129,7 +121,7 @@ const WorkoutSheetsDetailsContent = ({
                 {details?.active ? "Ativa" : "Inativa"}
               </strong>
               <span className={styles.infoHint}>
-                Fim: {formatDate(details?.endDate)}
+                Fim: {formatLocalDate(details?.endDate, "-")}
               </span>
             </article>
           </div>

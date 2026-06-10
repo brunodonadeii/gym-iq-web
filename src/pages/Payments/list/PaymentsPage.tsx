@@ -30,6 +30,7 @@ import { useGetEnrollments } from "@/queries/useGetEnrollments";
 import { useGetPayments } from "@/queries/useGetPayments";
 import { useGetStudentOptions } from "@/queries/useGetStudentOptions";
 import { getApiFieldErrors } from "@/utils/apiError";
+import { formatLocalDate } from "@/utils/date";
 import { useSearch } from "@tanstack/react-router";
 import { CheckCircle2, ClockAlert, RefreshCcw, X } from "lucide-react";
 import { useState } from "react";
@@ -76,15 +77,6 @@ const paymentMethodOptions = [
   { label: "Cartão de débito", value: "DEBIT_CARD" },
   { label: "Transferência bancária", value: "BANK_TRANSFER" },
 ];
-
-const formatDate = (value?: string | null) =>
-  value
-    ? new Date(value).toLocaleDateString("pt-BR", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      })
-    : "Não informado";
 
 const formatCurrency = (value?: number) =>
   new Intl.NumberFormat("pt-BR", {
@@ -517,7 +509,7 @@ export const PaymentsPage = () => {
                     </TableCell>
                     <TableCell>{resolvePlanName(payment)}</TableCell>
                     <TableCell>{formatCurrency(payment.amount)}</TableCell>
-                    <TableCell>{formatDate(payment.dueDate)}</TableCell>
+                    <TableCell>{formatLocalDate(payment.dueDate)}</TableCell>
                     <TableCell center>
                       <span
                         className={`${styles.statusBadge} ${
@@ -602,7 +594,7 @@ export const PaymentsPage = () => {
               </div>
               <div>
                 <span>Vencimento</span>
-                <strong>{formatDate(selectedPayment.dueDate)}</strong>
+                <strong>{formatLocalDate(selectedPayment.dueDate)}</strong>
               </div>
             </div>
 

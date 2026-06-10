@@ -28,6 +28,7 @@ import { useGetPlans } from "@/queries/useGetPlans";
 import { useGetStudentEnrollments } from "@/queries/useGetStudentEnrollments";
 import { useGetStudentOptions } from "@/queries/useGetStudentOptions";
 import { maskEmail } from "@/utils/sensitiveData";
+import { formatLocalDate } from "@/utils/date";
 import { useNavigate } from "@tanstack/react-router";
 import {
   BadgeCheck,
@@ -76,19 +77,10 @@ const isRecurringEnrollment = (enrollment?: Enrollment | null) => {
   );
 };
 
-const formatDate = (value?: string | null) =>
-  value
-    ? new Date(value).toLocaleDateString("pt-BR", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      })
-    : "Não informado";
-
 const formatEndDate = (enrollment?: Enrollment | null) =>
   isRecurringEnrollment(enrollment)
     ? "Recorrente"
-    : formatDate(enrollment?.endDate);
+    : formatLocalDate(enrollment?.endDate);
 
 const getEnrollmentTermLabel = (enrollment?: Enrollment | null) =>
   isRecurringEnrollment(enrollment) ? "Mensal recorrente" : "Prazo determinado";
@@ -444,7 +436,9 @@ export const EnrollmentsPage = () => {
                       </div>
                     </TableCell>
                     <TableCell>{resolvePlanName(enrollment)}</TableCell>
-                    <TableCell>{formatDate(enrollment.startDate)}</TableCell>
+                    <TableCell>
+                      {formatLocalDate(enrollment.startDate)}
+                    </TableCell>
                     <TableCell>
                       <div className={styles.termCell}>
                         <span>{formatEndDate(enrollment)}</span>

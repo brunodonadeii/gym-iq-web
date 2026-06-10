@@ -26,6 +26,7 @@ import {
   useGetWorkoutSheets,
 } from "@/queries/useGetWorkoutSheets";
 import { auth } from "@/utils/auth";
+import { formatLocalDate } from "@/utils/date";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { Eye, Pencil, PlusCircle, Trash2 } from "lucide-react";
@@ -46,15 +47,6 @@ const sheetColumns = [
   { width: "8%" },
   { width: "6%" },
 ];
-
-const formatDate = (value?: string | null) =>
-  value
-    ? new Date(value).toLocaleDateString("pt-BR", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      })
-    : "-";
 
 const getWorkoutSheetId = (sheet: WorkoutSheetSummary) =>
   String(sheet.workoutSheetId);
@@ -350,8 +342,12 @@ export const WorkoutSheetsPage = () => {
                       <TableCell>{resolveInstructorName(sheet)}</TableCell>
                       <TableCell>{sheet.name}</TableCell>
                       <TableCell>{sheet.goal || "-"}</TableCell>
-                      <TableCell>{formatDate(sheet.startDate)}</TableCell>
-                      <TableCell>{formatDate(sheet.endDate)}</TableCell>
+                      <TableCell>
+                        {formatLocalDate(sheet.startDate, "-")}
+                      </TableCell>
+                      <TableCell>
+                        {formatLocalDate(sheet.endDate, "-")}
+                      </TableCell>
                       <TableCell center>
                         <span
                           className={`${styles.statusBadge} ${
