@@ -7,10 +7,7 @@ type RouteAuthContext = {
   };
 };
 
-export const requireRoles = (
-  context: RouteAuthContext,
-  roles: UserRole[],
-) => {
+export const requireRoles = (context: RouteAuthContext, roles: UserRole[]) => {
   if (!context.auth.hasAnyRole(roles)) {
     throw redirect({
       to: "/unauthorized",

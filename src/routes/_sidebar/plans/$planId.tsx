@@ -1,4 +1,4 @@
-import { requireRoles } from "@/routes/guards";
+import { requireRoles } from "@/routes/-guards";
 import { lazyRouteComponent } from "@/utils/lazyRouteComponent";
 import { createFileRoute } from "@tanstack/react-router";
 
