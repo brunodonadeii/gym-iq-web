@@ -1,0 +1,369 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.heroCard,
+.metricsCard,
+.topBar,
+.tableSection {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.heroCard {
+  padding: 28px;
+}
+
+.eyebrow,
+.metricLabel {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-alt);
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.heroTitle {
+  margin-top: 16px;
+  font-size: clamp(1.7rem, 3vw, 2.3rem);
+  line-height: 1.1;
+  color: var(--text-primary);
+}
+
+.heroDescription {
+  max-width: 58ch;
+  margin-top: 12px;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+.metricsCard {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  padding: 18px;
+}
+
+.metric {
+  padding: 18px;
+  border-radius: 18px;
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+}
+
+.metricValue {
+  margin-top: 12px;
+  font-size: 1.9rem;
+  line-height: 1;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.metricHint {
+  margin-top: 8px;
+  color: var(--text-secondary);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.topBar {
+  display: grid;
+  grid-template-columns: minmax(240px, 280px) minmax(0, 1fr);
+  align-items: end;
+  gap: 16px;
+  padding: 18px 20px;
+}
+
+.topBarContent {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.topBarTitle,
+.sectionTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.topBarSubtitle,
+.sectionDescription {
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.topBarActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+.topBarActions > * {
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
+.filterField {
+  min-width: 180px;
+}
+
+.filterFieldLarge {
+  min-width: 280px;
+}
+
+@media (max-width: 1120px) {
+  .topBar {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .topBarActions {
+    justify-content: flex-start;
+  }
+
+  .filterFieldLarge {
+    flex: 1 1 320px;
+  }
+}
+
+.tableSection {
+  overflow: hidden;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 24px 24px 0;
+}
+
+.tableWrap {
+  padding: 18px 24px 24px;
+}
+
+.nameCell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.namePrimary {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.notesCell {
+  max-width: 180px;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.statusPENDING {
+  background: var(--status-yellow-bg);
+  color: var(--status-yellow-text);
+}
+
+.statusPAID {
+  background: var(--status-green-bg);
+  color: var(--status-green-text);
+}
+
+.statusOVERDUE {
+  background: var(--status-red-bg);
+  color: var(--status-red-text);
+}
+
+.statusCANCELED {
+  background: var(--status-red-bg);
+  color: var(--status-red-text);
+}
+
+@media (max-width: 1080px) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+}
+
+.modal {
+  width: min(620px, 100%);
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  background: var(--surface);
+  box-shadow: var(--shadow-lg);
+}
+
+.modalForm {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.modalEyebrow {
+  color: var(--primary);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.modalTitle {
+  margin-top: 8px;
+  color: var(--text-primary);
+  font-size: 1.35rem;
+  line-height: 1.2;
+}
+
+.modalDescription {
+  margin-top: 8px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.modalClose {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface-alt);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.modalClose:hover {
+  border-color: var(--border-strong);
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.modalClose:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.modalSummary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.modalSummary div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface-alt);
+}
+
+.modalSummary span {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.modalSummary strong {
+  color: var(--text-primary);
+  font-size: 0.95rem;
+}
+
+.modalFields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.modalFields > :last-child {
+  grid-column: 1 / -1;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+@media (max-width: 768px) {
+  .topBar,
+  .sectionHeader {
+    align-items: stretch;
+  }
+
+  .topBar {
+    grid-template-columns: 1fr;
+  }
+
+  .topBarActions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filterField,
+  .filterFieldLarge {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .metricsCard {
+    grid-template-columns: 1fr;
+  }
+
+  .tableWrap {
+    padding: 16px;
+  }
+
+  .modal {
+    padding: 20px;
+  }
+
+  .modalSummary,
+  .modalFields {
+    grid-template-columns: 1fr;
+  }
+
+  .modalActions {
+    flex-direction: column-reverse;
+  }
+}

@@ -1,0 +1,154 @@
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.requiredMark {
+  color: #ef4444;
+  font-weight: 800;
+}
+
+.optionalMeta {
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-weight: 400;
+}
+
+.trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 56px;
+  width: 100%;
+  padding: 0 16px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface-alt);
+  color: var(--text-primary);
+  cursor: pointer;
+  text-align: left;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.trigger:hover {
+  border-color: var(--border-strong);
+}
+
+.trigger:focus-visible {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px var(--primary-soft);
+  background: var(--background-elevated);
+}
+
+.trigger:disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
+  color: var(--text-primary);
+  background-color: color-mix(in srgb, var(--surface-alt) 88%, var(--surface));
+}
+
+.triggerError,
+.triggerError:hover,
+.triggerError:focus-visible {
+  border-color: #ef4444;
+}
+
+.triggerError:focus-visible {
+  box-shadow: 0 0 0 4px color-mix(in srgb, #ef4444 18%, transparent);
+}
+
+.triggerText {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.96rem;
+}
+
+.triggerIcon {
+  flex: 0 0 auto;
+  color: var(--muted);
+}
+
+.content {
+  min-width: var(--radix-dropdown-menu-trigger-width);
+  max-height: min(320px, var(--radix-dropdown-menu-content-available-height));
+  overflow-y: auto;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: var(--shadow-lg);
+  z-index: 40;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 44px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  outline: none;
+  user-select: none;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.item:hover,
+.item[data-highlighted] {
+  background: var(--surface-alt);
+  color: var(--text-primary);
+}
+
+.itemSelected {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+.itemDisabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.itemLabel {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.itemCheck {
+  flex: 0 0 auto;
+}
+
+.helperText {
+  color: var(--muted);
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+.errorText {
+  color: #fca5a5;
+  font-size: 0.84rem;
+  line-height: 1.5;
+}

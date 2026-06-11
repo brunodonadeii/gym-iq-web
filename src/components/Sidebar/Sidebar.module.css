@@ -1,0 +1,227 @@
+a {
+  text-decoration: none;
+  color: var(--text-primary);
+}
+
+.mobileTopbar {
+  display: none;
+}
+
+.sidebar,
+.drawer {
+  width: 100%;
+  max-width: 280px;
+  background: linear-gradient(
+    180deg,
+    var(--surface) 0%,
+    color-mix(in srgb, var(--surface) 78%, var(--background) 22%) 100%
+  );
+  border-right: 1px solid var(--border);
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  border-top-right-radius: 28px;
+  border-bottom-right-radius: 28px;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sectionLabel,
+.footerLabel {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.navigation {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.link {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px;
+  border: 1px solid transparent;
+  border-radius: 16px;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.link:hover {
+  background: var(--surface-hover);
+  border-color: var(--border);
+  transform: translateX(2px);
+}
+
+.link[data-status="active"] {
+  background: var(--surface-hover);
+  border-color: var(--border);
+  color: var(--text-primary);
+}
+
+.link svg,
+.logoutButton svg,
+.menuButton svg,
+.closeButton svg {
+  flex-shrink: 0;
+}
+
+.link span,
+.logoutButton span,
+.menuButton span {
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.sidebarFooter {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.logoutButton,
+.menuButton,
+.closeButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-secondary);
+  font: inherit;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.logoutButton {
+  width: 100%;
+  height: 48px;
+  justify-content: flex-start;
+  gap: 12px;
+  padding: 0 16px;
+  border-radius: 16px;
+}
+
+.logoutButton:hover {
+  background: var(--surface-hover);
+  border-color: var(--border);
+  color: var(--text-primary);
+  transform: translateX(2px);
+}
+
+.menuButton {
+  height: 42px;
+  gap: 10px;
+  padding: 0 14px;
+  border-color: var(--border);
+  border-radius: 14px;
+  background: var(--surface-alt);
+  color: var(--text-primary);
+}
+
+.menuButton:hover,
+.closeButton:hover {
+  border-color: var(--border-strong);
+  background: var(--surface-hover);
+}
+
+.drawerLayer {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+}
+
+.drawerOverlay {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  padding: 0;
+  background: var(--overlay);
+  cursor: pointer;
+}
+
+.drawer {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  max-width: min(84vw, 320px);
+  border-top-right-radius: 28px;
+  border-bottom-right-radius: 28px;
+  outline: none;
+  animation: drawerIn 0.2s ease-out;
+}
+
+.closeButton {
+  position: absolute;
+  top: 24px;
+  right: 20px;
+  width: 38px;
+  height: 38px;
+  border-color: var(--border);
+  border-radius: 12px;
+  background: var(--surface-alt);
+}
+
+.drawer .sectionHeader {
+  padding-right: 48px;
+}
+
+@keyframes drawerIn {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+@media (max-width: 900px) {
+  .mobileTopbar {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    background: color-mix(in srgb, var(--surface) 94%, transparent);
+    backdrop-filter: blur(14px);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .sidebar {
+    display: none;
+  }
+}

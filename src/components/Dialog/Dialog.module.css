@@ -1,0 +1,16 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: var(--overlay);
+  backdrop-filter: blur(8px);
+}
+
+@media (max-width: 480px) {
+  .overlay {
+    padding: 16px;
+  }
+}

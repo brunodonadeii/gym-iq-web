@@ -1,0 +1,202 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap");
+
+:root {
+  --primary: #ff8a3d;
+  --primary-contrast: #ffffff;
+  --primary-soft: rgba(255, 138, 61, 0.16);
+  --primary-ring: rgba(255, 138, 61, 0.18);
+  --button-hover: #f67821;
+  --button-active: #df6616;
+  --danger: #dc2626;
+  --danger-hover: #b91c1c;
+  --danger-contrast: #ffffff;
+  --background: #0f1115;
+  --background-elevated: #171c24;
+  --surface: #171c24;
+  --surface-alt: #1d2430;
+  --surface-hover: #252e3c;
+  --text-primary: #f3f4f6;
+  --text-secondary: #c5ced8;
+  --muted: #9ca3af;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --overlay: rgba(7, 10, 14, 0.72);
+  --shadow-sm: 0 12px 32px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 32px 80px rgba(0, 0, 0, 0.38);
+  --glow-strong: rgba(255, 138, 61, 0.25);
+  --glow-soft: rgba(255, 138, 61, 0.2);
+  --radius-panel: 20px;
+  --radius-card: 16px;
+  --radius-control: 12px;
+  --status-green-bg: rgba(34, 197, 94, 0.12);
+  --status-green-text: #166534;
+  --status-yellow-bg: rgba(234, 179, 8, 0.12);
+  --status-yellow-text: #854d0e;
+  --status-orange-bg: rgba(249, 115, 22, 0.12);
+  --status-orange-text: #9a3412;
+  --status-red-bg: rgba(239, 68, 68, 0.12);
+  --status-red-text: #991b1b;
+  --status-neutral-bg: rgba(100, 116, 139, 0.16);
+  --status-neutral-text: #475569;
+  --chart-axis: #c5ced8;
+  --chart-grid: rgba(197, 206, 216, 0.16);
+  --chart-label: #f3f4f6;
+  --chart-low: #8ea0b6;
+  --chart-medium: #d49a54;
+  --chart-high: #df7a4f;
+  --chart-critical: #d96b6b;
+  --chart-paid: #e6a06f;
+  --chart-pending: #d49a54;
+  --chart-overdue: #d96b6b;
+  --chart-active: #e6a06f;
+  --chart-suspended: #d49a54;
+  --chart-canceled: #d96b6b;
+}
+
+[data-theme="dark"] {
+  --primary: #d97a38;
+  --primary-contrast: #ffffff;
+  --primary-soft: rgba(217, 122, 56, 0.18);
+  --primary-ring: rgba(217, 122, 56, 0.28);
+  --button-hover: #e58948;
+  --button-active: #c76d2d;
+  --danger: #cf5f5f;
+  --danger-hover: #b94f4f;
+  --danger-contrast: #ffffff;
+  --background: #0f1115;
+  --background-elevated: #171c24;
+  --surface: #171c24;
+  --surface-alt: #1d2430;
+  --surface-hover: #252e3c;
+  --text-primary: #f3f4f6;
+  --text-secondary: #c5ced8;
+  --muted: #9ca3af;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --overlay: rgba(7, 10, 14, 0.72);
+  --shadow-sm: 0 12px 32px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 32px 80px rgba(0, 0, 0, 0.38);
+  --glow-strong: rgba(255, 138, 61, 0.25);
+  --glow-soft: rgba(255, 138, 61, 0.2);
+  --radius-panel: 20px;
+  --radius-card: 16px;
+  --radius-control: 12px;
+  --status-green-bg: rgba(34, 197, 94, 0.22);
+  --status-green-text: #6ee7a2;
+  --status-yellow-bg: rgba(234, 179, 8, 0.22);
+  --status-yellow-text: #f7c75c;
+  --status-orange-bg: rgba(249, 115, 22, 0.12);
+  --status-orange-text: #9a3412;
+  --status-red-bg: rgba(239, 68, 68, 0.22);
+  --status-red-text: #ff8f8f;
+  --status-neutral-bg: rgba(100, 116, 139, 0.16);
+  --status-neutral-text: #c5ced8;
+  --chart-axis: #c5ced8;
+  --chart-grid: rgba(197, 206, 216, 0.16);
+  --chart-label: #f3f4f6;
+  --chart-low: #8ea0b6;
+  --chart-medium: #d49a54;
+  --chart-high: #df7a4f;
+  --chart-critical: #d96b6b;
+  --chart-paid: #e6a06f;
+  --chart-pending: #d49a54;
+  --chart-overdue: #d96b6b;
+  --chart-active: #e6a06f;
+  --chart-suspended: #d49a54;
+  --chart-canceled: #d96b6b;
+}
+
+[data-theme="light"] {
+  --primary: #ff8a3d;
+  --primary-contrast: #ffffff;
+  --primary-soft: rgba(255, 138, 61, 0.16);
+  --primary-ring: rgba(255, 138, 61, 0.18);
+  --button-hover: #f67821;
+  --button-active: #df6616;
+  --danger: #dc2626;
+  --danger-hover: #b91c1c;
+  --danger-contrast: #ffffff;
+  --background: #f4f7fb;
+  --background-elevated: #ffffff;
+  --surface: #ffffff;
+  --surface-alt: #eef3f9;
+  --surface-hover: #e4ebf5;
+  --text-primary: #111827;
+  --text-secondary: #334155;
+  --muted: #64748b;
+  --border: rgba(15, 23, 42, 0.1);
+  --border-strong: rgba(15, 23, 42, 0.18);
+  --overlay: rgba(15, 23, 42, 0.4);
+  --shadow-sm: 0 14px 36px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 28px 72px rgba(15, 23, 42, 0.16);
+  --glow-strong: rgba(255, 138, 61, 0.18);
+  --glow-soft: rgba(255, 138, 61, 0.12);
+  --radius-panel: 20px;
+  --radius-card: 16px;
+  --radius-control: 12px;
+  --status-green-bg: rgba(34, 197, 94, 0.12);
+  --status-green-text: #166534;
+  --status-yellow-bg: rgba(234, 179, 8, 0.12);
+  --status-yellow-text: #854d0e;
+  --status-orange-bg: rgba(249, 115, 22, 0.12);
+  --status-orange-text: #9a3412;
+  --status-red-bg: rgba(239, 68, 68, 0.12);
+  --status-red-text: #991b1b;
+  --status-neutral-bg: rgba(100, 116, 139, 0.16);
+  --status-neutral-text: #475569;
+  --chart-axis: #475569;
+  --chart-grid: rgba(71, 85, 105, 0.22);
+  --chart-label: #111827;
+  --chart-low: #64748b;
+  --chart-medium: #b45309;
+  --chart-high: #c2410c;
+  --chart-critical: #b91c1c;
+  --chart-paid: #ff8a3d;
+  --chart-pending: #b45309;
+  --chart-overdue: #b91c1c;
+  --chart-active: #ff8a3d;
+  --chart-suspended: #b45309;
+  --chart-canceled: #b91c1c;
+}
+
+[data-theme="dark"] .MuiChartsTooltip-root,
+[data-theme="dark"] .MuiChartsTooltip-table,
+[data-theme="dark"] .MuiChartsTooltip-row,
+[data-theme="dark"] .MuiChartsTooltip-cell,
+[data-theme="dark"] .MuiChartsTooltip-markLabel,
+[data-theme="dark"] .MuiChartsTooltip-valueCell {
+  background: var(--surface) !important;
+  color: var(--chart-label) !important;
+}
+
+[data-theme="dark"] .MuiChartsTooltip-root {
+  border: 1px solid var(--border-strong) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scrollbar-gutter: stable;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100vh;
+  font-family: "Manrope", sans-serif;
+}
+
+body {
+  background: var(--background);
+  color: var(--text-primary);
+  overflow-x: hidden;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}

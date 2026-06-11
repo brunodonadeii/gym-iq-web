@@ -1,0 +1,542 @@
+import { Autocomplete } from "@/components/Autocomplete/Autocomplete";
+import { Button } from "@/components/Button/Button";
+import { ConfirmDialog } from "@/components/ConfirmDialog/ConfirmDialog";
+import { Dropdown, type DropdownItem } from "@/components/Dropdown/Dropdown";
+import { ListToolbar } from "@/components/ListToolbar/ListToolbar";
+import { Pagination } from "@/components/Pagination/Pagination";
+import { SelectField } from "@/components/SelectField/SelectField";
+import { Skeleton } from "@/components/Skeleton/Skeleton";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableEmptyState,
+  TableHead,
+  TableHeaderCell,
+  TableRow,
+  TableSkeletonRows,
+} from "@/components/Table/Table";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import { useUpdateEnrollmentStatus } from "@/mutations/useUpdateEnrollmentStatus";
+import type { Enrollment, EnrollmentStatus } from "@/pages/Enrollments/types";
+import { getStudentOptionLabel } from "@/pages/Students/types";
+import { useGetActiveStudentEnrollment } from "@/queries/useGetActiveStudentEnrollment";
+import {
+  type EnrollmentStatusFilter as EnrollmentApiStatusFilter,
+  useGetEnrollments,
+} from "@/queries/useGetEnrollments";
+import { useGetStudentEnrollments } from "@/queries/useGetStudentEnrollments";
+import { useGetStudentOptions } from "@/queries/useGetStudentOptions";
+import { maskEmail } from "@/utils/sensitiveData";
+import { formatLocalDate } from "@/utils/date";
+import { useNavigate } from "@tanstack/react-router";
+import {
+  BadgeCheck,
+  CircleOff,
+  PauseCircle,
+  PlusCircle,
+  RefreshCcw,
+  UserRoundSearch,
+} from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+import styles from "./EnrollmentsPage.module.css";
+
+const enrollmentColumns = [
+  { width: "26%" },
+  { width: "22%" },
+  { width: "14%" },
+  { width: "16%" },
+  { width: "12%" },
+  { width: "10%" },
+];
+
+const statusLabels: Record<EnrollmentStatus, string> = {
+  ACTIVE: "Acesso ativo",
+  SUSPENDED: "Acesso suspenso",
+  CANCELED: "Cancelada",
+};
+
+const isRecurringEnrollment = (enrollment?: Enrollment | null) => {
+  if (!enrollment) {
+    return false;
+  }
+
+  const rawEndDate = enrollment.endDate;
+  const normalizedEndDate =
+    typeof rawEndDate === "string"
+      ? rawEndDate.trim().toLowerCase()
+      : rawEndDate;
+
+  return (
+    normalizedEndDate === null ||
+    normalizedEndDate === undefined ||
+    normalizedEndDate === "" ||
+    normalizedEndDate === "null" ||
+    enrollment.plan?.durationMonths === 1
+  );
+};
+
+const formatEndDate = (enrollment?: Enrollment | null) =>
+  isRecurringEnrollment(enrollment)
+    ? "Recorrente"
+    : formatLocalDate(enrollment?.endDate);
+
+const getEnrollmentTermLabel = (enrollment?: Enrollment | null) =>
+  isRecurringEnrollment(enrollment) ? "Mensal recorrente" : "Prazo determinado";
+
+const resolveStudentName = (enrollment: Enrollment) =>
+  enrollment.student?.name ??
+  enrollment.studentName ??
+  `Aluno #${enrollment.studentId}`;
+
+const resolvePlanName = (enrollment: Enrollment) =>
+  enrollment.plan?.name ?? enrollment.planName ?? `Plano #${enrollment.planId}`;
+
+const canChangeAccessStatus = (status: EnrollmentStatus) =>
+  status !== "CANCELED";
+
+type EnrollmentConfirmation = {
+  enrollment: Enrollment;
+  newStatus: Extract<EnrollmentStatus, "SUSPENDED" | "CANCELED">;
+};
+
+export const EnrollmentsPage = () => {
+  const navigate = useNavigate();
+  const [selectedStudentId, setSelectedStudentId] = useState("");
+  const [selectedStudentName, setSelectedStudentName] = useState("");
+  const [selectedStudentEmail, setSelectedStudentEmail] = useState("");
+  const [studentSearch, setStudentSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"all" | EnrollmentStatus>("all");
+  const [page, setPage] = useState(0);
+  const [size, setSize] = useState(10);
+  const [confirmation, setConfirmation] =
+    useState<EnrollmentConfirmation | null>(null);
+  const debouncedStudentSearch = useDebouncedValue(studentSearch);
+  const enrollmentApiStatusFilter =
+    statusFilter === "all"
+      ? undefined
+      : (statusFilter as EnrollmentApiStatusFilter);
+
+  const {
+    data: allEnrollments,
+    isLoading: isLoadingAllEnrollments,
+    isFetching: isFetchingAllEnrollments,
+  } = useGetEnrollments(enrollmentApiStatusFilter, {
+    page,
+    size,
+    sort: "createdAt,desc",
+  });
+  const {
+    data: studentOptions,
+    isFetching: isFetchingStudentOptions,
+    isFetchingNextPage: isFetchingMoreStudentOptions,
+    hasNextPage: hasMoreStudentOptions,
+    fetchNextPage: fetchMoreStudentOptions,
+  } =
+    useGetStudentOptions(debouncedStudentSearch);
+  const { mutate: updateStatus, isPending: isUpdatingStatus } =
+    useUpdateEnrollmentStatus();
+
+  const studentFilterEnabled = selectedStudentId !== "";
+
+  const {
+    data: filteredEnrollments,
+    isLoading: isLoadingStudentEnrollments,
+    isFetching: isFetchingStudentEnrollments,
+  } = useGetStudentEnrollments(
+    selectedStudentId,
+    enrollmentApiStatusFilter,
+    studentFilterEnabled,
+    {
+      page,
+      size,
+      sort: "createdAt,desc",
+    },
+  );
+
+  const { data: activeEnrollment, isLoading: isLoadingActiveEnrollment } =
+    useGetActiveStudentEnrollment(selectedStudentId, studentFilterEnabled);
+
+  const enrollments = studentFilterEnabled
+    ? (filteredEnrollments?.content ?? [])
+    : (allEnrollments?.content ?? []);
+
+  const currentPage = studentFilterEnabled
+    ? filteredEnrollments
+    : allEnrollments;
+  const isLoadingEnrollments = studentFilterEnabled
+    ? isLoadingStudentEnrollments
+    : isLoadingAllEnrollments;
+  const isFetchingEnrollments = studentFilterEnabled
+    ? isFetchingStudentEnrollments
+    : isFetchingAllEnrollments;
+  const tableLoading = isLoadingEnrollments || isFetchingEnrollments;
+
+  const autocompleteStudentOptions =
+    studentOptions?.map((student) => ({
+      label: getStudentOptionLabel(student),
+      value: String(student.studentId),
+    })) ?? [];
+
+  const summaryPlanLabel = activeEnrollment
+    ? resolvePlanName(activeEnrollment)
+    : null;
+
+  const handleStatusChange = (id: string, newStatus: EnrollmentStatus) => {
+    updateStatus(
+      { id, newStatus },
+      {
+        onSuccess: () => {
+          toast.success("Status de acesso atualizado com sucesso!");
+          setConfirmation(null);
+        },
+        onError: (e) => {
+          toast.error(
+            <div>
+              <strong>{e?.error ?? "Erro"}</strong>
+              <br />
+              <span>{e?.message ?? "Erro inesperado"}</span>
+            </div>,
+          );
+        },
+      },
+    );
+  };
+
+  const getEnrollmentActions = (enrollment: Enrollment): DropdownItem[] => {
+    const enrollmentId = String(enrollment.enrollmentId);
+
+    if (enrollment.status === "CANCELED") {
+      return [
+        {
+          label: "Nenhuma ação disponível",
+          icon: <RefreshCcw size={15} />,
+          disabled: true,
+        },
+      ];
+    }
+
+    const recurringEnrollment = isRecurringEnrollment(enrollment);
+    const renewAction: DropdownItem = recurringEnrollment
+      ? {
+          label: "Renovar matrícula",
+          icon: <RefreshCcw size={15} />,
+          disabled: true,
+        }
+      : {
+          label: "Renovar matrícula",
+          icon: <RefreshCcw size={15} />,
+          onSelect: () =>
+            navigate({
+              to: "/enrollments/$enrollmentId",
+              params: {
+                enrollmentId,
+              },
+            }),
+        };
+
+    const statusActions =
+      enrollment.status === "ACTIVE"
+        ? [
+            {
+              label: "Suspender acesso",
+              icon: <PauseCircle size={15} />,
+              disabled: isUpdatingStatus,
+              onSelect: () =>
+                setConfirmation({
+                  enrollment,
+                  newStatus: "SUSPENDED",
+                }),
+            },
+          ]
+        : [
+            {
+              label: "Ativar acesso",
+              icon: <BadgeCheck size={15} />,
+              disabled: isUpdatingStatus,
+              onSelect: () => handleStatusChange(enrollmentId, "ACTIVE"),
+            },
+          ];
+
+    return [
+      renewAction,
+      ...statusActions,
+      {
+        label: "Cancelar matrícula",
+        icon: <CircleOff size={15} />,
+        danger: true,
+        disabled: isUpdatingStatus || !canChangeAccessStatus(enrollment.status),
+        onSelect: () =>
+          setConfirmation({
+            enrollment,
+            newStatus: "CANCELED",
+          }),
+      },
+    ];
+  };
+
+  return (
+    <div className={styles.page}>
+      <div className={styles.topBar}>
+        <ListToolbar
+          search={
+            <Autocomplete
+              label="Aluno"
+              id="studentFilter"
+              search={studentSearch}
+              onSearchChange={(value) => {
+                setStudentSearch(value);
+                setSelectedStudentId("");
+                setSelectedStudentName("");
+                setSelectedStudentEmail("");
+                setPage(0);
+              }}
+              onSelect={(option) => {
+                const selectedOption = studentOptions?.find(
+                  (student) => String(student.studentId) === option.value,
+                );
+
+                setSelectedStudentId(option.value);
+                setSelectedStudentName(selectedOption?.name ?? option.label);
+                setSelectedStudentEmail(selectedOption?.email ?? "");
+                setStudentSearch(option.label);
+                setPage(0);
+              }}
+              onClear={() => {
+                setStudentSearch("");
+                setSelectedStudentId("");
+                setSelectedStudentName("");
+                setSelectedStudentEmail("");
+                setPage(0);
+              }}
+              options={autocompleteStudentOptions}
+              loading={
+                isFetchingStudentOptions && autocompleteStudentOptions.length === 0
+              }
+              loadingMore={isFetchingMoreStudentOptions}
+              hasMoreOptions={Boolean(hasMoreStudentOptions)}
+              onLoadMore={() => void fetchMoreStudentOptions()}
+              placeholder="Buscar por nome ou por CPF/e-mail completos"
+              containerClassName={styles.filterFieldLarge}
+            />
+          }
+          filters={
+            <SelectField
+              label="Status"
+              id="enrollmentStatusFilter"
+              value={statusFilter}
+              onChange={(event) => {
+                setStatusFilter(event.target.value as "all" | EnrollmentStatus);
+                setPage(0);
+              }}
+              options={[
+                { label: "Todos", value: "all" },
+                { label: "Acesso ativo", value: "ACTIVE" },
+                { label: "Acesso suspenso", value: "SUSPENDED" },
+                { label: "Cancelada", value: "CANCELED" },
+              ]}
+              containerProps={{ className: styles.filterField }}
+            />
+          }
+          action={
+            <Button
+              leftIcon={<PlusCircle size={18} />}
+              onClick={() => navigate({ to: "/enrollments/create" })}
+            >
+              Nova matrícula
+            </Button>
+          }
+        />
+      </div>
+
+      {studentFilterEnabled && (
+        <section className={styles.summaryCard}>
+          <div className={styles.summaryHeader}>
+            <div>
+              <span className={styles.summaryEyebrow}>Aluno selecionado</span>
+              <h3 className={styles.summaryTitle}>
+                {selectedStudentName || `Aluno #${selectedStudentId}`}
+              </h3>
+              <p className={styles.summaryDescription}>
+                {selectedStudentEmail
+                  ? maskEmail(selectedStudentEmail)
+                  : "Sem e-mail informado"}
+              </p>
+            </div>
+            <div className={styles.summaryBadge}>
+              <UserRoundSearch size={16} />
+              {isLoadingStudentEnrollments ? (
+                <Skeleton width="132px" height="16px" />
+              ) : (
+                `${enrollments.length} matrícula(s)`
+              )}
+            </div>
+          </div>
+
+          <div className={styles.activePanel}>
+            <div>
+              <span className={styles.panelLabel}>Matrícula ativa</span>
+              {isLoadingActiveEnrollment ? (
+                <div className={styles.panelSkeleton}>
+                  <Skeleton width="180px" height="22px" />
+                  <Skeleton width="140px" height="14px" />
+                </div>
+              ) : activeEnrollment ? (
+                <>
+                  <p className={styles.panelValue}>
+                    {summaryPlanLabel ?? resolvePlanName(activeEnrollment)}
+                  </p>
+                  <p className={styles.panelHint}>
+                    Vigência: {formatEndDate(activeEnrollment)}
+                  </p>
+                  <span className={styles.termBadge}>
+                    {getEnrollmentTermLabel(activeEnrollment)}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <p className={styles.panelValue}>Nenhuma matrícula ativa</p>
+                  <p className={styles.panelHint}>
+                    Esse aluno não possui contrato ativo no momento.
+                  </p>
+                </>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+
+      <section className={styles.tableSection}>
+        <div className={styles.sectionHeader}>
+          <div>
+            <h3 className={styles.sectionTitle}>Lista principal</h3>
+            <p className={styles.sectionDescription}>
+              Consulte aluno, plano, vigência e status de acesso. Exibindo{" "}
+              {enrollments.length} registro(s) nesta página.
+            </p>
+          </div>
+        </div>
+
+        <div className={styles.tableWrap}>
+          <Table columns={enrollmentColumns} minWidth="1040px">
+            <TableHead>
+              <TableRow>
+                <TableHeaderCell>Aluno</TableHeaderCell>
+                <TableHeaderCell>Plano</TableHeaderCell>
+                <TableHeaderCell>Início</TableHeaderCell>
+                <TableHeaderCell>Fim</TableHeaderCell>
+                <TableHeaderCell center>Status</TableHeaderCell>
+                <TableHeaderCell center>Ações</TableHeaderCell>
+              </TableRow>
+            </TableHead>
+
+            <TableBody>
+              {tableLoading && <TableSkeletonRows columns={6} />}
+
+              {!tableLoading &&
+                enrollments.map((enrollment) => (
+                  <TableRow key={enrollment.enrollmentId}>
+                    <TableCell>
+                      <div className={styles.nameCell}>
+                        <span className={styles.namePrimary}>
+                          {resolveStudentName(enrollment)}
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell>{resolvePlanName(enrollment)}</TableCell>
+                    <TableCell>
+                      {formatLocalDate(enrollment.startDate)}
+                    </TableCell>
+                    <TableCell>
+                      <div className={styles.termCell}>
+                        <span>{formatEndDate(enrollment)}</span>
+                        <span className={styles.termBadge}>
+                          {getEnrollmentTermLabel(enrollment)}
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell center>
+                      <span
+                        className={`${styles.statusBadge} ${
+                          styles[`status${enrollment.status}`]
+                        }`}
+                      >
+                        {statusLabels[enrollment.status]}
+                      </span>
+                    </TableCell>
+                    <TableCell center>
+                      <Dropdown items={getEnrollmentActions(enrollment)} />
+                    </TableCell>
+                  </TableRow>
+                ))}
+
+              {!tableLoading && enrollments.length === 0 && (
+                <TableEmptyState
+                  colSpan={6}
+                  message="Nenhuma matrícula encontrada."
+                />
+              )}
+            </TableBody>
+          </Table>
+        </div>
+
+        <Pagination
+          page={currentPage}
+          currentPage={page}
+          loading={isFetchingEnrollments}
+          onPageChange={setPage}
+          onSizeChange={(nextSize) => {
+            setSize(nextSize);
+            setPage(0);
+          }}
+        />
+      </section>
+
+      <ConfirmDialog
+        open={!!confirmation}
+        title={
+          confirmation?.newStatus === "CANCELED"
+            ? "Cancelar matrícula?"
+            : "Suspender acesso?"
+        }
+        description={
+          confirmation
+            ? (
+                <>
+                  A matrícula de{" "}
+                  <strong>{resolveStudentName(confirmation.enrollment)}</strong>{" "}
+                  no plano{" "}
+                  <strong>{resolvePlanName(confirmation.enrollment)}</strong>{" "}
+                  será{" "}
+                  <strong>
+                    {confirmation.newStatus === "CANCELED"
+                      ? "cancelada definitivamente"
+                      : "suspensa"}
+                  </strong>
+                  {confirmation.newStatus === "CANCELED"
+                    ? ". Ela não poderá ser reativada por este fluxo."
+                    : ". O aluno perderá o acesso até que a matrícula seja ativada novamente."}
+                </>
+              )
+            : ""
+        }
+        confirmLabel={
+          confirmation?.newStatus === "CANCELED"
+            ? "Cancelar matrícula"
+            : "Suspender acesso"
+        }
+        loading={isUpdatingStatus}
+        onCancel={() => setConfirmation(null)}
+        onConfirm={() => {
+          if (!confirmation) return;
+
+          handleStatusChange(
+            String(confirmation.enrollment.enrollmentId),
+            confirmation.newStatus,
+          );
+        }}
+      />
+    </div>
+  );
+};

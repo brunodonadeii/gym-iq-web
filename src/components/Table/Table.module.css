@@ -1,0 +1,70 @@
+.tableContainer {
+  overflow-x: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.tableHead .cell,
+.tableBody .cell {
+  padding: 20px;
+  vertical-align: middle;
+}
+
+.tableHead .cell {
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--border);
+}
+
+.tableBody .cell {
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border);
+}
+
+.tableBody .tableRow {
+  transition: background-color 0.2s ease;
+}
+
+.tableBody .tableRow:hover {
+  background: color-mix(in srgb, var(--surface-alt) 65%, transparent);
+}
+
+.tableBody .tableRow:last-child .cell {
+  border-bottom: none;
+}
+
+.centerCell {
+  text-align: center !important;
+}
+
+.emptyCell {
+  padding: 32px 20px;
+  text-align: center;
+  color: var(--muted);
+}
+
+@media (max-width: 480px) {
+  .tableHead .cell,
+  .tableBody .cell,
+  .emptyCell {
+    padding: 16px;
+  }
+}

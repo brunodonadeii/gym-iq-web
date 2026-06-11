@@ -1,0 +1,272 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.heroCard,
+.metricsCard,
+.topBar,
+.summaryCard,
+.tableSection {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.heroCard {
+  padding: 28px;
+}
+
+.eyebrow,
+.summaryEyebrow,
+.metricLabel,
+.panelLabel {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-alt);
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.heroTitle {
+  margin-top: 16px;
+  font-size: clamp(1.7rem, 3vw, 2.3rem);
+  line-height: 1.1;
+  color: var(--text-primary);
+}
+
+.heroDescription {
+  max-width: 58ch;
+  margin-top: 12px;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+.metricsCard {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  padding: 18px;
+}
+
+.metric {
+  padding: 18px;
+  border-radius: 18px;
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+}
+
+.metricValue {
+  margin-top: 12px;
+  font-size: 1.9rem;
+  line-height: 1;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.metricHint {
+  margin-top: 8px;
+  color: var(--text-secondary);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.topBar {
+  padding: 18px 20px;
+}
+
+.topBarContent {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.topBarTitle,
+.sectionTitle,
+.summaryTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.topBarSubtitle,
+.sectionDescription,
+.summaryDescription,
+.panelHint {
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.topBarActions {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.filterField {
+  min-width: 180px;
+}
+
+.filterFieldLarge {
+  min-width: 280px;
+}
+
+.summaryCard {
+  padding: 22px;
+}
+
+.summaryHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.summaryBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: var(--surface-alt);
+  color: var(--text-secondary);
+  font-size: 0.92rem;
+}
+
+.activePanel {
+  margin-top: 18px;
+  padding: 18px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--surface-alt);
+}
+
+.panelValue {
+  margin-top: 12px;
+  color: var(--text-primary);
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.panelSkeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.tableSection {
+  overflow: hidden;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 24px 24px 0;
+}
+
+.tableWrap {
+  padding: 18px 24px 24px;
+}
+
+.nameCell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.termCell {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.namePrimary {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.termBadge {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-size: 0.82rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.statusACTIVE {
+  background: var(--status-green-bg);
+  border-color: color-mix(in srgb, var(--status-green-text) 18%, transparent);
+  color: var(--status-green-text);
+}
+
+.statusSUSPENDED {
+  background: var(--status-yellow-bg);
+  border-color: color-mix(in srgb, var(--status-yellow-text) 18%, transparent);
+  color: var(--status-yellow-text);
+}
+
+.statusCANCELED {
+  background: var(--status-red-bg);
+  border-color: color-mix(in srgb, var(--status-red-text) 18%, transparent);
+  color: var(--status-red-text);
+}
+
+@media (max-width: 1080px) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+
+  .metricsCard {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .summaryHeader,
+  .sectionHeader {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filterField,
+  .filterFieldLarge {
+    min-width: 0;
+  }
+
+  .tableWrap {
+    padding: 16px;
+  }
+}

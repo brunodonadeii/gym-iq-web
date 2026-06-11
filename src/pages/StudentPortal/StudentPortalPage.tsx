@@ -1,0 +1,437 @@
+﻿import { Button } from "@/components/Button/Button";
+import { ConfirmDialog } from "@/components/ConfirmDialog/ConfirmDialog";
+import { Skeleton } from "@/components/Skeleton/Skeleton";
+import { useDeleteMyStudentPersonalData } from "@/mutations/useDeleteMyStudentPersonalData";
+import { useGetMyActiveEnrollment } from "@/queries/useGetMyActiveEnrollment";
+import { useGetMyEnrollments } from "@/queries/useGetMyEnrollments";
+import { useGetMyPayments } from "@/queries/useGetMyPayments";
+import { useGetMyPresences } from "@/queries/useGetMyPresences";
+import { useGetMyStudentPersonalDataDeletionEligibility } from "@/queries/useGetStudentPersonalDataDeletionEligibility";
+import { useGetMyWorkoutSheets } from "@/queries/useGetMyWorkoutSheets";
+import { useGetStudentMe } from "@/queries/useGetStudentMe";
+import { clearAuthStorage } from "@/utils/auth";
+import { useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
+import { toast } from "sonner";
+import { WorkoutSheetCard } from "./components/WorkoutSheetCard";
+import styles from "./StudentPortalPage.module.css";
+import {
+  enrollmentStatusLabels,
+  formatCurrency,
+  formatDate,
+  formatDateTimeAsDate,
+  formatDateTime,
+  formatEnrollmentEndDate,
+  getEnrollmentStatusClassName,
+  getPaymentStatusClassName,
+  paymentStatusLabels,
+} from "./utils";
+
+export const StudentPortalPage = () => {
+  const [expandedSheetId, setExpandedSheetId] = useState<string | null>(null);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const navigate = useNavigate();
+  const { data: student, isLoading: isLoadingStudent } = useGetStudentMe();
+  const { data: activeEnrollment, isLoading: isLoadingActiveEnrollment } =
+    useGetMyActiveEnrollment();
+  const {
+    data: enrollments,
+    isLoading: isLoadingEnrollments,
+    isFetchingNextPage: isFetchingMoreEnrollments,
+    hasNextPage: hasMoreEnrollments,
+    fetchNextPage: fetchMoreEnrollments,
+  } = useGetMyEnrollments();
+  const {
+    data: payments,
+    isLoading: isLoadingPayments,
+    isFetchingNextPage: isFetchingMorePayments,
+    hasNextPage: hasMorePayments,
+    fetchNextPage: fetchMorePayments,
+  } = useGetMyPayments();
+  const {
+    data: presences,
+    isLoading: isLoadingPresences,
+    isFetchingNextPage: isFetchingMorePresences,
+    hasNextPage: hasMorePresences,
+    fetchNextPage: fetchMorePresences,
+  } = useGetMyPresences();
+  const {
+    data: workoutSheets,
+    isLoading: isLoadingWorkoutSheets,
+    isFetchingNextPage: isFetchingMoreWorkoutSheets,
+    hasNextPage: hasMoreWorkoutSheets,
+    fetchNextPage: fetchMoreWorkoutSheets,
+  } = useGetMyWorkoutSheets();
+  const {
+    data: deletionEligibility,
+    isLoading: isLoadingDeletionEligibility,
+  } = useGetMyStudentPersonalDataDeletionEligibility(!isLoadingStudent);
+  const { mutate: deleteMyPersonalData, isPending: isDeletingMyPersonalData } =
+    useDeleteMyStudentPersonalData();
+  const canDeletePersonalData = deletionEligibility?.canAnonymize === true;
+  const deletePersonalDataDisabled =
+    isDeletingMyPersonalData ||
+    isLoadingDeletionEligibility ||
+    !canDeletePersonalData;
+
+  const handleLogout = () => {
+    clearAuthStorage();
+    navigate({ to: "/login" });
+  };
+
+  const handleDeleteAccount = () => {
+    deleteMyPersonalData(undefined, {
+      onSuccess: () => {
+        clearAuthStorage();
+        toast.success("Seus dados pessoais foram excluídos com sucesso.");
+        navigate({ to: "/login" });
+      },
+      onError: (e) => {
+        toast.error(
+          <div>
+            <strong>{e?.error ?? "Erro"}</strong>
+            <br />
+            <span>{e?.message ?? "Não foi possível excluir seus dados."}</span>
+          </div>,
+        );
+      },
+    });
+  };
+
+  return (
+    <main className={styles.page}>
+      <div className={styles.container}>
+        <header className={styles.header}>
+          <div>
+            <span className={styles.eyebrow}>Área do aluno</span>
+            <h1 className={styles.title}>
+              {isLoadingStudent ? (
+                <Skeleton width="280px" height="3rem" />
+              ) : (
+                `Olá, ${student?.name ?? "aluno"}`
+              )}
+            </h1>
+            <p className={styles.subtitle}>
+              Acompanhe sua matrícula, pagamentos, presenças e fichas de treino.
+            </p>
+          </div>
+
+          <Button type="button" onClick={handleLogout}>
+            Sair
+          </Button>
+        </header>
+
+        <section className={styles.grid}>
+          <article className={styles.card}>
+            <div className={styles.cardHeader}>
+              <h2 className={styles.cardTitle}>Meus dados</h2>
+            </div>
+
+            {isLoadingStudent ? (
+              <Skeleton height="160px" radius="18px" />
+            ) : (
+              <>
+                <div className={styles.details}>
+                  <div className={styles.detail}>
+                    <span>E-mail</span>
+                    <strong>{student?.email ?? "Não informado"}</strong>
+                  </div>
+                  <div className={styles.detail}>
+                    <span>CPF</span>
+                    <strong>{student?.cpf ?? "Não informado"}</strong>
+                  </div>
+                  <div className={styles.detail}>
+                    <span>Telefone</span>
+                    <strong>{student?.phone ?? "Não informado"}</strong>
+                  </div>
+                  <div className={styles.detail}>
+                    <span>Status</span>
+                    <strong>{student?.active ? "Ativo" : "Inativo"}</strong>
+                  </div>
+                </div>
+
+                <div className={styles.cardActions}>
+                  <Button
+                    variant="danger"
+                    onClick={() => setConfirmDeleteOpen(true)}
+                    disabled={deletePersonalDataDisabled}
+                  >
+                    Excluir
+                  </Button>
+                </div>
+
+                {!isLoadingDeletionEligibility &&
+                  deletionEligibility &&
+                  !deletionEligibility.canAnonymize && (
+                    <div
+                      className={[
+                        styles.eligibilityNotice,
+                        deletionEligibility.hasFinancialPendingIssues &&
+                          styles.eligibilityNoticeDanger,
+                      ]
+                        .filter(Boolean)
+                        .join(" ")}
+                    >
+                      <strong>Exclusão indisponível no momento</strong>
+                      <ul>
+                        {deletionEligibility.blockers.map((blocker) => (
+                          <li key={blocker}>{blocker}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+              </>
+            )}
+          </article>
+
+          <article className={styles.card}>
+            <div className={styles.cardHeader}>
+              <h2 className={styles.cardTitle}>Matrícula ativa</h2>
+              {activeEnrollment?.status && (
+                <span
+                  className={getEnrollmentStatusClassName(
+                    activeEnrollment.status,
+                    styles,
+                  )}
+                >
+                  {enrollmentStatusLabels[activeEnrollment.status]}
+                </span>
+              )}
+            </div>
+
+            {isLoadingActiveEnrollment ? (
+              <Skeleton height="160px" radius="18px" />
+            ) : activeEnrollment ? (
+              <div className={styles.details}>
+                <div className={styles.detail}>
+                  <span>Plano</span>
+                  <strong>
+                    {activeEnrollment.plan?.name ??
+                      activeEnrollment.planName ??
+                      `Plano #${activeEnrollment.planId}`}
+                  </strong>
+                </div>
+                <div className={styles.detail}>
+                  <span>Início</span>
+                  <strong>{formatDate(activeEnrollment.startDate)}</strong>
+                </div>
+                <div className={styles.detail}>
+                  <span>Fim</span>
+                  <strong>
+                    {formatEnrollmentEndDate(activeEnrollment.endDate)}
+                  </strong>
+                </div>
+                <div className={styles.detail}>
+                  <span>Criada em</span>
+                  <strong>
+                    {formatDateTimeAsDate(activeEnrollment.createdAt)}
+                  </strong>
+                </div>
+              </div>
+            ) : (
+              <div className={styles.empty}>
+                Nenhuma matrícula ativa encontrada.
+              </div>
+            )}
+          </article>
+
+          <article className={styles.card}>
+            <h2 className={styles.cardTitle}>Pagamentos recentes</h2>
+
+            {isLoadingPayments ? (
+              <Skeleton height="180px" radius="18px" />
+            ) : payments.length ? (
+              <>
+                <div className={styles.list}>
+                  {payments.map((payment) => (
+                    <div
+                      className={styles.listItem}
+                      key={payment.paymentId ?? payment.id}
+                    >
+                      <div>
+                        <p className={styles.itemTitle}>
+                          {formatCurrency(payment.amount)}
+                        </p>
+                        <p className={styles.itemDescription}>
+                          Vencimento: {formatDate(payment.dueDate)}
+                        </p>
+                      </div>
+                      <span
+                        className={getPaymentStatusClassName(
+                          payment.status,
+                          styles,
+                        )}
+                      >
+                        {paymentStatusLabels[payment.status]}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                {hasMorePayments && (
+                  <div className={styles.loadMore}>
+                    <Button
+                      variant="secondary"
+                      loading={isFetchingMorePayments}
+                      onClick={() => void fetchMorePayments()}
+                    >
+                      Carregar mais pagamentos
+                    </Button>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className={styles.empty}>Nenhum pagamento encontrado.</div>
+            )}
+          </article>
+
+          <article className={styles.card}>
+            <h2 className={styles.cardTitle}>Últimas presenças</h2>
+
+            {isLoadingPresences ? (
+              <Skeleton height="180px" radius="18px" />
+            ) : presences.length ? (
+              <>
+                <div className={styles.list}>
+                  {presences.map((presence) => (
+                    <div className={styles.listItem} key={presence.presenceId}>
+                      <div>
+                        <p className={styles.itemTitle}>
+                          {formatDateTime(presence.checkInAt)}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {hasMorePresences && (
+                  <div className={styles.loadMore}>
+                    <Button
+                      variant="secondary"
+                      loading={isFetchingMorePresences}
+                      onClick={() => void fetchMorePresences()}
+                    >
+                      Carregar mais presenças
+                    </Button>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className={styles.empty}>Nenhuma presença encontrada.</div>
+            )}
+          </article>
+
+          <article className={`${styles.card} ${styles.wide}`}>
+            <h2 className={styles.cardTitle}>Fichas de treino ativas</h2>
+
+            {isLoadingWorkoutSheets ? (
+              <Skeleton height="180px" radius="18px" />
+            ) : workoutSheets.length ? (
+              <>
+                <div className={styles.list}>
+                  {workoutSheets.map((sheet) => (
+                    <WorkoutSheetCard
+                      key={sheet.workoutSheetId}
+                      sheet={sheet}
+                      expanded={expandedSheetId === sheet.workoutSheetId}
+                      onToggle={() =>
+                        setExpandedSheetId((current) =>
+                          current === sheet.workoutSheetId
+                            ? null
+                            : sheet.workoutSheetId,
+                        )
+                      }
+                    />
+                  ))}
+                </div>
+                {hasMoreWorkoutSheets && (
+                  <div className={styles.loadMore}>
+                    <Button
+                      variant="secondary"
+                      loading={isFetchingMoreWorkoutSheets}
+                      onClick={() => void fetchMoreWorkoutSheets()}
+                    >
+                      Carregar mais fichas
+                    </Button>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className={styles.empty}>Nenhuma ficha ativa encontrada.</div>
+            )}
+          </article>
+
+          <article className={`${styles.card} ${styles.wide}`}>
+            <h2 className={styles.cardTitle}>Histórico de matrículas</h2>
+
+            {isLoadingEnrollments ? (
+              <Skeleton height="160px" radius="18px" />
+            ) : enrollments.length ? (
+              <>
+                <div className={styles.list}>
+                  {enrollments.map((enrollment) => (
+                    <div
+                      className={styles.listItem}
+                      key={enrollment.enrollmentId}
+                    >
+                      <div>
+                        <p className={styles.itemTitle}>
+                          {enrollment.plan?.name ??
+                            enrollment.planName ??
+                            `Plano #${enrollment.planId}`}
+                        </p>
+                        <p className={styles.itemDescription}>
+                          {formatDate(enrollment.startDate)} até{" "}
+                          {formatEnrollmentEndDate(enrollment.endDate)}
+                        </p>
+                      </div>
+                      <span
+                        className={getEnrollmentStatusClassName(
+                          enrollment.status,
+                          styles,
+                        )}
+                      >
+                        {enrollmentStatusLabels[enrollment.status]}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                {hasMoreEnrollments && (
+                  <div className={styles.loadMore}>
+                    <Button
+                      variant="secondary"
+                      loading={isFetchingMoreEnrollments}
+                      onClick={() => void fetchMoreEnrollments()}
+                    >
+                      Carregar mais matrículas
+                    </Button>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className={styles.empty}>Nenhuma matrícula encontrada.</div>
+            )}
+          </article>
+        </section>
+      </div>
+
+      <ConfirmDialog
+        open={confirmDeleteOpen}
+        title="Excluir seus dados?"
+        description={
+          <>
+            Seus dados pessoais serão <strong>excluídos</strong> e o histórico
+            será preservado. Esta ação <strong>não pode ser desfeita</strong> e
+            não será concluída se houver <strong>pagamentos pendentes ou
+            atrasados</strong>.
+          </>
+        }
+        confirmLabel="Excluir"
+        loading={isDeletingMyPersonalData}
+        confirmDisabled={!canDeletePersonalData}
+        onCancel={() => setConfirmDeleteOpen(false)}
+        onConfirm={handleDeleteAccount}
+      />
+    </main>
+  );
+};
+
+

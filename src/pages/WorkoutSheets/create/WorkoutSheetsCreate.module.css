@@ -1,0 +1,99 @@
+.row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.row + .row {
+  margin-top: 16px;
+}
+
+.exercisesSection {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+
+.exercisesHeader,
+.exerciseCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.exercisesTitle {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.exercisesDescription {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.exerciseList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.addExerciseRow {
+  display: flex;
+  justify-content: center;
+  margin-top: 18px;
+}
+
+.sectionCard {
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface-alt);
+}
+
+.sectionCardHeader {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: end;
+  margin-bottom: 16px;
+}
+
+.sectionExerciseList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.exerciseCard {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+}
+
+.exerciseCardHeader {
+  margin-bottom: 16px;
+  color: var(--text-primary);
+}
+
+@media (max-width: 768px) {
+  .row {
+    grid-template-columns: 1fr;
+  }
+
+  .exercisesHeader,
+  .exerciseCardHeader,
+  .sectionCardHeader {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .sectionCardHeader {
+    display: flex;
+  }
+}
