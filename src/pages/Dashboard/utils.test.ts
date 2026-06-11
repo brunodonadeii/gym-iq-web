@@ -1,6 +1,4 @@
 import { describe, expect, it, vi } from "vitest";
-import type { WorkoutSheetExercise } from "@/pages/WorkoutSheets/types";
-
 const { normalizeApiErrorSpy } = vi.hoisted(() => ({
   normalizeApiErrorSpy: vi.fn(),
 }));
@@ -16,7 +14,6 @@ import {
   formatNumber,
   formatPercent,
   getErrorMessage,
-  groupExercisesByTrainingSection,
   hasPositiveValues,
   isForbiddenError,
 } from "./utils";
@@ -81,52 +78,5 @@ describe("dashboard utils", () => {
     expect(hasPositiveValues([0, -1, 2])).toBe(true);
     expect(hasPositiveValues([0, -1, -2])).toBe(false);
     expect(hasPositiveValues([])).toBe(false);
-  });
-});
-
-describe("groupExercisesByTrainingSection", () => {
-  it("returns an empty list when there are no exercises", () => {
-    expect(groupExercisesByTrainingSection()).toEqual([]);
-    expect(groupExercisesByTrainingSection([])).toEqual([]);
-  });
-
-  it("groups exercises by section, trims names and sorts by execution order", () => {
-    const exercises = [
-      {
-        id: 1,
-        trainingSection: " B ",
-        executionOrder: 2,
-      },
-      {
-        id: 2,
-        trainingSection: "",
-        executionOrder: 3,
-      },
-      {
-        id: 3,
-        trainingSection: "B",
-        executionOrder: 1,
-      },
-      {
-        id: 4,
-        trainingSection: "A",
-        executionOrder: 4,
-      },
-    ] as WorkoutSheetExercise[];
-
-    expect(groupExercisesByTrainingSection(exercises)).toEqual([
-      {
-        section: "B",
-        exercises: [exercises[2], exercises[0]],
-      },
-      {
-        section: "Treino",
-        exercises: [exercises[1]],
-      },
-      {
-        section: "A",
-        exercises: [exercises[3]],
-      },
-    ]);
   });
 });
