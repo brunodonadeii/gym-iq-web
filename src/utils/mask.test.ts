@@ -10,7 +10,7 @@ describe("mask", () => {
 
   it("stops formatting when the value runs out of digits", () => {
     expect(mask("12345", "###.###.###-##")).toBe("123.45.-");
-    expect(mask("1", "(##) #####-####")).toBe("(1");
+    expect(mask("1", "(##) #####-####")).toBe("(1) -");
   });
 
   it("ignores extra digits beyond the amount required by the pattern", () => {

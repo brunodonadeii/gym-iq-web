@@ -36,10 +36,16 @@ describe("requireRoles", () => {
       },
     };
 
-    expect(() => requireRoles(context, ["ADMIN"])).toThrowErrorMatchingObject({
-      type: "redirect",
-      to: "/unauthorized",
-    });
+    try {
+      requireRoles(context, ["ADMIN"]);
+      throw new Error("Expected requireRoles to throw");
+    } catch (error) {
+      expect(error).toEqual({
+        type: "redirect",
+        to: "/unauthorized",
+      });
+    }
+
     expect(redirectSpy).toHaveBeenCalledWith({ to: "/unauthorized" });
   });
 });

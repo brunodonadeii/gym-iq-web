@@ -1,5 +1,4 @@
 import { render, screen } from "@testing-library/react";
-import type { ReactNode } from "react";
 import { describe, expect, it, vi } from "vitest";
 
 vi.mock("../DashboardPage.module.css", () => ({
@@ -65,7 +64,7 @@ describe("MetricCard", () => {
     render(
       <MetricCard
         label="Churn"
-        value={<span>12%</span> as ReactNode}
+        value={<span>12%</span>}
         icon={<span>Icon</span>}
       />,
     );

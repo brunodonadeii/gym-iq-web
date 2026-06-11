@@ -4,10 +4,12 @@ const {
   buildApiUrlSpy,
   clearAuthStorageSpy,
   parseApiResponseSpy,
+  setItemSpy,
 } = vi.hoisted(() => ({
   buildApiUrlSpy: vi.fn((path: string) => `https://api.test/${path}`),
   clearAuthStorageSpy: vi.fn(),
   parseApiResponseSpy: vi.fn(),
+  setItemSpy: vi.fn(),
 }));
 
 vi.mock("@/services/apiUrl", () => ({
@@ -28,7 +30,7 @@ describe("auth service", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.stubGlobal("fetch", vi.fn());
-    vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {});
+    vi.spyOn(Storage.prototype, "setItem").mockImplementation(setItemSpy);
   });
 
   it("logs in, clears previous auth state and persists the returned token", async () => {
@@ -66,7 +68,7 @@ describe("auth service", () => {
       "Não foi possível entrar. Confira seu e-mail e senha e tente novamente.",
     );
     expect(clearAuthStorageSpy).toHaveBeenCalledTimes(1);
-    expect(localStorage.setItem).toHaveBeenCalledWith("token", "jwt-token");
+    expect(setItemSpy).toHaveBeenCalledWith("token", "jwt-token");
   });
 
   it("requests forgot password with the expected payload and fallback message", async () => {

@@ -63,6 +63,6 @@ describe("maskEmail", () => {
   it("masks e-mails with short and long local parts", () => {
     expect(maskEmail("jo@email.com")).toBe("jo*@email.com");
     expect(maskEmail("joao@email.com")).toBe("jo**@email.com");
-    expect(maskEmail("mariana@email.com")).toBe("ma*****a@email.com");
+    expect(maskEmail("mariana@email.com")).toBe("ma****a@email.com");
   });
 });
