@@ -1,73 +1,157 @@
-# React + TypeScript + Vite
+# Gym IQ Web
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend do projeto acadêmico **Gym IQ**, desenvolvido como parte de um **Trabalho de Conclusão de Curso (TCC)**. A aplicação tem como objetivo apoiar a gestão de academias, centralizando rotinas administrativas, acompanhamento operacional e serviços voltados ao aluno em uma interface web moderna.
 
-Currently, two official plugins are available:
+## Contexto do projeto
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+O sistema foi idealizado para atender necessidades comuns do ambiente de academias, como:
 
-## React Compiler
+- cadastro e acompanhamento de alunos;
+- organização de planos e matrículas;
+- controle de pagamentos;
+- gestão de instrutores, exercícios e fichas de treino;
+- acompanhamento de indicadores administrativos;
+- disponibilização de uma área do aluno.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Além do foco operacional, o projeto também contempla recursos analíticos, como **dashboard administrativo**, métricas financeiras e sinais relacionados à **retenção de alunos**.
 
-## Expanding the ESLint configuration
+## Objetivo deste repositório
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Este repositório contém o **frontend** da solução. A aplicação consome uma API REST e oferece diferentes experiências de uso conforme o perfil autenticado.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Perfis identificados no projeto:
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- `ADMIN`
+- `RECEPTION`
+- `INSTRUCTOR`
+- `STUDENT`
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Principais funcionalidades
+
+### Painel administrativo
+
+- dashboard com indicadores de retenção, finanças e operação;
+- visualização de alertas de retenção;
+- consulta de logs de auditoria;
+- gestão de usuários administrativos.
+
+### Operação da academia
+
+- cadastro e listagem de alunos;
+- gerenciamento de planos;
+- controle de matrículas;
+- controle de pagamentos;
+- gerenciamento de instrutores.
+
+### Treinamento
+
+- cadastro de exercícios;
+- criação e manutenção de fichas de treino;
+- associação de exercícios às fichas.
+
+### Portal do aluno
+
+- visualização de matrícula ativa;
+- consulta de pagamentos;
+- histórico de presenças;
+- acesso às fichas de treino ativas;
+- solicitação de exclusão de dados pessoais, respeitando regras do sistema.
+
+## Tecnologias utilizadas
+
+- `React 19`
+- `TypeScript`
+- `Vite`
+- `TanStack Router`
+- `TanStack Query`
+- `Vitest`
+- `Testing Library`
+- `ESLint`
+- `MUI`
+- `Lucide React`
+
+## Estrutura geral do projeto
+
+```text
+src/
+  components/   Componentes reutilizáveis da interface
+  hooks/        Hooks customizados
+  mutations/    Operações de escrita na API
+  pages/        Páginas e fluxos da aplicação
+  queries/      Consultas e cache de dados
+  routes/       Definição de rotas e regras de acesso
+  services/     Configuração de API e serviços compartilhados
+  test/         Setup de testes
+  utils/        Funções utilitárias
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Requisitos
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- `Node.js` 20 ou superior
+- `npm` 10 ou superior
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Configuração do ambiente
+
+O projeto utiliza a variável de ambiente `VITE_API_URL` para definir a URL base da API.
+
+Exemplo:
+
+```env
+VITE_API_URL=https://api.gymiq.gusoaresfdev.com.br/api
 ```
+
+Se a variável não for informada, o frontend utiliza uma URL padrão configurada no projeto.
+
+## Como executar localmente
+
+1. Instale as dependências:
+
+```bash
+npm install
+```
+
+2. Inicie o servidor de desenvolvimento:
+
+```bash
+npm run dev
+```
+
+3. Acesse a aplicação no endereço exibido pelo Vite, normalmente:
+
+```text
+http://localhost:5173
+```
+
+## Scripts disponíveis
+
+- `npm run dev`: inicia a aplicação em modo de desenvolvimento.
+- `npm run build`: gera a versão de produção.
+- `npm run preview`: executa a versão buildada localmente.
+- `npm run lint`: analisa o código com ESLint.
+- `npm run test`: executa os testes automatizados.
+- `npm run test:watch`: executa os testes em modo observação.
+- `npm run test:coverage`: gera relatório de cobertura de testes.
+- `npm run routes`: exibe a árvore de rotas do projeto.
+
+## Qualidade e testes
+
+O projeto possui cobertura de testes automatizados para utilitários, hooks, componentes, queries, mutations e fluxos específicos de páginas. A estratégia adotada busca aumentar a confiabilidade do sistema e apoiar a evolução do software durante o desenvolvimento do TCC.
+
+## Observações acadêmicas
+
+Este software foi desenvolvido com finalidade acadêmica, servindo como artefato prático de um TCC na área de desenvolvimento de sistemas web. A proposta envolve aplicar conceitos de:
+
+- arquitetura de frontend;
+- componentização;
+- roteamento com controle de acesso;
+- consumo de API REST;
+- testes automatizados;
+- experiência do usuário em sistemas de gestão.
+
+## Possíveis evoluções
+
+- integração mais ampla com notificações e alertas em tempo real;
+- expansão dos indicadores analíticos;
+- melhorias de acessibilidade;
+- evolução do portal do aluno;
+- integração com novos módulos do ecossistema da academia.
