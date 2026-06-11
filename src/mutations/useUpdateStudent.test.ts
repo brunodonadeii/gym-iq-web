@@ -35,13 +35,14 @@ import { useUpdateStudent } from "./useUpdateStudent";
 
 describe("useUpdateStudent", () => {
   it("updates the student and invalidates related queries on success", async () => {
-    const mutation = useUpdateStudent();
+    useUpdateStudent();
+    const mutation = useMutationSpy.mock.calls.at(-1)?.[0] as Record<string, any>;
     const variables = {
       id: "42",
       data: {
         name: "Marina",
       },
-    } as never;
+    };
     const response = new Response(null, { status: 200 });
     const parsed = { id: "42", name: "Marina" };
 

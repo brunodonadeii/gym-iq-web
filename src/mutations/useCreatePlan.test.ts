@@ -28,7 +28,8 @@ import { useCreatePlan } from "./useCreatePlan";
 
 describe("useCreatePlan", () => {
   it("creates a plan and invalidates plans on success", async () => {
-    const mutation = useCreatePlan();
+    useCreatePlan();
+    const mutation = useMutationSpy.mock.calls.at(-1)?.[0] as Record<string, any>;
     const variables = {
       data: {
         name: "Premium",
@@ -36,7 +37,7 @@ describe("useCreatePlan", () => {
         monthlyPrice: 99.9,
         durationMonths: 12,
       },
-    } as never;
+    };
     const response = new Response(null, { status: 200 });
     const parsed = { planId: 1 };
 

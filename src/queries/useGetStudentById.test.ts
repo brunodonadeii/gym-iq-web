@@ -22,7 +22,8 @@ import { useGetStudentById } from "./useGetStudentById";
 
 describe("useGetStudentById", () => {
   it("builds the query config for a valid student id", async () => {
-    const query = useGetStudentById("42");
+    useGetStudentById("42");
+    const query = useQuerySpy.mock.calls.at(-1)?.[0] as Record<string, any>;
     const response = new Response(null, { status: 200 });
     const parsed = { studentId: "42" };
     authFetchSpy.mockResolvedValue(response);
@@ -43,7 +44,8 @@ describe("useGetStudentById", () => {
   });
 
   it("disables the query when the id is empty", () => {
-    const query = useGetStudentById("");
+    useGetStudentById("");
+    const query = useQuerySpy.mock.calls.at(-1)?.[0] as Record<string, any>;
 
     expect(query.enabled).toBe(false);
     expect(query.queryKey).toEqual(["students", ""]);

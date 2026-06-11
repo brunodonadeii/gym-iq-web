@@ -93,7 +93,8 @@ describe("useGetWorkoutSheets", () => {
   it("builds the query with placeholder data and enabled flag", () => {
     const queryConfig = { mode: "all" } as const;
     const pagination = { page: 2, size: 20 };
-    const query = useGetWorkoutSheets(queryConfig, false, pagination);
+    useGetWorkoutSheets(queryConfig, false, pagination);
+    const query = useQuerySpy.mock.calls.at(-1)?.[0] as Record<string, unknown>;
 
     expect(query.queryKey).toEqual(["workout-sheets", queryConfig, pagination]);
     expect(query.enabled).toBe(false);

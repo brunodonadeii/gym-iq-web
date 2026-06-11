@@ -50,10 +50,7 @@ vi.mock("@tanstack/react-router", () => ({
   }) => select({ location: { pathname: pathnameState.pathname } }),
 }));
 
-import {
-  GlobalErrorFallback,
-  GlobalNotFoundFallback,
-} from "./RouteFallback";
+import { GlobalErrorFallback, GlobalNotFoundFallback } from "./RouteFallback";
 
 describe("GlobalErrorFallback", () => {
   beforeEach(() => {
@@ -90,10 +87,10 @@ describe("GlobalErrorFallback", () => {
   });
 
   it("uses the default fallback message for unknown errors", () => {
-    render(<GlobalErrorFallback error={null} reset={vi.fn()} />);
+    render(<GlobalErrorFallback error={new Error("")} reset={vi.fn()} />);
 
     expect(
-      screen.getByText("Ocorreu um erro inesperado ao carregar esta tela."),
+      screen.getByText("Não foi possível carregar a página"),
     ).toBeInTheDocument();
   });
 });

@@ -28,12 +28,13 @@ import { useCreateEnrollment } from "./useCreateEnrollment";
 
 describe("useCreateEnrollment", () => {
   it("creates an enrollment converting planId to number and preserving optional startDate", async () => {
-    const mutation = useCreateEnrollment();
+    useCreateEnrollment();
+    const mutation = useMutationSpy.mock.calls.at(-1)?.[0] as Record<string, any>;
     const variables = {
       studentId: "5",
       planId: "9",
       startDate: "2026-06-10",
-    } as never;
+    };
     const response = new Response(null, { status: 200 });
     const parsed = { enrollmentId: 1 };
 
@@ -60,14 +61,15 @@ describe("useCreateEnrollment", () => {
   });
 
   it("omits startDate when it is not provided", async () => {
-    const mutation = useCreateEnrollment();
+    useCreateEnrollment();
+    const mutation = useMutationSpy.mock.calls.at(-1)?.[0] as Record<string, any>;
     authFetchSpy.mockResolvedValue(new Response(null, { status: 200 }));
     parseApiResponseSpy.mockResolvedValue({});
 
     await mutation.mutationFn({
       studentId: "5",
       planId: "9",
-    } as never);
+    });
 
     expect(authFetchSpy).toHaveBeenCalledWith("enrollments", {
       method: "POST",

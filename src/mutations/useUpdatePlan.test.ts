@@ -28,7 +28,8 @@ import { useUpdatePlan } from "./useUpdatePlan";
 
 describe("useUpdatePlan", () => {
   it("updates a plan and invalidates plans on success", async () => {
-    const mutation = useUpdatePlan();
+    useUpdatePlan();
+    const mutation = useMutationSpy.mock.calls.at(-1)?.[0] as Record<string, any>;
     const variables = {
       id: "7",
       data: {
@@ -37,7 +38,7 @@ describe("useUpdatePlan", () => {
         monthlyPrice: 109.9,
         durationMonths: 12,
       },
-    } as never;
+    };
     const response = new Response(null, { status: 200 });
     const parsed = { planId: 7 };
 

@@ -35,7 +35,8 @@ import { useDeleteStudentPersonalData } from "./useDeleteStudentPersonalData";
 
 describe("useDeleteStudentPersonalData", () => {
   it("deletes personal data and invalidates related queries on success", async () => {
-    const mutation = useDeleteStudentPersonalData();
+    useDeleteStudentPersonalData();
+    const mutation = useMutationSpy.mock.calls.at(-1)?.[0] as Record<string, any>;
     const variables = { id: "42" };
     const response = new Response(null, { status: 200 });
     const parsed = { id: "42" };

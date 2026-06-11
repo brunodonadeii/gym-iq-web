@@ -75,7 +75,8 @@ describe("useGetStudents", () => {
 
   it("builds the query with placeholder data and cache timings", () => {
     const pagination = { page: 2, size: 20 };
-    const query = useGetStudents("mar", "INACTIVE", pagination);
+    useGetStudents("mar", "INACTIVE", pagination);
+    const query = useQuerySpy.mock.calls.at(-1)?.[0] as Record<string, unknown>;
 
     expect(query.queryKey).toEqual(["students", "mar", "INACTIVE", pagination]);
     expect(query.placeholderData).toBe(keepPreviousDataMock);

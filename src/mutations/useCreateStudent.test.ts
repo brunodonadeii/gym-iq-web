@@ -31,11 +31,12 @@ import { useCreateStudent } from "./useCreateStudent";
 
 describe("useCreateStudent", () => {
   it("creates the mutation with the expected request and invalidates students on success", async () => {
-    const mutation = useCreateStudent();
+    useCreateStudent();
+    const mutation = useMutationSpy.mock.calls.at(-1)?.[0] as Record<string, any>;
     const payload = {
       name: "Marina",
       email: "marina@test.com",
-    } as never;
+    };
     const response = new Response(null, { status: 200 });
     const parsed = { id: "1", name: "Marina" };
 

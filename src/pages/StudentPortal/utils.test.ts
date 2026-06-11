@@ -78,7 +78,7 @@ describe("student portal utils", () => {
         trainingSection: "A",
         executionOrder: 4,
       },
-    ] as WorkoutSheetExercise[];
+    ] as unknown as WorkoutSheetExercise[];
 
     expect(groupExercisesByTrainingSection()).toEqual([]);
     expect(groupExercisesByTrainingSection([])).toEqual([]);

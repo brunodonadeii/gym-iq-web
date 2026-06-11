@@ -28,7 +28,8 @@ import { useRenewEnrollment } from "./useRenewEnrollment";
 
 describe("useRenewEnrollment", () => {
   it("renews the enrollment and invalidates the enrollment list on success", async () => {
-    const mutation = useRenewEnrollment();
+    useRenewEnrollment();
+    const mutation = useMutationSpy.mock.calls.at(-1)?.[0] as Record<string, any>;
     const variables = {
       id: "12",
       newPlanId: "3",
