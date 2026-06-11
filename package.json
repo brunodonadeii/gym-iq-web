@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage --coverage.reporter=html",
+    "test:coverage": "vitest --coverage --coverage.reporter=html",
     "preview": "vite preview",
     "routes": "tree /f src/routes"
   },
