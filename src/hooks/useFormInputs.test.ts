@@ -59,8 +59,6 @@ describe("useFormInputs", () => {
       target: { value: "11987654321" },
     } as React.ChangeEvent<HTMLInputElement>);
 
-    expect(maskSpy).toHaveBeenCalledWith("11987654321", "(##) #####-####");
-
     const updater = setData.mock.calls[0][0] as (
       prev: Record<string, string>,
     ) => Record<string, string>;
@@ -69,5 +67,6 @@ describe("useFormInputs", () => {
       phone: "(11) 98765-4321",
       name: "Bruno",
     });
+    expect(maskSpy).toHaveBeenCalledWith("11987654321", "(##) #####-####");
   });
 });

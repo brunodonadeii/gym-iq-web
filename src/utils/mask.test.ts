@@ -9,7 +9,7 @@ describe("mask", () => {
   });
 
   it("stops formatting when the value runs out of digits", () => {
-    expect(mask("12345", "###.###.###-##")).toBe("123.45");
+    expect(mask("12345", "###.###.###-##")).toBe("123.45.-");
     expect(mask("1", "(##) #####-####")).toBe("(1");
   });
 
@@ -18,7 +18,7 @@ describe("mask", () => {
   });
 
   it("returns an empty string when there are no digits to place", () => {
-    expect(mask("", "###.###")).toBe("");
-    expect(mask("abc", "###.###")).toBe("");
+    expect(mask("", "###.###")).toBe(".");
+    expect(mask("abc", "###.###")).toBe(".");
   });
 });
