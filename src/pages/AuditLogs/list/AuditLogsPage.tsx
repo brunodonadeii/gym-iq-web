@@ -17,6 +17,7 @@ import type { AuditLog, AuditLogFilters } from "@/pages/AuditLogs/types";
 import { useGetAuditLogFilterOptions } from "@/queries/useGetAuditLogFilterOptions";
 import { useGetAuditLogs } from "@/queries/useGetAuditLogs";
 import { normalizeApiError } from "@/utils/apiError";
+import Tooltip from "@mui/material/Tooltip";
 import { FilterX, Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -34,9 +35,49 @@ const EMPTY_FILTERS: AuditLogFilters = {
   action: "",
   actorId: "",
   resourceType: "",
-  resourceId: "",
   from: "",
   to: "",
+};
+
+const actionLabelOverrides: Record<string, string> = {
+  ACTIVATE_INSTRUCTOR: "Ativação de instrutor",
+  ACTIVATE_PLAN: "Ativação de plano",
+  ACTIVATE_STUDENT: "Ativação de aluno",
+  ACTIVATE_WORKOUT_SHEET: "Ativação de ficha de treino",
+  CREATE_ADMIN_USER: "Criação de usuário administrativo",
+  CREATE_ENROLLMENT: "Criação de matrícula",
+  CREATE_EXERCISE: "Criação de exercício",
+  CREATE_INSTRUCTOR: "Criação de instrutor",
+  CREATE_PAYMENT: "Criação de pagamento",
+  CREATE_PLAN: "Criação de plano",
+  CREATE_STUDENT: "Criação de aluno",
+  CREATE_WORKOUT_SHEET: "Criação de ficha de treino",
+  DEACTIVATE_INSTRUCTOR: "Desativação de instrutor",
+  DEACTIVATE_PLAN: "Desativação de plano",
+  DEACTIVATE_STUDENT: "Desativação de aluno",
+  DEACTIVATE_WORKOUT_SHEET: "Desativação de ficha de treino",
+  DELETE_ADMIN_USER: "Exclusão de usuário administrativo",
+  DELETE_EXERCISE: "Exclusão de exercício",
+  DELETE_INSTRUCTOR: "Exclusão de instrutor",
+  DELETE_PLAN: "Exclusão de plano",
+  DELETE_STUDENT_PERSONAL_DATA: "Exclusão de dados pessoais do aluno",
+  DELETE_WORKOUT_SHEET: "Exclusão de ficha de treino",
+  FORGOT_PASSWORD: "Recuperação de senha",
+  GENERATE_MONTHLY_PAYMENTS: "Geração de mensalidades",
+  GENERATE_RETENTION_ALERTS: "Geração de alertas de retenção",
+  LOGIN: "Login",
+  PAY_PAYMENT: "Pagamento recebido",
+  REFRESH_OVERDUE_PAYMENTS: "Atualização de pagamentos vencidos",
+  RENEW_ENROLLMENT: "Renovação de matrícula",
+  RESET_PASSWORD: "Redefinição de senha",
+  UPDATE_ADMIN_USER: "Atualização de usuário administrativo",
+  UPDATE_ENROLLMENT_STATUS: "Atualização de status da matrícula",
+  UPDATE_EXERCISE: "Atualização de exercício",
+  UPDATE_INSTRUCTOR: "Atualização de instrutor",
+  UPDATE_PAYMENT_STATUS: "Atualização de status do pagamento",
+  UPDATE_PLAN: "Atualização de plano",
+  UPDATE_STUDENT: "Atualização de aluno",
+  UPDATE_WORKOUT_SHEET: "Atualização de ficha de treino",
 };
 
 const formatDateTime = (value?: string | null) =>
@@ -53,7 +94,26 @@ const formatDateTime = (value?: string | null) =>
 const getLogId = (log: AuditLog, index: number) =>
   String(log.auditLogId ?? `${log.createdAt ?? "log"}-${index}`);
 
+const getActionLabel = (log: AuditLog) => {
+  const actionLabel = log.actionLabel?.trim();
+  if (actionLabel) return actionLabel;
+
+  const action = log.action?.trim();
+  if (!action) return "-";
+
+  return actionLabelOverrides[action] ?? action;
+};
+
 const getActorLabel = (log: AuditLog) => {
+  const actorLabel = log.actorLabel?.trim();
+
+  if (actorLabel) {
+    return {
+      primary: actorLabel,
+      secondary: log.actorRole?.trim() || "",
+    };
+  }
+
   if (log.resourceType === "JOB") {
     return {
       primary: "Sistema",
@@ -63,19 +123,14 @@ const getActorLabel = (log: AuditLog) => {
 
   if (log.actorUserId || log.actorEmail || log.actorRole) {
     return {
-      primary: log.actorEmail?.trim() || `Usuário #${log.actorUserId ?? "-"}`,
-      secondary: [
-        log.actorRole?.trim(),
-        log.actorUserId ? `ID ${log.actorUserId}` : null,
-      ]
-        .filter(Boolean)
-        .join(" • "),
+      primary: log.actorEmail?.trim() || "Usuário",
+      secondary: log.actorRole?.trim() || "",
     };
   }
 
-  if (log.action === "LOGIN" && log.resourceType === "USER" && log.resourceId) {
+  if (log.action === "LOGIN" && log.resourceType === "USER") {
     return {
-      primary: `Usuário #${log.resourceId}`,
+      primary: "Usuário",
       secondary: "Próprio usuário autenticado",
     };
   }
@@ -90,15 +145,17 @@ const getResourceLabel = (
   log: AuditLog,
   resourceTypeLabels: Record<string, string>,
 ) => {
+  const resourceLabel = log.resourceLabel?.trim();
+  if (resourceLabel) return resourceLabel;
+
   if (log.resourceType === "JOB") {
-    return "Job do sistema";
+    return "Rotina automática";
   }
 
-  const rawType = log.resourceType?.trim() || "Recurso";
-  const type = resourceTypeLabels[rawType] ?? rawType;
-  const id = log.resourceId ?? "-";
+  const resourceType = log.resourceType?.trim();
+  if (!resourceType) return "-";
 
-  return `${type} #${id}`;
+  return resourceTypeLabels[resourceType] ?? resourceType;
 };
 
 export const AuditLogsPage = () => {
@@ -129,7 +186,10 @@ export const AuditLogsPage = () => {
   const invalidFilterError = apiError?.status === 400;
   const actionOptions = [
     { label: "Todas", value: "" },
-    ...(filterOptions?.actions ?? []),
+    ...(filterOptions?.actions ?? []).map((option) => ({
+      ...option,
+      label: actionLabelOverrides[option.value] ?? option.label,
+    })),
   ];
   const resourceTypeOptions = [
     { label: "Todos", value: "" },
@@ -197,7 +257,6 @@ export const AuditLogsPage = () => {
       action: draftFilters.action.trim(),
       actorId: draftFilters.actorId.trim(),
       resourceType: draftFilters.resourceType.trim(),
-      resourceId: draftFilters.resourceId.trim(),
       from: draftFilters.from,
       to: draftFilters.to,
     });
@@ -272,18 +331,6 @@ export const AuditLogsPage = () => {
             disabled={isLoadingFilterOptions}
           />
           <TextField
-            label="ID do registro afetado"
-            id="auditResourceId"
-            value={draftFilters.resourceId}
-            onChange={(event) =>
-              setDraftFilters((prev) => ({
-                ...prev,
-                resourceId: event.target.value,
-              }))
-            }
-            placeholder="10"
-          />
-          <TextField
             label="Data inicial"
             id="auditFrom"
             type="date"
@@ -356,39 +403,85 @@ export const AuditLogsPage = () => {
               {!tableLoading &&
                 logs.map((log, index) => {
                   const actor = getActorLabel(log);
+                  const actionLabel = getActionLabel(log);
+                  const resourceLabel = getResourceLabel(
+                    log,
+                    resourceTypeLabels,
+                  );
+                  const description = log.description?.trim() || "-";
 
                   return (
                     <TableRow key={getLogId(log, index)}>
                       <TableCell>{formatDateTime(log.createdAt)}</TableCell>
                       <TableCell>
-                        <span className={styles.actionBadge}>
-                          {log.action?.trim() || "-"}
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        <div className={styles.cellStack}>
-                          <span className={styles.cellPrimary}>
-                            {actor.primary}
-                          </span>
-                          <span className={styles.cellSecondary}>
-                            {actor.secondary || "-"}
-                          </span>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        {getResourceLabel(log, resourceTypeLabels)}
-                      </TableCell>
-                      <TableCell>
-                        <div className={styles.cellStack}>
-                          <span className={styles.cellSecondary}>
-                            {log.description?.trim() || "-"}
-                          </span>
-                          {log.ipAddress?.trim() && (
-                            <span className={styles.cellSecondary}>
-                              IP: {log.ipAddress.trim()}
+                        <Tooltip
+                          title={actionLabel}
+                          arrow
+                          slotProps={{
+                            tooltip: { className: styles.tooltip },
+                            arrow: { className: styles.tooltipArrow },
+                          }}
+                        >
+                          <span className={styles.actionBadge}>
+                            <span className={styles.truncatedText}>
+                              {actionLabel}
                             </span>
-                          )}
-                        </div>
+                          </span>
+                        </Tooltip>
+                      </TableCell>
+                      <TableCell>
+                        <Tooltip
+                          title={actor.primary}
+                          arrow
+                          slotProps={{
+                            tooltip: { className: styles.tooltip },
+                            arrow: { className: styles.tooltipArrow },
+                          }}
+                        >
+                          <div className={styles.cellStack}>
+                            <span className={styles.cellPrimary}>
+                              {actor.primary}
+                            </span>
+                            <span className={styles.cellSecondary}>
+                              {actor.secondary || "-"}
+                            </span>
+                          </div>
+                        </Tooltip>
+                      </TableCell>
+                      <TableCell>
+                        <Tooltip
+                          title={resourceLabel}
+                          arrow
+                          slotProps={{
+                            tooltip: { className: styles.tooltip },
+                            arrow: { className: styles.tooltipArrow },
+                          }}
+                        >
+                          <span className={styles.truncatedText}>
+                            {resourceLabel}
+                          </span>
+                        </Tooltip>
+                      </TableCell>
+                      <TableCell>
+                        <Tooltip
+                          title={description}
+                          arrow
+                          slotProps={{
+                            tooltip: { className: styles.tooltip },
+                            arrow: { className: styles.tooltipArrow },
+                          }}
+                        >
+                          <div className={styles.cellStack}>
+                            <span className={styles.cellSecondary}>
+                              {description}
+                            </span>
+                            {log.ipAddress?.trim() && (
+                              <span className={styles.cellSecondary}>
+                                IP: {log.ipAddress.trim()}
+                              </span>
+                            )}
+                          </div>
+                        </Tooltip>
                       </TableCell>
                     </TableRow>
                   );
