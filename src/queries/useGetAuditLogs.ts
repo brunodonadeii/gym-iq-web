@@ -61,7 +61,6 @@ const buildAuditLogsPath = (
 ) => {
   const actorId = filters.actorId.trim();
   const resourceType = filters.resourceType.trim();
-  const resourceId = filters.resourceId.trim();
   const action = filters.action.trim();
   const from = filters.from.trim();
   const to = filters.to.trim();
@@ -70,7 +69,6 @@ const buildAuditLogsPath = (
     actorUserId: actorId || undefined,
     action: action || undefined,
     resourceType: resourceType || undefined,
-    resourceId: resourceId || undefined,
     from: toAuditLogDateTime(from, "start"),
     to: toAuditLogDateTime(to, "end"),
   });

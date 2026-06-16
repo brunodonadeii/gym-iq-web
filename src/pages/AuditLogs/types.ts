@@ -4,10 +4,13 @@ export type AuditLog = {
   auditLogId?: number;
   actorUserId?: string | null;
   actorEmail?: string | null;
+  actorLabel?: string | null;
   actorRole?: string | null;
   action?: string | null;
+  actionLabel?: string | null;
   resourceType?: string | null;
   resourceId?: string | null;
+  resourceLabel?: string | null;
   description?: string | null;
   ipAddress?: string | null;
   createdAt?: string | null;
@@ -17,7 +20,6 @@ export type AuditLogFilters = {
   action: string;
   actorId: string;
   resourceType: string;
-  resourceId: string;
   from: string;
   to: string;
 };
